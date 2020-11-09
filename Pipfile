@@ -1,0 +1,10 @@
+[packages]
+Flask = "==1.1.2"
+Flask-Cors = "==3.0.9"
+
+[dev-packages]
+
+[[source]]
+url = "https://pypi.org/simple/"
+verify_ssl = false
+name = "pypi-447"
