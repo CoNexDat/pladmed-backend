@@ -1,13 +1,30 @@
 version: '3'
 services:
   server:
-    container_name: server
-    build: ./
-    entrypoint: flask run --host 0.0.0.0
-    environment:
-      - PYTHONUNBUFFERED=1
-      - FLASK_APP=src/main.py
+    container_name: pladmed-server
+    image: server:latest
+    command: python src/main.py
+    env_file:
+      - .env_server
     volumes:
       - ./src:/home/src
+      - ./logs:/home/logs
     ports:
       - 5000:5000
+    restart: on-failure
+    networks:
+      - pladmed_net
+      
+  db:
+    image: 'mongo:3.6'
+    container_name: pladmed-database
+    env_file:
+      - .env_database
+    volumes:
+      - ./mongodb:/data/db
+    restart: on-failure
+    networks:
+      - pladmed_net
+
+networks:
+  pladmed_net:

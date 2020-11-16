@@ -3,10 +3,24 @@ PWD := $(shell pwd)
 
 all:
 
-start:
-	FLASK_APP=src/main.py flask run --host 0.0.0.0
+build:
+	docker build -f ./Dockerfile -t "server:latest" .
+.PHONY: build
+
+start: build
+	docker-compose up --d
 .PHONY: start
 
-debug:
-	FLASK_APP=src/main.py FLASK_ENV=development flask run --host 0.0.0.0
+logs:
+	docker-compose logs -f
+.PHONY: logs
+
+stop:
+	docker-compose stop -t 1
+	docker-compose down
+.PHONY: stop
+
+debug: build
+	docker-compose up --d
+	docker-compose logs -f
 .PHONY: debug

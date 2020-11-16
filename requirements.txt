@@ -1,4 +1,4 @@
 -i https://pypi.org/simple/
 flask==1.1.2
 flask-cors==3.0.9
-Flask-PyMongo==2.3.0
+pymongo==3.9.0
