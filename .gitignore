@@ -2,5 +2,6 @@ ubuntu-xenial-16.04-cloudimg-console.log
 .vagrant/
 mongodb/
 logs/
-
+.env_database
+.env_server
 __pycache__/
