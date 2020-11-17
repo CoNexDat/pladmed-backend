@@ -8,7 +8,7 @@ build:
 .PHONY: build
 
 start: build
-	docker-compose up --d
+	docker-compose up -d
 .PHONY: start
 
 logs:
@@ -21,6 +21,15 @@ stop:
 .PHONY: stop
 
 debug: build
-	docker-compose up --d
+	docker-compose up -d
 	docker-compose logs -f
 .PHONY: debug
+
+test: build
+	-COMPOSE_PROJECT_NAME=testing \
+	GREEN="\033[32m" \
+	docker-compose -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml up \
+	--abort-on-container-exit
+	COMPOSE_PROJECT_NAME=testing \
+	docker-compose -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml down
+.PHONY: test

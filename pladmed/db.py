@@ -30,6 +30,7 @@ class Database:
             "/"
         )
 
+        self.db_name = db
         self.db = self.client[db]
 
     def save_user(self, email, password):
@@ -42,3 +43,6 @@ class Database:
 
     def find_user(self, email):
         return self.db.users.find_one({"email": email})
+
+    def reset_db(self):
+        self.client.drop_database(self.db_name)

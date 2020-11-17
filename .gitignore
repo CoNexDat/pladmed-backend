@@ -5,3 +5,11 @@ logs/
 .env_database
 .env_server
 __pycache__/
+*.pyc
+instance/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/

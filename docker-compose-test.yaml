@@ -1,0 +1,38 @@
+version: '3'
+services:
+  server:
+    container_name: pladmed-testing
+    image: server:latest
+    entrypoint: ./docker-entrypoint.sh
+    command: 
+      - bash
+      - -c
+      - |
+        echo ;
+        echo -e "${GREEN}Testing reports"
+        coverage run -m unittest discover
+        echo ;
+        echo -e "${GREEN}Coverage reports"
+        echo ;
+        coverage report
+        echo ;
+    env_file:
+      - .env_server
+    volumes:
+      - ./pladmed:/home/pladmed
+    networks:
+      - pladmed_testing_net
+      
+  db:
+    image: 'mongo:3.6'
+    container_name: pladmed-database-testing
+    command: mongod --quiet --logpath /dev/null
+    env_file:
+      - .env_database
+    volumes:
+      - ./mongodb:/data/db
+    networks:
+      - pladmed_testing_net
+
+networks:
+  pladmed_testing_net:

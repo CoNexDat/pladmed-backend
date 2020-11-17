@@ -3,11 +3,12 @@ services:
   server:
     container_name: pladmed-server
     image: server:latest
-    command: python src/main.py
+    entrypoint: ./docker-entrypoint.sh
+    command: flask run --host 0.0.0.0
     env_file:
       - .env_server
     volumes:
-      - ./src:/home/src
+      - ./pladmed:/home/pladmed
       - ./logs:/home/logs
     ports:
       - 5000:5000
