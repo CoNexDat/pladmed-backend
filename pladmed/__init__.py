@@ -1,9 +1,10 @@
 import os
 from flask_cors import CORS
-from flask import Flask, make_response, jsonify
+from flask import Flask
 from pladmed.db import Database
 import logging
 from flask_socketio import SocketIO
+from pladmed.routes import api
 
 socketio = SocketIO()
 
@@ -48,18 +49,7 @@ def create_app(test_config=None):
 
     app.db = init_database(app.config)
 
-    @app.route('/')
-    def root():
-        app.db.save_user("juan@gmail.com", "password")
-        user = app.db.find_user("juan@gmail.com")
-
-        return make_response(
-            jsonify(
-                id=40,
-                email=user["email"]
-            ),
-            200
-        )
+    app.register_blueprint(api, url_prefix='/api')
   
     CORS(app)
 
