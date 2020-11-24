@@ -11,5 +11,4 @@ def on_disconnect():
 
 @socketio.on('test_event')
 def handle_test_event(msg):
-    print(msg)
-    emit('my response: ', msg)
+    emit('response', msg)

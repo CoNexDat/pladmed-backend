@@ -11,9 +11,10 @@ class ExampleTest(BaseTest):
             flask_test_client=self.client
         )
 
-        #Ensure connection is up
-        #assert client_socket.is_connected()
+        client_socket.emit('test_event', {"data": "something"})
 
         r = client_socket.get_received()
 
         self.assertEqual(r[0]['name'], 'connected')
+        self.assertEqual(r[1]['name'], 'response')
+        self.assertEqual(r[1]['args'][0]["data"], 'something')
