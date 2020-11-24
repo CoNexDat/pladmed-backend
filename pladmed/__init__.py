@@ -4,7 +4,6 @@ from flask import Flask
 from pladmed.db import Database
 import logging
 from flask_socketio import SocketIO
-from pladmed.routes import api
 
 socketio = SocketIO()
 
@@ -49,7 +48,8 @@ def create_app(test_config=None):
 
     app.db = init_database(app.config)
 
-    app.register_blueprint(api, url_prefix='/api')
+    from pladmed.routes import api
+    app.register_blueprint(api)#, url_prefix='/api')
   
     CORS(app)
 

@@ -1,5 +1,5 @@
 from flask import current_app, make_response, jsonify
-from . import api
+from pladmed.routes import api
 
 @api.route('/')
 def root():
