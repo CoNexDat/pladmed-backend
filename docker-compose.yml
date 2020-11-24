@@ -4,7 +4,7 @@ services:
     container_name: pladmed-server
     image: server:latest
     entrypoint: ./docker-entrypoint.sh
-    command: flask run --host 0.0.0.0
+    command: python3 main.py #python3 pladmed/main.py #flask run --host 0.0.0.0
     env_file:
       - .env_server
     volumes:

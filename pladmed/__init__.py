@@ -3,6 +3,9 @@ from flask_cors import CORS
 from flask import Flask, make_response, jsonify
 from pladmed.db import Database
 import logging
+from flask_socketio import SocketIO
+
+socketio = SocketIO()
 
 def init_database(config):
     return Database(
@@ -59,5 +62,7 @@ def create_app(test_config=None):
         )
   
     CORS(app)
+
+    socketio.init_app(app)
 
     return app
