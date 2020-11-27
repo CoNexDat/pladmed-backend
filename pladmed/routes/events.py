@@ -1,14 +1,12 @@
 from pladmed import socketio
 from flask_socketio import emit
+from flask import current_app, request
 
 @socketio.on('connect')
 def on_connect():
-    emit('connected')
+    emit('connected', "You re connected")
+    current_app.probes.append(request.namespace)
 
 @socketio.on('disconnect')
 def on_disconnect():
-    print("Client disconnected")
-
-@socketio.on('test_event')
-def handle_test_event(msg):
-    emit('response', msg)
+    current_app.probes.remove(request.namespace)    

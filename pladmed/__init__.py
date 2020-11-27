@@ -47,6 +47,7 @@ def create_app(test_config=None):
         pass
 
     app.db = init_database(app.config)
+    app.probes = []
 
     from pladmed.routes import api
     app.register_blueprint(api)#, url_prefix='/api')
