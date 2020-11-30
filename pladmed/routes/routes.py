@@ -1,7 +1,8 @@
 from flask import current_app, make_response, jsonify
 from pladmed.routes import api
 
-@api.route('/')
+# Temporary left as an example
+'''@api.route('/')
 def root():
     current_app.db.save_user("juan@gmail.com", "password")
     user = current_app.db.find_user("juan@gmail.com")
@@ -13,3 +14,4 @@ def root():
         ),
         200
     )
+'''

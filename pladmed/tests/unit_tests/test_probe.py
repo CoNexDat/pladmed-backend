@@ -1,23 +1,11 @@
 import unittest
-from pladmed.tests.test_base import BaseTest
-import json
-from pladmed import socketio
+from pladmed.models.probe import Probe
 
-class ProbeTest(BaseTest):
-    def test_connection_up(self):
-        probe = socketio.test_client(
-            self.app,
-            flask_test_client=self.client
+class ProbeTest(unittest.TestCase):
+    def setUp(self):
+        self.probe = Probe(
+            identifier="3ap394c"
         )
 
-        self.assertEqual(len(self.app.probes), 1)   
-
-    def test_disconnect(self):
-        probe = socketio.test_client(
-            self.app,
-            flask_test_client=self.client
-        )
-
-        probe.disconnect()
-
-        self.assertEqual(len(self.app.probes), 0)   
+    def test_probe_includes_identifier(self):
+        self.assertEqual("3ap394c", self.probe.identifier)
