@@ -10,7 +10,9 @@ class ProbeTest(BaseTest):
             flask_test_client=self.client
         )
 
-        self.assertEqual(len(self.app.probes), 1)   
+        self.assertEqual(len(self.app.probes), 1)
+
+        probe.disconnect()
 
     def test_disconnect(self):
         probe = socketio.test_client(
@@ -20,4 +22,4 @@ class ProbeTest(BaseTest):
 
         probe.disconnect()
 
-        self.assertEqual(len(self.app.probes), 0)   
+        self.assertEqual(len(self.app.probes), 0)

@@ -1,5 +1,6 @@
 import unittest
 from pladmed import create_app
+from pladmed import socketio
 
 class BaseTest(unittest.TestCase):
     def setUp(self):
