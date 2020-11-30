@@ -12,8 +12,6 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 1)
 
-        probe.disconnect()
-
     def test_disconnect(self):
         probe = socketio.test_client(
             self.app,
