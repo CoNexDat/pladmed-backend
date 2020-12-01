@@ -1,4 +1,5 @@
 class Operation:
-    def __init__(self, operation, probes):
+    def __init__(self, operation, params, probes):
         self.operation = operation
         self.probes = probes
+        self.params = params
