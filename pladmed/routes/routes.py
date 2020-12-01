@@ -15,3 +15,5 @@ def create_operation():
             emit("operation", data, room=conn, namespace='')
 
     return make_response(data, 201)
+
+
