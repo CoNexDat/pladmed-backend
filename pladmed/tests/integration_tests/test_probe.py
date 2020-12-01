@@ -21,3 +21,22 @@ class ProbeTest(BaseTest):
         probe.disconnect()
 
         self.assertEqual(len(self.app.probes), 0)
+
+    def test_receives_operation(self):
+        probe = socketio.test_client(
+            self.app,
+            flask_test_client=self.client
+        )
+
+        self.client.post('/operation', json=dict(
+            operation="traceroute",
+            probes=["identifier"],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            }
+        ))
+
+        received = probe.get_received()
+
+        self.assertEqual(received[1]["name"], "operation")
