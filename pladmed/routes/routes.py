@@ -1,17 +1,8 @@
-from flask import current_app, make_response, jsonify
+from flask import current_app, make_response, jsonify, request
 from pladmed.routes import api
 
-# Temporary left as an example
-'''@api.route('/')
-def root():
-    current_app.db.save_user("juan@gmail.com", "password")
-    user = current_app.db.find_user("juan@gmail.com")
+@api.route('/operation', methods=["POST"])
+def create_operation():
+    data = request.get_json(force=True) 
 
-    return make_response(
-        jsonify(
-            id=40,
-            email=user["email"]
-        ),
-        200
-    )
-'''
+    return make_response(data, 201)
