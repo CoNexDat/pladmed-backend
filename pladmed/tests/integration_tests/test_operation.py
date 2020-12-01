@@ -3,7 +3,6 @@ from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 
 class OperationTest(BaseTest):
-    # TODO Integration test 
     def test_creates_traceroute(self):
         res = self.client.post('/operation', json=dict(
             operation="traceroute",
