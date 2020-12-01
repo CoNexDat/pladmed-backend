@@ -40,3 +40,4 @@ class ProbeTest(BaseTest):
         received = probe.get_received()
 
         self.assertEqual(received[1]["name"], "operation")
+        self.assertEqual(received[1]["args"][0]["params"]["ips"][0], "192.168.0.0")
