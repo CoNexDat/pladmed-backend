@@ -5,7 +5,6 @@ from pladmed.models.probe import Probe
 
 @socketio.on('connect')
 def on_connect():
-    emit('connected', "You re connected")
     current_app.probes[request.sid] = Probe("identifier")
 
 @socketio.on('disconnect')
