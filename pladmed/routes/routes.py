@@ -2,6 +2,7 @@ from flask import current_app, make_response, jsonify, request
 from pladmed.routes import api
 from flask_socketio import emit
 
+
 @api.route('/operation', methods=["POST"])
 def create_operation():
     data = request.get_json(force=True)
@@ -12,7 +13,7 @@ def create_operation():
 
     for conn, probe in list(current_app.probes.items()):
         if probe.identifier in data["probes"]:
-            emit("operation", data, room=conn, namespace='')
+            emit(data["operation"], data, room=conn, namespace='')
 
     return make_response(data, 201)
 
