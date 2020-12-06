@@ -23,6 +23,8 @@ def create_user():
 
     # TODO Validate data and params
 
+    #current_app.db.save_user(data["email"], data["password"])
+
     del data["password"]
 
     return make_response(data, 201)

@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import urllib.parse
 import logging
+from pladmed.database.users import UsersCollection
 
 class Database:
     def __init__(self, username, password, host, port, db):
@@ -33,16 +34,11 @@ class Database:
         self.db_name = db
         self.db = self.client[db]
 
-    def save_user(self, email, password):
-        user = {
-            "email": email,
-            "password": password
-        }
+        self.init_users()
 
-        self.db.users.insert_one(user)
-
-    def find_user(self, email):
-        return self.db.users.find_one({"email": email})
-
+    # Initialize users collection
+    def init_users(self):
+        self.users = UsersCollection(self.db)
+    
     def reset_db(self):
         self.client.drop_database(self.db_name)
