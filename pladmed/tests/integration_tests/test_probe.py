@@ -39,5 +39,5 @@ class ProbeTest(BaseTest):
 
         received = probe.get_received()
 
-        self.assertEqual(received[0]["name"], "operation")
+        self.assertEqual(received[0]["name"], "traceroute")
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
