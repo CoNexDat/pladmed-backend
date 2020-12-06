@@ -5,6 +5,7 @@ import logging
 class UsersCollection:
     def __init__(self, db):
         self.db = db
+        self.db.users.create_index("email", unique=True)
     
     def save_user(self, email, password):
         user = {

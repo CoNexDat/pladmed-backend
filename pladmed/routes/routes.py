@@ -23,7 +23,10 @@ def create_user():
 
     # TODO Validate data and params
 
-    #current_app.db.save_user(data["email"], data["password"])
+    try:
+        current_app.db.users.save_user(data["email"], data["password"])
+    except:
+        return make_response({"Error": "That email is already registered"}, 404)
 
     del data["password"]
 

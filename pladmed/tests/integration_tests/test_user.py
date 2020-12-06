@@ -22,7 +22,7 @@ class UserTest(BaseTest):
         self.assertEqual(data["email"], "agustin@gmail.com")
         self.assertEqual("password" in data, False)
         
-    '''def test_unique_users(self):
+    def test_unique_users(self):
         self.client.post('/users', json=dict(
             email="agustin@gmail.com",
             password="secure_password"
@@ -33,4 +33,4 @@ class UserTest(BaseTest):
             password="secure_password"
         ))
 
-        self.assertEqual(res.status_code, 404)'''
+        self.assertEqual(res.status_code, 404)
