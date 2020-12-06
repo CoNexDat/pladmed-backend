@@ -1,12 +1,13 @@
 import unittest
 from pladmed.models.user import User
+from passlib.hash import pbkdf2_sha256 as secure_password
 
 class UserTest(unittest.TestCase):
     def setUp(self):
         self.user = User(
             _id="482932jik",
             email="agustin@gmail.com",
-            password="simple_password"
+            password=secure_password.hash("simple_password")
         )
 
     def test_user_has_id(self):
@@ -16,4 +17,11 @@ class UserTest(unittest.TestCase):
         self.assertEqual(self.user.email, "agustin@gmail.com")
 
     def test_user_has_password(self):
-        self.assertEqual(self.user.password, "simple_password")
+        self.assertEqual(
+            secure_password.verify(
+                "simple_password",
+                self.user.password
+            ),
+            True
+        )
+    
