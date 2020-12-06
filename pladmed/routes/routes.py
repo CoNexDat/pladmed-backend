@@ -23,4 +23,6 @@ def create_user():
 
     # TODO Validate data and params
 
+    del data["password"]
+
     return make_response(data, 201)
