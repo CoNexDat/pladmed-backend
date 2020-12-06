@@ -1,6 +1,5 @@
 import unittest
 from pladmed.models.user import User
-from passlib.hash import pbkdf2_sha256 as secure_password
 
 class UserTest(unittest.TestCase):
     def setUp(self):

@@ -1,7 +1,6 @@
 import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 from pladmed.models.user import User
-from passlib.hash import pbkdf2_sha256 as secure_password
 import json
 
 class DatabaseTest(BaseTest):
@@ -37,4 +36,4 @@ class DatabaseTest(BaseTest):
         user = self.app.db.users.find_user("juan@gmail.com")
 
         self.assertNotEqual(user.password, "123")
-        self.assertEqual(secure_password.verify("123", user.password), True)
+        self.assertEqual(user.verify_password("123"), True)
