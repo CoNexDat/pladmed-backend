@@ -4,11 +4,11 @@ from passlib.hash import pbkdf2_sha256 as secure_password
 
 class UserTest(unittest.TestCase):
     def setUp(self):
-        self.user = User(
-            _id="482932jik",
-            email="agustin@gmail.com",
-            password=secure_password.hash("simple_password")
-        )
+        self.user = User({
+            "_id": "482932jik",
+            "email": "agustin@gmail.com",
+            "raw_password": "simple_password"
+        })
 
     def test_user_has_id(self):
         self.assertEqual(self.user._id, "482932jik")
@@ -18,10 +18,7 @@ class UserTest(unittest.TestCase):
 
     def test_user_has_password(self):
         self.assertEqual(
-            secure_password.verify(
-                "simple_password",
-                self.user.password
-            ),
+            self.user.verify_password("simple_password"),
             True
         )
     

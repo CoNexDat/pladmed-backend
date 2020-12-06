@@ -2,7 +2,6 @@ from pymongo import MongoClient
 import urllib.parse
 import logging
 from pladmed.models.user import User
-from passlib.hash import pbkdf2_sha256 as secure_password
 
 class UsersCollection:
     def __init__(self, db):
@@ -10,14 +9,13 @@ class UsersCollection:
         self.db.users.create_index("email", unique=True)
     
     def create_user(self, email, password):
-        hashed_password = secure_password.hash(password)
+        user = User({"email": email, "raw_password": password})
 
-        _id = self.db.users.insert_one({
-            "email": email,
-            "password": hashed_password
-        })
+        _id = self.db.users.insert_one(user.__dict__)
 
-        return User(str(_id.inserted_id), email, hashed_password)
+        user._id = str(_id.inserted_id)
+
+        return user
 
     def find_user(self, email):
         user_data = self.db.users.find_one({"email": email})
@@ -25,8 +23,8 @@ class UsersCollection:
         if not user_data:
             return None
 
-        return User(
-            str(user_data["_id"]),
-            user_data["email"],
-            user_data["password"]
-        )
+        return User({
+            "_id": str(user_data["_id"]),
+            "email": user_data["email"],
+            "password": user_data["password"]
+        })
