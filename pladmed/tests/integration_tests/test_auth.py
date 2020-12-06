@@ -11,6 +11,26 @@ class AuthenticationTest(BaseTest):
 
         self.assertEqual(res.status_code, 201)
 
+    def test_register_user_returns_email(self):
+        res = self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data["email"], "agustin@gmail.com")        
+
+    def test_register_user_returns_id(self):
+        res = self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        data = json.loads(res.data)
+
+        self.assertEqual("_id" in data, True)     
+
     def test_register_user_doesnt_return_password(self):
         res = self.client.post('/register', json=dict(
             email="agustin@gmail.com",
@@ -19,7 +39,6 @@ class AuthenticationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual(data["email"], "agustin@gmail.com")
         self.assertEqual("password" in data, False)
         
     def test_unique_users(self):

@@ -23,13 +23,14 @@ def create_user():
 
     # TODO Validate data and params
 
-    user = User(data["email"], data["password"])
-
     try:
-        current_app.db.users.save_user(user)
+        user = current_app.db.users.create_user(
+            data["email"],
+            data["password"]
+        )
+
+        user_data = user.public_data()
+
+        return make_response(jsonify(user_data), 201)
     except:
         return make_response({"Error": "That email is already registered"}, 404)
-
-    del data["password"]
-
-    return make_response(data, 201)
