@@ -7,13 +7,8 @@ class UsersCollection:
         self.db = db
         self.db.users.create_index("email", unique=True)
     
-    def save_user(self, email, password):
-        user = {
-            "email": email,
-            "password": password
-        }
-
-        self.db.users.insert_one(user)
+    def save_user(self, user):
+        self.db.users.insert_one(user.__dict__)
 
     def find_user(self, email):
         return self.db.users.find_one({"email": email})

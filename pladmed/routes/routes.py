@@ -1,7 +1,7 @@
 from flask import current_app, make_response, jsonify, request
 from pladmed.routes import api
 from flask_socketio import emit
-
+from pladmed.models.user import User
 
 @api.route('/operation', methods=["POST"])
 def create_operation():
@@ -23,8 +23,10 @@ def create_user():
 
     # TODO Validate data and params
 
+    user = User(data["email"], data["password"])
+
     try:
-        current_app.db.users.save_user(data["email"], data["password"])
+        current_app.db.users.save_user(user)
     except:
         return make_response({"Error": "That email is already registered"}, 404)
 
