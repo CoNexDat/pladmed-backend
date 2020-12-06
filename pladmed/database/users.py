@@ -17,4 +17,13 @@ class UsersCollection:
         return User(str(_id.inserted_id), email, password)
 
     def find_user(self, email):
-        return self.db.users.find_one({"email": email})
+        user_data = self.db.users.find_one({"email": email})
+
+        if not user_data:
+            return None
+
+        return User(
+            user_data._id.str,
+            user_data.email,
+            user_data.password
+        )

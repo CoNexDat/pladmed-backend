@@ -29,7 +29,7 @@ class AuthenticationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual("_id" in data, True)     
+        self.assertEqual("_id" in data, True)
 
     def test_register_user_doesnt_return_password(self):
         res = self.client.post('/register', json=dict(
