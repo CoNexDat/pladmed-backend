@@ -5,9 +5,10 @@ class UserTest(unittest.TestCase):
     def setUp(self):
         self.user = User({
             "_id": "482932jik",
-            "email": "agustin@gmail.com",
-            "raw_password": "simple_password"
+            "email": "agustin@gmail.com"
         })
+
+        self.user.set_password("simple_password")
 
     def test_user_has_id(self):
         self.assertEqual(self.user._id, "482932jik")

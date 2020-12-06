@@ -7,9 +7,8 @@ class User:
         for param in params:
             setattr(self, param, params[param])
 
-        if "raw_password" in params:
-            self.password = secure_password.hash(self.raw_password)
-            del self.raw_password
+    def set_password(self, password):
+        self.password = secure_password.hash(password)
 
     def verify_password(self, password):
         return secure_password.verify(password, self.password)
