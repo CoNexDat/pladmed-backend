@@ -16,3 +16,11 @@ def create_operation():
             emit(data["operation"], data, room=conn, namespace='')
 
     return make_response(data, 201)
+
+@api.route('/users', methods=["POST"])
+def create_user():
+    data = request.get_json(force=True)
+
+    # TODO Validate data and params
+
+    return make_response(data, 201)
