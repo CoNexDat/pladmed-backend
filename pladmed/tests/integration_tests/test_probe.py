@@ -22,13 +22,13 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 0)
 
-    def test_receives_operation(self):
+    def test_receives_traceroute(self):
         probe = socketio.test_client(
             self.app,
             flask_test_client=self.client
         )
 
-        self.client.post('/operation', json=dict(
+        self.client.post('/traceroute', json=dict(
             operation="traceroute",
             probes=["identifier"],
             params={
@@ -39,5 +39,43 @@ class ProbeTest(BaseTest):
 
         received = probe.get_received()
 
-        self.assertEqual(received[0]["name"], "operation")
+        self.assertEqual(received[0]["name"], "traceroute")
+        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
+
+    def test_receives_ping(self):
+        probe = socketio.test_client(
+            self.app,
+            flask_test_client=self.client
+        )
+
+        self.client.post('/ping', json=dict(
+            operation="ping",
+            probes=["identifier"],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"]
+            }
+        ))
+
+        received = probe.get_received()
+
+        self.assertEqual(received[0]["name"], "ping")
+        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
+
+    def test_receives_dns(self):
+        probe = socketio.test_client(
+            self.app,
+            flask_test_client=self.client
+        )
+
+        self.client.post('/dns', json=dict(
+            operation="dns",
+            probes=["identifier"],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"]
+            }
+        ))
+
+        received = probe.get_received()
+
+        self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
