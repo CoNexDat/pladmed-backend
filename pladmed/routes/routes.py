@@ -34,3 +34,17 @@ def create_user():
         return make_response(jsonify(user_data), 201)
     except:
         return make_response({"Error": "That email is already registered"}, 404)
+
+@api.route('/login', methods=["POST"])
+def login_user():
+    data = request.get_json(force=True)
+
+    try:
+        user = current_app.db.users.find_user(data["email"])
+
+        if not user.verify_password(data["password"]):
+            return make_response({"Error": "Invalid email or password"}, 404)
+        
+        return make_response({"token": "sadasd2a2da"}, 200)
+    except:
+        return make_response({"Error": "Invalid email or password"}, 404)

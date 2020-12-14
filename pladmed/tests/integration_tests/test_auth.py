@@ -53,3 +53,16 @@ class AuthenticationTest(BaseTest):
         ))
 
         self.assertEqual(res.status_code, 404)
+
+    def test_login_user_correctly(self):
+        self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+                
+        res = self.client.post('/login', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        self.assertEqual(res.status_code, 200)
