@@ -73,4 +73,17 @@ class AuthenticationTest(BaseTest):
             password="secure_password"
         ))
 
-        self.assertEqual(res.status_code, 404)        
+        self.assertEqual(res.status_code, 404)
+
+    def test_login_user_fails_invalid_password(self):
+        self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        res = self.client.post('/login', json=dict(
+            email="agustin@gmail.com",
+            password="not_my_password"
+        ))
+
+        self.assertEqual(res.status_code, 404)
