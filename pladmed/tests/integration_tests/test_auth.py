@@ -59,10 +59,18 @@ class AuthenticationTest(BaseTest):
             email="agustin@gmail.com",
             password="secure_password"
         ))
-                
+
         res = self.client.post('/login', json=dict(
             email="agustin@gmail.com",
             password="secure_password"
         ))
 
         self.assertEqual(res.status_code, 200)
+
+    def test_login_fails_no_user_exists(self):
+        res = self.client.post('/login', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        self.assertEqual(res.status_code, 404)        
