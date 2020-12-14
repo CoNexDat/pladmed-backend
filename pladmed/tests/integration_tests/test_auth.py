@@ -101,4 +101,4 @@ class AuthenticationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual("token" in data, True)
+        self.assertEqual("access_token" in data, True)

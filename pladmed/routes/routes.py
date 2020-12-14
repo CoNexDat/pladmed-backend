@@ -45,6 +45,8 @@ def login_user():
         if not user.verify_password(data["password"]):
             return make_response({"Error": "Invalid email or password"}, 404)
         
-        return make_response({"token": "sadasd2a2da"}, 200)
+        access_token = "dasda23a2"
+
+        return make_response({"access_token": access_token}, 200)
     except:
         return make_response({"Error": "Invalid email or password"}, 404)

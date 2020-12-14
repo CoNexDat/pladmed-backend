@@ -4,7 +4,6 @@ from flask import Flask
 from pladmed.database import Database
 import logging
 from flask_socketio import SocketIO
-from flask_jwt_extended import JWTManager
 
 socketio = SocketIO()
 
@@ -34,8 +33,7 @@ def create_app(test_config=None):
         MONGO_PASSWORD=os.getenv('MONGO_PASSWORD', 'password'),
         MONGO_HOST=os.getenv('MONGO_HOST', 'localhost'),
         MONGO_PORT=os.getenv('MONGO_PORT', "27017"),
-        MONGO_DB=os.getenv('MONGO_DATABASE', 'pladmed'),
-        JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY', 'dev-jwt')
+        MONGO_DB=os.getenv('MONGO_DATABASE', 'pladmed')
     )
 
     if test_config is None:
@@ -52,11 +50,9 @@ def create_app(test_config=None):
     app.probes = {}
 
     from pladmed.routes import api
-    app.register_blueprint(api)#, url_prefix='/api')
+    app.register_blueprint(api)
   
     CORS(app)
-
-    JWTManager(app)
 
     socketio.init_app(app)
 
