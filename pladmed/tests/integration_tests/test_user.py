@@ -4,11 +4,11 @@ import json
 
 class UserTest(BaseTest):
     def test_get_user_data(self):
-        self.register_user()
+        access_token = self.register_user()
 
         res = self.client.get(
             '/users/me', 
-            headers={'access_token': self.token}
+            headers={'access_token': access_token}
         )
         
         self.assertEqual(res.status_code, 200)
@@ -35,11 +35,11 @@ class UserTest(BaseTest):
         self.assertEqual(res.status_code, 403)
 
     def test_get_user_data_returns_user_data(self):
-        self.register_user()
+        access_token = self.register_user()
 
         res = self.client.get(
             '/users/me', 
-            headers={'access_token': self.token}
+            headers={'access_token': access_token}
         )
 
         data = json.loads(res.data)

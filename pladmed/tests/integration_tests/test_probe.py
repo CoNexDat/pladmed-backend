@@ -4,11 +4,26 @@ import json
 from pladmed import socketio
 
 class ProbeTest(BaseTest):
+    def register_probe(self, token):
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': token}
+        )
+
+        data = json.loads(res.data)
+
+        return data["token"]
+
     def start_connection(self):
+        access_token = self.register_user()
+        token = self.register_probe(access_token)
+
+        query = "token=" + token
+
         return socketio.test_client(
             self.app,
             flask_test_client=self.client,
-            query_string="token=single_token"
+            query_string=query
         )
 
     def test_connection_up(self):
@@ -73,11 +88,11 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_register_probe_correctly(self):
-        self.register_user()
+        access_token = self.register_user()
 
         res = self.client.post(
             '/probes',
-            headers={'access_token': self.token}
+            headers={'access_token': access_token}
         )
 
         self.assertEqual(res.status_code, 201)
@@ -96,13 +111,7 @@ class ProbeTest(BaseTest):
         self.assertEqual(res.status_code, 403)
 
     def test_register_probe_correctly_gets_token(self):
-        self.register_user()
+        access_token = self.register_user()
+        token = self.register_probe(access_token)
 
-        res = self.client.post(
-            '/probes',
-            headers={'access_token': self.token}
-        )
-
-        data = json.loads(res.data)
-
-        self.assertEqual("token" in data, True)
+        self.assertEqual(len(token) > 0, True)

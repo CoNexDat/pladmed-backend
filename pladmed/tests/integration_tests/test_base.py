@@ -23,4 +23,4 @@ class BaseTest(unittest.TestCase):
             password="secure_password"
         ))
 
-        self.token = json.loads(res.data)["access_token"]    
+        return json.loads(res.data)["access_token"]    
