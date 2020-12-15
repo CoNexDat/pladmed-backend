@@ -14,6 +14,9 @@ def user_protected(func):
 
             user = current_app.db.users.find_user(data["email"])
 
+            if not user:
+                return make_response({"Error": "No authorization to access this content"}, 403)
+
             request.user = user
 
             return func(*args, **kwargs)
