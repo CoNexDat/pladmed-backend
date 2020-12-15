@@ -3,19 +3,6 @@ from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 
 class UserTest(BaseTest):
-    def register_user(self):
-        self.client.post('/register', json=dict(
-            email="agustin@gmail.com",
-            password="secure_password"
-        ))
-
-        res = self.client.post('/login', json=dict(
-            email="agustin@gmail.com",
-            password="secure_password"
-        ))
-
-        self.token = json.loads(res.data)["access_token"]
-
     def test_get_user_data(self):
         self.register_user()
 

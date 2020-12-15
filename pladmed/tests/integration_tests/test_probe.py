@@ -4,19 +4,6 @@ import json
 from pladmed import socketio
 
 class ProbeTest(BaseTest):
-    def register_user(self):
-        self.client.post('/register', json=dict(
-            email="agustin@gmail.com",
-            password="secure_password"
-        ))
-
-        res = self.client.post('/login', json=dict(
-            email="agustin@gmail.com",
-            password="secure_password"
-        ))
-
-        self.token = json.loads(res.data)["access_token"]
-
     def test_connection_up(self):
         probe = socketio.test_client(
             self.app,

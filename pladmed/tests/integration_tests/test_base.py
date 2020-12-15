@@ -1,6 +1,8 @@
 import unittest
 from pladmed import create_app
 from pladmed import socketio
+from functools import wraps
+import json
 
 class BaseTest(unittest.TestCase):
     def setUp(self):
@@ -10,3 +12,16 @@ class BaseTest(unittest.TestCase):
 
     def tearDown(self):
         self.app.db.reset_db()
+
+    def register_user(self):
+        self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        res = self.client.post('/login', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        self.token = json.loads(res.data)["access_token"]    
