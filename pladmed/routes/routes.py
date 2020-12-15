@@ -60,4 +60,8 @@ def users_me():
     if access_token is None:
         return make_response({"Error": "No authorization to access this content"}, 403)
 
-    return make_response({}, 200)
+    try:
+        user = current_app.token.identity(access_token)
+        return make_response({}, 200)
+    except:
+        return make_response({"Error": "No authorization to access this content"}, 403)

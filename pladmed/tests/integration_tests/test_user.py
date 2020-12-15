@@ -9,10 +9,12 @@ class UserTest(BaseTest):
             password="secure_password"
         ))
 
-        self.token = self.client.post('/login', json=dict(
+        res = self.client.post('/login', json=dict(
             email="agustin@gmail.com",
             password="secure_password"
         ))
+
+        self.token = json.loads(res.data)["access_token"]
 
     def test_get_user_data(self):
         self.register_user()
@@ -29,6 +31,16 @@ class UserTest(BaseTest):
 
         res = self.client.get(
             '/users/me'
+        )
+
+        self.assertEqual(res.status_code, 403)
+
+    def test_get_user_data_fails_invalid_token(self):
+        self.register_user()
+
+        res = self.client.get(
+            '/users/me',
+            headers={'access_token': "invalid_token"}
         )
 
         self.assertEqual(res.status_code, 403)
