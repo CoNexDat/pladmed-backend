@@ -2,6 +2,7 @@ from flask import current_app, make_response, jsonify, request
 from pladmed.routes import api
 from flask_socketio import emit
 from pladmed.models.user import User
+from pladmed.utils.decorators import user_protected
 
 @api.route('/operation', methods=["POST"])
 def create_operation():
@@ -54,19 +55,10 @@ def login_user():
         return make_response({"Error": "Invalid email or password"}, 404)
 
 @api.route('/users/me', methods=["GET"])
+@user_protected
 def users_me():
-    access_token = request.headers.get("access_token")
+    user = request.user
 
-    if access_token is None:
-        return make_response({"Error": "No authorization to access this content"}, 403)
+    user_data = user.public_data()
 
-    try:
-        data = current_app.token.identity(access_token)
-
-        user = current_app.db.users.find_user(data["email"])
-
-        user_data = user.public_data()
-
-        return make_response(user_data, 200)
-    except:
-        return make_response({"Error": "No authorization to access this content"}, 403)
+    return make_response(user_data, 200)
