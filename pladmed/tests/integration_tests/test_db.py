@@ -67,3 +67,15 @@ class DatabaseTest(BaseTest):
         probe = self.app.db.probes.find_probe("5fd88dcaa1fe1d28abe9e154")
 
         self.assertEqual(probe, None)        
+
+    def test_find_all_probes(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        self.assertEqual(len(probes), 2)

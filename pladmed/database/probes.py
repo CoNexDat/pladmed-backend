@@ -29,3 +29,6 @@ class ProbesCollection:
             return Probe(str(probe["_id"]))
         except:
             return None
+
+    def find_all_probes(self):
+        return list(self.db.probes.find({}))
