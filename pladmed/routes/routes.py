@@ -45,7 +45,9 @@ def login_user():
         if not user.verify_password(data["password"]):
             return make_response({"Error": "Invalid email or password"}, 404)
         
-        access_token = "dasda23a2"
+        user_data = user.public_data()
+
+        access_token = current_app.token.create_token({"email": "user"})
 
         return make_response({"access_token": access_token}, 200)
     except:

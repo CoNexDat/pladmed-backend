@@ -2,6 +2,7 @@ import os
 from flask_cors import CORS
 from flask import Flask
 from pladmed.database import Database
+from pladmed.models.token import Token
 import logging
 from flask_socketio import SocketIO
 
@@ -48,6 +49,7 @@ def create_app(test_config=None):
 
     app.db = init_database(app.config)
     app.probes = {}
+    app.token = Token(app.config["SECRET_KEY"])
 
     from pladmed.routes import api
     app.register_blueprint(api)
