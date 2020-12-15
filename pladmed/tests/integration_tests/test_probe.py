@@ -79,3 +79,8 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
+
+    def test_register_probe_correctly(self):
+        res = self.client.post('/probes')
+
+        self.assertEqual(res.status_code, 201)

@@ -87,3 +87,7 @@ def users_me():
     user_data = user.public_data()
 
     return make_response(user_data, 200)
+
+@api.route('/probes', methods=["POST"])
+def register_probe():
+    return make_response({}, 201)
