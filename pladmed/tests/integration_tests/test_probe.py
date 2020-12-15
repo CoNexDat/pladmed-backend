@@ -87,6 +87,18 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
+    def test_connection_refuse_no_token(self):
+        probe = socketio.test_client(
+            self.app,
+            flask_test_client=self.client
+        )
+
+        self.assertEqual(len(self.app.probes), 0)
+
+    # ---------------------------------------------
+    # API Rest test
+    # ---------------------------------------------
+
     def test_register_probe_correctly(self):
         access_token = self.register_user()
 

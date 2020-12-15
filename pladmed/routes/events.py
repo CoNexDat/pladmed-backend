@@ -2,11 +2,14 @@ from pladmed import socketio
 from flask_socketio import emit
 from flask import current_app, request
 from pladmed.models.probe import Probe
-
+from flask_socketio import ConnectionRefusedError
 
 @socketio.on('connect')
 def on_connect():
     token = request.args.get('token')
+
+    if not token:
+        raise ConnectionRefusedError('Invalid token')
    
     current_app.probes[request.sid] = Probe("identifier")
 
