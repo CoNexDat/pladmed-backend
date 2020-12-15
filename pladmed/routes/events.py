@@ -6,6 +6,8 @@ from pladmed.models.probe import Probe
 
 @socketio.on('connect')
 def on_connect():
+    token = request.args.get('token')
+   
     current_app.probes[request.sid] = Probe("identifier")
 
 

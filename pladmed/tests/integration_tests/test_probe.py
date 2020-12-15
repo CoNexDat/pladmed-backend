@@ -4,29 +4,27 @@ import json
 from pladmed import socketio
 
 class ProbeTest(BaseTest):
-    def test_connection_up(self):
-        probe = socketio.test_client(
+    def start_connection(self):
+        return socketio.test_client(
             self.app,
-            flask_test_client=self.client
+            flask_test_client=self.client,
+            query_string="token=single_token"
         )
+
+    def test_connection_up(self):
+        probe = self.start_connection()
 
         self.assertEqual(len(self.app.probes), 1)
 
     def test_disconnect(self):
-        probe = socketio.test_client(
-            self.app,
-            flask_test_client=self.client
-        )
+        probe = self.start_connection()
 
         probe.disconnect()
 
         self.assertEqual(len(self.app.probes), 0)
 
     def test_receives_traceroute(self):
-        probe = socketio.test_client(
-            self.app,
-            flask_test_client=self.client
-        )
+        probe = self.start_connection()
 
         self.client.post('/traceroute', json=dict(
             operation="traceroute",
@@ -43,10 +41,7 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_ping(self):
-        probe = socketio.test_client(
-            self.app,
-            flask_test_client=self.client
-        )
+        probe = self.start_connection()
 
         self.client.post('/ping', json=dict(
             operation="ping",
@@ -62,10 +57,7 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_dns(self):
-        probe = socketio.test_client(
-            self.app,
-            flask_test_client=self.client
-        )
+        probe = self.start_connection()
 
         self.client.post('/dns', json=dict(
             operation="dns",
