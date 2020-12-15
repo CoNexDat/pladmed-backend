@@ -52,3 +52,9 @@ def login_user():
         return make_response({"access_token": access_token}, 200)
     except:
         return make_response({"Error": "Invalid email or password"}, 404)
+
+@api.route('/users/me', methods=["GET"])
+def users_me():
+    access_token = request.headers.get("access_token")
+
+    return make_response({}, 200)
