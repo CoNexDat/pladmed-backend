@@ -28,12 +28,16 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 0)
 
-    '''def test_receives_traceroute(self):
+    def test_receives_traceroute(self):
         probe = self.start_connection()
+
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
 
         self.client.post('/traceroute', json=dict(
             operation="traceroute",
-            probes=["identifier"],
+            probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
                 "confidence": 0.95
@@ -48,9 +52,13 @@ class ProbeTest(BaseTest):
     def test_receives_ping(self):
         probe = self.start_connection()
 
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
+
         self.client.post('/ping', json=dict(
             operation="ping",
-            probes=["identifier"],
+            probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"]
             }
@@ -63,10 +71,14 @@ class ProbeTest(BaseTest):
 
     def test_receives_dns(self):
         probe = self.start_connection()
+        
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
 
         self.client.post('/dns', json=dict(
             operation="dns",
-            probes=["identifier"],
+            probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"]
             }
@@ -75,7 +87,7 @@ class ProbeTest(BaseTest):
         received = probe.get_received()
 
         self.assertEqual(received[0]["name"], "dns")
-        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")'''
+        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_connection_refuse_no_token(self):
         probe = socketio.test_client(
