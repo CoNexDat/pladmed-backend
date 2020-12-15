@@ -46,3 +46,14 @@ class DatabaseTest(BaseTest):
         probe = self.app.db.probes.create_probe(user)
 
         self.assertEqual(hasattr(probe, "identifier"), True)
+
+    def test_find_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe = self.app.db.probes.create_probe(user)
+
+        ret_probe = self.app.db.probes.find_probe(probe.identifier)
+
+        self.assertEqual(probe.identifier, ret_probe.identifier)

@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import logging
 from pladmed.models.probe import Probe
+from bson.objectid import ObjectId
 
 class ProbesCollection:
     def __init__(self, db):
@@ -9,7 +10,7 @@ class ProbesCollection:
     
     def create_probe(self, user):
         data = {
-            "owner": user._id
+            "owner": ObjectId(user._id)
         }
 
         _id = self.db.probes.insert_one(data)
@@ -17,3 +18,11 @@ class ProbesCollection:
         probe = Probe(str(_id.inserted_id))
 
         return probe
+
+    def find_probe(self, identifier):
+        probe = self.db.probes.find_one({"_id": ObjectId(identifier)})
+
+        if not probe:
+            return None
+
+        return Probe(str(probe["_id"]))
