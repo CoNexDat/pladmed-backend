@@ -47,7 +47,7 @@ def login_user():
         
         user_data = user.public_data()
 
-        access_token = current_app.token.create_token({"email": "user"})
+        access_token = current_app.token.create_token(user_data)
 
         return make_response({"access_token": access_token}, 200)
     except:
@@ -61,7 +61,12 @@ def users_me():
         return make_response({"Error": "No authorization to access this content"}, 403)
 
     try:
-        user = current_app.token.identity(access_token)
-        return make_response({}, 200)
+        data = current_app.token.identity(access_token)
+
+        user = current_app.db.users.find_user(data["email"])
+
+        user_data = user.public_data()
+
+        return make_response(user_data, 200)
     except:
         return make_response({"Error": "No authorization to access this content"}, 403)

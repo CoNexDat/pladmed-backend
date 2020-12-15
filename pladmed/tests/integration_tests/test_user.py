@@ -23,7 +23,7 @@ class UserTest(BaseTest):
             '/users/me', 
             headers={'access_token': self.token}
         )
-
+        
         self.assertEqual(res.status_code, 200)
 
     def test_get_user_data_fails_no_token(self):
@@ -40,7 +40,26 @@ class UserTest(BaseTest):
 
         res = self.client.get(
             '/users/me',
-            headers={'access_token': "invalid_token"}
+            headers={
+                'access_token': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXIifQ.Q-JpIizU5ITl167RI6oN7R8kvCWrfGasBxARnIyJQv1"
+            }
         )
 
         self.assertEqual(res.status_code, 403)
+
+    def test_get_user_data_returns_user_data(self):
+        self.register_user()
+
+        res = self.client.get(
+            '/users/me', 
+            headers={'access_token': self.token}
+        )
+
+        data = json.loads(res.data)
+
+        expected_data = (
+            "_id",
+            "email"
+        )
+        
+        self.assertEqual(len(expected_data - data.keys()), 0)
