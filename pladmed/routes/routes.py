@@ -103,4 +103,6 @@ def register_probe():
 
 @api.route('/probes', methods=["GET"])
 def all_probes():
-    return make_response(jsonify([{"identifier": "probe_id"}]), 200)
+    probes = current_app.db.probes.find_all_probes()
+
+    return make_response(jsonify(probes), 200)

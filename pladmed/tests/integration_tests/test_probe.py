@@ -147,3 +147,12 @@ class ProbeTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(len(data), 1)
+
+    def test_get_all_probes_zero_if_not_created(self):
+        res = self.client.get(
+            '/probes'
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(len(data), 0)

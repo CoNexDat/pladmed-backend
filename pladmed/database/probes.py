@@ -31,4 +31,9 @@ class ProbesCollection:
             return None
 
     def find_all_probes(self):
-        return list(self.db.probes.find({}))
+        probes = []
+
+        for probe in self.db.probes.find():
+            probes.append(Probe(str(probe["_id"])))
+            
+        return probes

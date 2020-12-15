@@ -5,6 +5,7 @@ from pladmed.database import Database
 from pladmed.models.token import Token
 import logging
 from flask_socketio import SocketIO
+from pladmed.utils.encoders import JsonEncoder
 
 socketio = SocketIO()
 
@@ -50,6 +51,7 @@ def create_app(test_config=None):
     app.db = init_database(app.config)
     app.probes = {}
     app.token = Token(app.config["SECRET_KEY"])
+    app.json_encoder = JsonEncoder
 
     from pladmed.routes import api
     app.register_blueprint(api)
