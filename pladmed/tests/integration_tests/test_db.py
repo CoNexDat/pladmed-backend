@@ -79,3 +79,8 @@ class DatabaseTest(BaseTest):
         probes = self.app.db.probes.find_all_probes()
 
         self.assertEqual(len(probes), 2)
+
+    def test_find_all_probes_no_exist(self):
+        probes = self.app.db.probes.find_all_probes()
+
+        self.assertEqual(len(probes), 0)
