@@ -92,10 +92,10 @@ def users_me():
 @api.route('/probes', methods=["POST"])
 @user_protected
 def register_probe():
-    #user = request.user
+    user = request.user
 
-    #probe = current_app.db.probes.create_probe(user)
+    probe = current_app.db.probes.create_probe(user)
 
-    #token = current_app.token.create_token(probe.identifier)
+    token = current_app.token.create_token(probe.public_data())
 
-    return make_response({"token": "simple_token"}, 201)
+    return make_response({"token": token}, 201)
