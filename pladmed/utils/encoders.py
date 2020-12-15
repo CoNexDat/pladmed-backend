@@ -6,4 +6,4 @@ class JsonEncoder(JSONEncoder):
 		if isinstance(obj, Probe):
 			return obj.public_data()
 
-		return json.JSONEncoder.default(self, obj)
+		return JSONEncoder.default(self, obj)
