@@ -95,7 +95,7 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 0)
 
-    def test_connection_refuse_fake_token(self):
+    def test_connection_refuse_invalid_token(self):
         probe = socketio.test_client(
             self.app,
             flask_test_client=self.client,
@@ -103,6 +103,16 @@ class ProbeTest(BaseTest):
         )
 
         self.assertEqual(len(self.app.probes), 0)
+
+    def test_connection_refuse_fake_token(self):
+        probe = socketio.test_client(
+            self.app,
+            flask_test_client=self.client,
+            query_string="token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiNWZkODkwZWIxOTIxMGUxODg0ZWU5NDRmIn0.lcyp89G7GobSTe8qQnCNmDKNFFl1jRtyAWymlWJWpa4"
+        )
+
+        self.assertEqual(len(self.app.probes), 0)
+
     # ---------------------------------------------
     # API Rest test
     # ---------------------------------------------
