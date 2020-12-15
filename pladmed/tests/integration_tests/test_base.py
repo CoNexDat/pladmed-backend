@@ -1,7 +1,6 @@
 import unittest
 from pladmed import create_app
 from pladmed import socketio
-from functools import wraps
 import json
 
 class BaseTest(unittest.TestCase):

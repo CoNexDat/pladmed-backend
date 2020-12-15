@@ -102,3 +102,15 @@ class ProbeTest(BaseTest):
         )
 
         self.assertEqual(res.status_code, 403)
+
+    '''def test_register_probe_correctly_gets_token(self):
+        self.register_user()
+
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': self.token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual("token" in data, True)'''

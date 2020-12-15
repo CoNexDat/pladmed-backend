@@ -2,6 +2,7 @@ from flask import current_app, make_response, jsonify, request
 from pladmed.routes import api
 from flask_socketio import emit
 from pladmed.models.user import User
+from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
 
 @api.route('/traceroute', methods=["POST"])
