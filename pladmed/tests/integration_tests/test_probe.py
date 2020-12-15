@@ -94,3 +94,11 @@ class ProbeTest(BaseTest):
         res = self.client.post('/probes')
 
         self.assertEqual(res.status_code, 403)
+
+    def test_register_probe_doesnt_work_without_invalid_token(self):
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': "fake_token"}
+        )
+
+        self.assertEqual(res.status_code, 403)
