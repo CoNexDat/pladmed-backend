@@ -20,7 +20,7 @@ def on_connect():
         if probe is None:
             raise ConnectionRefusedError('Invalid token')
 
-        current_app.probes[request.sid] = Probe("identifier")
+        current_app.probes[request.sid] = probe
     except DecodeError:
         # Raising something in except is bad, but we can't do it better for now
         raise ConnectionRefusedError('Invalid token')

@@ -24,3 +24,13 @@ class BaseTest(unittest.TestCase):
         ))
 
         return json.loads(res.data)["access_token"]    
+
+    def register_probe(self, token):
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': token}
+        )
+
+        data = json.loads(res.data)
+
+        return data["token"]

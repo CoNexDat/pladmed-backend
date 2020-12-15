@@ -38,6 +38,7 @@ def dns():
     return make_response(data, 201)
 
 def do_operation(operation, data):
+    # TODO: Change this, we don't want to travel all the probes...
     for conn, probe in list(current_app.probes.items()):
         if probe.identifier in data["probes"]:
             emit(operation, data, room=conn, namespace='')
