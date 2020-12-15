@@ -4,17 +4,42 @@ from flask_socketio import emit
 from pladmed.models.user import User
 from pladmed.utils.decorators import user_protected
 
-@api.route('/operation', methods=["POST"])
-def create_operation():
+@api.route('/traceroute', methods=["POST"])
+def traceroute():
     data = request.get_json(force=True)
 
     # TODO Validate data and params
 
     # TODO Save operation in db
 
+    do_operation("traceroute", data)
+
+    return make_response(data, 201)
+
+@api.route('/ping', methods=["POST"])
+def ping():
+    data = request.get_json(force=True)
+    # TODO Validate data and params
+
+    # TODO Save operation in db
+    do_operation("ping", data)
+
+    return make_response(data, 201)
+
+@api.route('/dns', methods=["POST"])
+def dns():
+    data = request.get_json(force=True)
+    # TODO Validate data and params
+
+    # TODO Save operation in db
+    do_operation("dns", data)
+
+    return make_response(data, 201)
+
+def do_operation(operation, data):
     for conn, probe in list(current_app.probes.items()):
         if probe.identifier in data["probes"]:
-            emit(data["operation"], data, room=conn, namespace='')
+            emit(operation, data, room=conn, namespace='')
 
     return make_response(data, 201)
 
