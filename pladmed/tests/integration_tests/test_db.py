@@ -37,3 +37,50 @@ class DatabaseTest(BaseTest):
 
         self.assertNotEqual(user.password, "123")
         self.assertEqual(user.verify_password("123"), True)
+
+    def test_creates_probes(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe = self.app.db.probes.create_probe(user)
+
+        self.assertEqual(hasattr(probe, "identifier"), True)
+
+    def test_find_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe = self.app.db.probes.create_probe(user)
+
+        ret_probe = self.app.db.probes.find_probe(probe.identifier)
+
+        self.assertEqual(probe.identifier, ret_probe.identifier)
+
+    def test_find_probe_invalid_id(self):
+        probe = self.app.db.probes.find_probe("fake_identifier")
+
+        self.assertEqual(probe, None)
+
+    def test_find_probe_no_exists(self):
+        probe = self.app.db.probes.find_probe("5fd88dcaa1fe1d28abe9e154")
+
+        self.assertEqual(probe, None)        
+
+    def test_find_all_probes(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        self.assertEqual(len(probes), 2)
+
+    def test_find_all_probes_no_exist(self):
+        probes = self.app.db.probes.find_all_probes()
+
+        self.assertEqual(len(probes), 0)

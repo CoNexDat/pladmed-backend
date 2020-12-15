@@ -9,3 +9,6 @@ class ProbeTest(unittest.TestCase):
 
     def test_probe_includes_identifier(self):
         self.assertEqual("3ap394c", self.probe.identifier)
+
+    def test_probe_has_public_data(self):
+        self.assertEqual("identifier" in self.probe.public_data(), True)
