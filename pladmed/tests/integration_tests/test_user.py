@@ -23,3 +23,12 @@ class UserTest(BaseTest):
         )
 
         self.assertEqual(res.status_code, 200)
+
+    def test_get_user_data_fails_no_token(self):
+        self.register_user()
+
+        res = self.client.get(
+            '/users/me'
+        )
+
+        self.assertEqual(res.status_code, 403)

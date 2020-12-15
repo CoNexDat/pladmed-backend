@@ -57,4 +57,7 @@ def login_user():
 def users_me():
     access_token = request.headers.get("access_token")
 
+    if access_token is None:
+        return make_response({"Error": "No authorization to access this content"}, 403)
+
     return make_response({}, 200)
