@@ -9,4 +9,7 @@ class Token:
         return token
     
     def identity(self, token):
-        return jwt.decode(token, self.secret_key, algorithms=['HS256'])
+        try:
+            return jwt.decode(token, self.secret_key, algorithms=['HS256'])
+        except:
+            return None

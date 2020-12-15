@@ -10,7 +10,13 @@ def on_connect():
 
     if not token:
         raise ConnectionRefusedError('Invalid token')
-   
+
+    probe = current_app.token.identity(token)
+
+    if not probe:
+        # Refuse connection if no probe exists with that token
+        raise ConnectionRefusedError('Invalid token')
+
     current_app.probes[request.sid] = Probe("identifier")
 
 
