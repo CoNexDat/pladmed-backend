@@ -57,3 +57,13 @@ class DatabaseTest(BaseTest):
         ret_probe = self.app.db.probes.find_probe(probe.identifier)
 
         self.assertEqual(probe.identifier, ret_probe.identifier)
+
+    def test_find_probe_invalid_id(self):
+        probe = self.app.db.probes.find_probe("fake_identifier")
+
+        self.assertEqual(probe, None)
+
+    def test_find_probe_no_exists(self):
+        probe = self.app.db.probes.find_probe("5fd88dcaa1fe1d28abe9e154")
+
+        self.assertEqual(probe, None)        

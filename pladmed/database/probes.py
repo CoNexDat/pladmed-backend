@@ -20,9 +20,12 @@ class ProbesCollection:
         return probe
 
     def find_probe(self, identifier):
-        probe = self.db.probes.find_one({"_id": ObjectId(identifier)})
+        try:
+            probe = self.db.probes.find_one({"_id": ObjectId(identifier)})
 
-        if not probe:
+            if not probe:
+                return None
+
+            return Probe(str(probe["_id"]))
+        except:
             return None
-
-        return Probe(str(probe["_id"]))
