@@ -135,3 +135,15 @@ class ProbeTest(BaseTest):
         token = self.register_probe(access_token)
 
         self.assertEqual(len(token) > 0, True)
+
+    def test_get_all_probes(self):
+        access_token = self.register_user()
+        self.register_probe(access_token)
+
+        res = self.client.get(
+            '/probes'
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(len(data), 1)

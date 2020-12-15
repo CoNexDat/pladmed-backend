@@ -100,3 +100,7 @@ def register_probe():
     token = current_app.token.create_token(probe.public_data())
 
     return make_response({"token": token}, 201)
+
+@api.route('/probes', methods=["GET"])
+def all_probes():
+    return make_response(jsonify([{"identifier": "probe_id"}]), 200)
