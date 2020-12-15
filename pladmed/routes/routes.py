@@ -89,5 +89,6 @@ def users_me():
     return make_response(user_data, 200)
 
 @api.route('/probes', methods=["POST"])
+@user_protected
 def register_probe():
     return make_response({}, 201)

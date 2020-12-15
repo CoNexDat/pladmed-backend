@@ -4,6 +4,19 @@ import json
 from pladmed import socketio
 
 class ProbeTest(BaseTest):
+    def register_user(self):
+        self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        res = self.client.post('/login', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        self.token = json.loads(res.data)["access_token"]
+
     def test_connection_up(self):
         probe = socketio.test_client(
             self.app,
@@ -81,6 +94,16 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_register_probe_correctly(self):
-        res = self.client.post('/probes')
+        self.register_user()
+
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': self.token}
+        )
 
         self.assertEqual(res.status_code, 201)
+
+    def test_register_probe_doesnt_work_without_token(self):
+        res = self.client.post('/probes')
+
+        self.assertEqual(res.status_code, 403)
