@@ -18,11 +18,11 @@ class OperationsCollection:
 
         _id = self.db.operations.insert_one(data)
 
-        probe = Operation(
+        operation = Operation(
             str(_id.inserted_id),
             operation,
             params,
             probes
         )
 
-        return probe
+        return operation
