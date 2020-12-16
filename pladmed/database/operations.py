@@ -12,7 +12,7 @@ class OperationsCollection:
         data = {
             "operation": operation,
             "params": params,
-            "probes": probes,
+            "probes": [ObjectId(probe) for probe in probes],
             "owner": ObjectId(user._id)
         }
 
