@@ -6,6 +6,7 @@ from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
 
 @api.route('/traceroute', methods=["POST"])
+@user_protected
 def traceroute():
     data = request.get_json(force=True)
 
