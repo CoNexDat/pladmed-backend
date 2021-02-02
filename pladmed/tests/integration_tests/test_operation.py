@@ -80,3 +80,22 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(403, res.status_code)
+
+    def test_creates_ping_requires_login(self):
+        access_token = self.register_user()
+
+        res = self.client.post(
+            '/ping', 
+            json=dict(
+                operation="ping",
+                probes=["test_probe", "another_test_probe"],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            )
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(403, res.status_code)

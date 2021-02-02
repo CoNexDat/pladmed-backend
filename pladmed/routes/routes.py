@@ -19,6 +19,7 @@ def traceroute():
     return make_response(data, 201)
 
 @api.route('/ping', methods=["POST"])
+@user_protected
 def ping():
     data = request.get_json(force=True)
     # TODO Validate data and params
