@@ -137,3 +137,21 @@ class DatabaseTest(BaseTest):
         same_op = self.app.db.operations.find_operation("operation_fake")
 
         self.assertEqual(same_op, None)
+
+    def test_creates_operation_fails_invalid_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probes_ids = ["fake_probe"]
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        op = self.app.db.operations.create_operation(operation, params, probes_ids, user)
+
+        self.assertEqual(op, None)

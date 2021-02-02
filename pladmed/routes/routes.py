@@ -13,7 +13,7 @@ def traceroute():
 
     # TODO Validate data and params
 
-    '''operation = current_app.db.save_operation(
+    '''operation = current_app.db.operations.save_operation(
         "traceroute",
         data["params"],
         data["probes"],

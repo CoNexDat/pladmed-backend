@@ -9,23 +9,26 @@ class OperationsCollection:
         self.db = db
     
     def create_operation(self, operation, params, probes, user):
-        data = {
-            "operation": operation,
-            "params": params,
-            "probes": [ObjectId(probe) for probe in probes],
-            "owner": ObjectId(user._id)
-        }
+        try:
+            data = {
+                "operation": operation,
+                "params": params,
+                "probes": [ObjectId(probe) for probe in probes],
+                "owner": ObjectId(user._id)
+            }
 
-        _id = self.db.operations.insert_one(data)
+            _id = self.db.operations.insert_one(data)
 
-        operation = Operation(
-            str(_id.inserted_id),
-            operation,
-            params,
-            probes
-        )
+            operation = Operation(
+                str(_id.inserted_id),
+                operation,
+                params,
+                probes
+            )
 
-        return operation
+            return operation
+        except:
+            return None
 
     def find_operation(self, identifier):
         try:
