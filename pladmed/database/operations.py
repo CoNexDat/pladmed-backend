@@ -26,3 +26,19 @@ class OperationsCollection:
         )
 
         return operation
+
+    def find_operation(self, identifier):
+        try:
+            op = self.db.operations.find_one({"_id": ObjectId(identifier)})
+
+            if not op:
+                return None
+
+            return Operation(
+                str(op["_id"]),
+                op["operation"],
+                op["params"],
+                op["probes"]
+            )
+        except:
+            return None
