@@ -41,7 +41,9 @@ class ProbesCollection:
     def find_selected_probes(self, identifiers):
         probes = []
 
-        for probe_id in identifiers:
+        probes_ids = [ObjectId(probe) for probe in identifiers]
+
+        for probe_id in self.db.probes.find({ "_id": { "$in": probes_ids } }):
             probes.append(self.find_probe(probe_id))
 
         return probes
