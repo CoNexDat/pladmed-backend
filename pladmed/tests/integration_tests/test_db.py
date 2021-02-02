@@ -2,6 +2,7 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 from pladmed.models.user import User
 import json
+from pladmed.exceptions import InvalidOperation
 
 class DatabaseTest(BaseTest):
     def test_creates_users(self):
@@ -152,6 +153,5 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes_ids, user)
-
-        self.assertEqual(op, None)
+        with self.assertRaises(InvalidOperation):
+            self.app.db.operations.create_operation(operation, params, probes_ids, user)

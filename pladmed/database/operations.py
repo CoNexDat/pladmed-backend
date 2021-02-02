@@ -3,6 +3,7 @@ import urllib.parse
 import logging
 from pladmed.models.operation import Operation
 from bson.objectid import ObjectId
+from pladmed.exceptions import InvalidOperation
 
 class OperationsCollection:
     def __init__(self, db):
@@ -28,7 +29,7 @@ class OperationsCollection:
 
             return operation
         except:
-            return None
+            raise InvalidOperation()
 
     def find_operation(self, identifier):
         try:
