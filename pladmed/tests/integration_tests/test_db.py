@@ -135,9 +135,8 @@ class DatabaseTest(BaseTest):
         self.assertEqual(same_op._id, op._id)
 
     def test_find_operation_no_exists(self):
-        same_op = self.app.db.operations.find_operation("operation_fake")
-
-        self.assertEqual(same_op, None)
+        with self.assertRaises(InvalidOperation):
+            self.app.db.operations.find_operation("operation_fake")
 
     def test_creates_operation_fails_invalid_probe(self):
         self.app.db.users.create_user("juan@gmail.com", "123")
