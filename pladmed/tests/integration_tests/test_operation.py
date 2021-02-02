@@ -99,3 +99,21 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(403, res.status_code)
+
+    def test_creates_dns_requires_login(self):
+        access_token = self.register_user()
+
+        res = self.client.post(
+            '/dns',
+            json=dict(
+                operation="dns",
+                probes=["test_probe", "another_test_probe"],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            )
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(403, res.status_code)

@@ -30,6 +30,7 @@ def ping():
     return make_response(data, 201)
 
 @api.route('/dns', methods=["POST"])
+@user_protected
 def dns():
     data = request.get_json(force=True)
     # TODO Validate data and params

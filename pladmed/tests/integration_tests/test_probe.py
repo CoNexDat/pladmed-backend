@@ -85,12 +85,14 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         self.client.post('/dns', json=dict(
-            operation="dns",
-            probes=[probes[0]["identifier"]],
-            params={
-                "ips": ["192.168.0.0", "192.162.1.1"]
-            }
-        ))
+                operation="dns",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': access_token}
+        )
 
         received = probe.get_received()
 
