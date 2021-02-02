@@ -117,3 +117,23 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(403, res.status_code)
+
+    '''def test_creates_traceroute_saves_operation_in_db(self):
+        access_token = self.register_user()
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=["test_probe", "another_test_probe"],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': access_token}
+        )
+
+        operation = self.app.db.operations.find_operation(res.data["_id"])
+
+        self.assertEqual(operation.operation, "traceroute")'''

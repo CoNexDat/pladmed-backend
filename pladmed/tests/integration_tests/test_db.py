@@ -104,4 +104,6 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        self.app.db.operations.create_operation(operation, params, probes_ids, user)
+        op = self.app.db.operations.create_operation(operation, params, probes_ids, user)
+
+        self.assertEqual(hasattr(op, "params"), True)
