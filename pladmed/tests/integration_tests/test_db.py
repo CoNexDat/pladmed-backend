@@ -132,3 +132,8 @@ class DatabaseTest(BaseTest):
         same_op = self.app.db.operations.find_operation(op._id)
 
         self.assertEqual(same_op._id, op._id)
+
+    def test_find_operation_no_exists(self):
+        same_op = self.app.db.operations.find_operation("operation_fake")
+
+        self.assertEqual(same_op, None)
