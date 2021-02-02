@@ -8,11 +8,17 @@ from pladmed.utils.decorators import user_protected
 @api.route('/traceroute', methods=["POST"])
 @user_protected
 def traceroute():
+    user = request.user
     data = request.get_json(force=True)
 
     # TODO Validate data and params
 
-    # TODO Save operation in db
+    '''operation = current_app.db.save_operation(
+        "traceroute",
+        data["params"],
+        data["probes"],
+        user
+    )'''
 
     do_operation("traceroute", data)
 

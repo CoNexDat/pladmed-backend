@@ -134,6 +134,8 @@ class OperationTest(BaseTest):
             headers={'access_token': access_token}
         )
 
-        operation = self.app.db.operations.find_operation(res.data["_id"])
+        data = json.loads(res.data)
+
+        operation = self.app.db.operations.find_operation(data["_id"])
 
         self.assertEqual(operation.operation, "traceroute")'''

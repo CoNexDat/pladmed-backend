@@ -4,3 +4,8 @@ class Operation:
         self.operation = operation
         self.probes = probes
         self.params = params
+        
+    def public_data(self):
+        data = self.__dict__
+
+        return data
