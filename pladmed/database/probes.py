@@ -37,3 +37,11 @@ class ProbesCollection:
             probes.append(Probe(str(probe["_id"])))
             
         return probes
+
+    def find_selected_probes(self, identifiers):
+        probes = []
+
+        for probe_id in identifiers:
+            probes.append(self.find_probe(probe_id))
+
+        return probes

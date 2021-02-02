@@ -154,3 +154,18 @@ class DatabaseTest(BaseTest):
 
         with self.assertRaises(InvalidOperation):
             self.app.db.operations.create_operation(operation, params, probes_ids, user)
+
+    def test_find_selected_probes(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe_1 = self.app.db.probes.create_probe(user)
+        probe_2 = self.app.db.probes.create_probe(user)
+        probe_3 = self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_selected_probes(
+            [probe_1.identifier, probe_2.identifier]
+        )
+
+        self.assertEqual(len(probes), 2)

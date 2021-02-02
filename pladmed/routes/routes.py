@@ -8,21 +8,23 @@ from pladmed.utils.decorators import user_protected
 @api.route('/traceroute', methods=["POST"])
 @user_protected
 def traceroute():
-    user = request.user
-    data = request.get_json(force=True)
+    try:
+        user = request.user
+        data = request.get_json(force=True)
 
-    # TODO Validate data and params
+        # TODO Validate data and params
+        operation = current_app.db.operations.save_operation(
+            "traceroute",
+            data["params"],
+            data["probes"],
+            user
+        )
 
-    '''operation = current_app.db.operations.save_operation(
-        "traceroute",
-        data["params"],
-        data["probes"],
-        user
-    )'''
+        do_operation("traceroute", data)
 
-    do_operation("traceroute", data)
-
-    return make_response(data, 201)
+        return make_response(data, 201)
+    except:
+        return make_response({"Error": "Invalid data provided"}, 404)
 
 @api.route('/ping', methods=["POST"])
 @user_protected
