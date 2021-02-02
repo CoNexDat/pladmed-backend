@@ -3,6 +3,7 @@ import urllib.parse
 import logging
 from pladmed.models.probe import Probe
 from bson.objectid import ObjectId
+from pladmed.exceptions import InvalidProbe
 
 class ProbesCollection:
     def __init__(self, db):
@@ -41,9 +42,15 @@ class ProbesCollection:
     def find_selected_probes(self, identifiers):
         probes = []
 
-        probes_ids = [ObjectId(probe) for probe in identifiers]
+        try:
+            probes_ids = [ObjectId(probe) for probe in identifiers]
+        except:
+            raise InvalidProbe()
 
         for probe_id in self.db.probes.find({ "_id": { "$in": probes_ids } }):
             probes.append(self.find_probe(probe_id))
 
+        if len(probes_ids) != len(probes):
+            raise InvalidProbe()
+                
         return probes

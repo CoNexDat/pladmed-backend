@@ -2,7 +2,7 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 from pladmed.models.user import User
 import json
-from pladmed.exceptions import InvalidOperation
+from pladmed.exceptions import InvalidOperation, InvalidProbe
 
 class DatabaseTest(BaseTest):
     def test_creates_users(self):
@@ -169,3 +169,27 @@ class DatabaseTest(BaseTest):
         )
 
         self.assertEqual(len(probes), 2)
+
+    def test_find_selected_probes_raises_invalid_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe_1 = self.app.db.probes.create_probe(user)
+
+        with self.assertRaises(InvalidProbe):
+            self.app.db.probes.find_selected_probes(
+                [probe_1.identifier, "5fd93938d1af6852c13aae23"]
+            )
+
+    def test_find_selected_probes_raises_fake_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe_1 = self.app.db.probes.create_probe(user)
+
+        with self.assertRaises(InvalidProbe):
+            self.app.db.probes.find_selected_probes(
+                [probe_1.identifier, "1451515"]
+            )
