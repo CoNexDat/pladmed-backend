@@ -52,7 +52,7 @@ def do_operation(operation, data):
     # TODO: Change this, we don't want to travel all the probes...
     for conn, probe in list(current_app.probes.items()):
         for data_probes in data["probes"]:
-            if probe.identifier == data_probes.identifier:
+            if probe.identifier == data_probes["identifier"]:
                 emit(operation, data, room=conn, namespace='')
 
 @api.route('/register', methods=["POST"])

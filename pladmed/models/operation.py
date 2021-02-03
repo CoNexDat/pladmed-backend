@@ -10,4 +10,6 @@ class Operation:
 
         del data["operation"]
 
+        data["probes"] = [probe.public_data() for probe in self.probes]
+
         return data
