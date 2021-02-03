@@ -27,6 +27,8 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(201, res.status_code)
+        self.assertEqual(data["params"]["confidence"], 0.95)
+        self.assertEqual(data["probes"][0]["identifier"], probes[0]["identifier"])
 
     def test_creates_ping(self):
         access_token = self.register_user()
