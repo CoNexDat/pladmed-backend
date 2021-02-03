@@ -34,24 +34,27 @@ def traceroute():
 @api.route('/ping', methods=["POST"])
 @user_protected
 def ping():
-    user = request.user
-    data = request.get_json(force=True)
-    # TODO Validate data and params
+    try:
+        user = request.user
+        data = request.get_json(force=True)
+        # TODO Validate data and params
 
-    probes = current_app.db.probes.find_selected_probes(data["probes"])
+        probes = current_app.db.probes.find_selected_probes(data["probes"])
 
-    operation = current_app.db.operations.create_operation(
-        "ping",
-        data["params"],
-        probes,
-        user
-    )
+        operation = current_app.db.operations.create_operation(
+            "ping",
+            data["params"],
+            probes,
+            user
+        )
 
-    operation_data = operation.public_data()
+        operation_data = operation.public_data()
 
-    do_operation("ping", data)
+        do_operation("ping", data)
 
-    return make_response(operation_data, 201)
+        return make_response(operation_data, 201)
+    except:
+        return make_response({"Error": "Invalid data provided"}, 404)
 
 @api.route('/dns', methods=["POST"])
 @user_protected
