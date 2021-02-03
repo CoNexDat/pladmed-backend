@@ -34,13 +34,24 @@ def traceroute():
 @api.route('/ping', methods=["POST"])
 @user_protected
 def ping():
+    user = request.user
     data = request.get_json(force=True)
     # TODO Validate data and params
 
-    # TODO Save operation in db
+    probes = current_app.db.probes.find_selected_probes(data["probes"])
+
+    operation = current_app.db.operations.create_operation(
+        "ping",
+        data["params"],
+        probes,
+        user
+    )
+
+    operation_data = operation.public_data()
+
     do_operation("ping", data)
 
-    return make_response(data, 201)
+    return make_response(operation_data, 201)
 
 @api.route('/dns', methods=["POST"])
 @user_protected
@@ -58,7 +69,9 @@ def do_operation(operation, data):
     for conn, probe in list(current_app.probes.items()):
         if probe.identifier in data["probes"]:
             emit(operation, data, room=conn, namespace='')
-
+    '''        for data_probes in data["probes"]:
+            if probe.identifier == data_probes["identifier"]:
+                emit(operation, data, room=conn, namespace='')'''
     return make_response(data, 201)
 
 @api.route('/register', methods=["POST"])
