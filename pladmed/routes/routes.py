@@ -13,16 +13,21 @@ def traceroute():
         data = request.get_json(force=True)
 
         # TODO Validate data and params
-        operation = current_app.db.operations.save_operation(
+
+        probes = current_app.db.probes.find_selected_probes(data["probes"])
+
+        operation = current_app.db.operations.create_operation(
             "traceroute",
             data["params"],
-            data["probes"],
+            probes,
             user
         )
 
+        operation_data = operation.public_data()
+
         do_operation("traceroute", data)
 
-        return make_response(data, 201)
+        return make_response(operation_data, 201)
     except:
         return make_response({"Error": "Invalid data provided"}, 404)
 

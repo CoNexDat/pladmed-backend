@@ -3,15 +3,19 @@ from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 
 class OperationTest(BaseTest):
-    '''def test_creates_traceroute(self):
+    def test_creates_traceroute(self):
         access_token = self.register_user()
-        token_probe = self.register_probe(access_token)
+        self.register_probe(access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
 
         res = self.client.post(
             '/traceroute', 
             json=dict(
                 operation="traceroute",
-                probes=[token_probe],
+                probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
@@ -22,7 +26,7 @@ class OperationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual(201, res.status_code)'''
+        self.assertEqual(201, res.status_code)
 
     def test_creates_ping(self):
         access_token = self.register_user()
@@ -137,14 +141,17 @@ class OperationTest(BaseTest):
 
         self.assertEqual(404, res.status_code)
 
-    '''def test_creates_traceroute_saves_operation_in_db(self):
+    def test_creates_traceroute_saves_operation_in_db(self):
         access_token = self.register_user()
+        self.register_probe(access_token)
+
+        probes = self.app.db.probes.find_all_probes()
 
         res = self.client.post(
             '/traceroute', 
             json=dict(
                 operation="traceroute",
-                probes=["test_probe", "another_test_probe"],
+                probes=[probes[0].identifier],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
@@ -157,4 +164,4 @@ class OperationTest(BaseTest):
 
         operation = self.app.db.operations.find_operation(data["_id"])
 
-        self.assertEqual(operation.operation, "traceroute")'''
+        self.assertEqual(operation.operation, "traceroute")

@@ -14,20 +14,20 @@ class OperationsCollection:
             data = {
                 "operation": operation,
                 "params": params,
-                "probes": [ObjectId(probe) for probe in probes],
+                "probes": [ObjectId(probe.identifier) for probe in probes],
                 "owner": ObjectId(user._id)
             }
 
             _id = self.db.operations.insert_one(data)
 
-            operation = Operation(
+            op = Operation(
                 str(_id.inserted_id),
                 operation,
                 params,
                 probes
             )
 
-            return operation
+            return op
         except:
             raise InvalidOperation()
 

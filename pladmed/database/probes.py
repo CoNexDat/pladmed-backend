@@ -47,8 +47,8 @@ class ProbesCollection:
         except:
             raise InvalidProbe()
 
-        for probe_id in self.db.probes.find({ "_id": { "$in": probes_ids } }):
-            probes.append(self.find_probe(probe_id))
+        for probe in self.db.probes.find({ "_id": { "$in": probes_ids } }):
+            probes.append(Probe(str(probe["_id"])))
 
         if len(probes_ids) != len(probes):
             raise InvalidProbe()

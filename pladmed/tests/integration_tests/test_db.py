@@ -96,8 +96,6 @@ class DatabaseTest(BaseTest):
 
         probes = self.app.db.probes.find_all_probes()
 
-        probes_ids = [probe.identifier for probe in probes]
-
         operation = "traceroute"
 
         params = {
@@ -105,7 +103,7 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes_ids, user)
+        op = self.app.db.operations.create_operation(operation, params, probes, user)
 
         self.assertEqual(hasattr(op, "params"), True)
 
@@ -119,8 +117,6 @@ class DatabaseTest(BaseTest):
 
         probes = self.app.db.probes.find_all_probes()
 
-        probes_ids = [probe.identifier for probe in probes]
-
         operation = "traceroute"
 
         params = {
@@ -128,7 +124,7 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes_ids, user)
+        op = self.app.db.operations.create_operation(operation, params, probes, user)
 
         same_op = self.app.db.operations.find_operation(op._id)
 
@@ -137,23 +133,6 @@ class DatabaseTest(BaseTest):
     def test_find_operation_no_exists(self):
         with self.assertRaises(InvalidOperation):
             self.app.db.operations.find_operation("operation_fake")
-
-    def test_creates_operation_fails_invalid_probe(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
-
-        user = self.app.db.users.find_user("juan@gmail.com")
-
-        probes_ids = ["fake_probe"]
-
-        operation = "traceroute"
-
-        params = {
-            "confidence": 0.95,
-            "ips": ["192.168.0.0", "192.168.0.1"]
-        }
-
-        with self.assertRaises(InvalidOperation):
-            self.app.db.operations.create_operation(operation, params, probes_ids, user)
 
     def test_find_selected_probes(self):
         self.app.db.users.create_user("juan@gmail.com", "123")

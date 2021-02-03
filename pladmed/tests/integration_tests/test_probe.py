@@ -29,7 +29,7 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 0)
 
-    '''def test_receives_traceroute(self):
+    def test_receives_traceroute(self):
         access_token = self.register_user()
         probe = self.start_connection(access_token)
 
@@ -51,7 +51,7 @@ class ProbeTest(BaseTest):
         received = probe.get_received()
 
         self.assertEqual(received[0]["name"], "traceroute")
-        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")'''
+        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_ping(self):
         access_token = self.register_user()
