@@ -57,12 +57,17 @@ class OperationTest(BaseTest):
 
     def test_creates_dns(self):
         access_token = self.register_user()
+        self.register_probe(access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
 
         res = self.client.post(
             '/dns',
             json=dict(
                 operation="dns",
-                probes=["test_probe", "another_test_probe"],
+                probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"]
                 }
@@ -213,3 +218,26 @@ class OperationTest(BaseTest):
         )
 
         self.assertEqual(404, res.status_code)
+
+    def test_creates_dns_saves_operation_in_db(self):
+        access_token = self.register_user()
+        self.register_probe(access_token)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        res = self.client.post(
+            '/dns', 
+            json=dict(
+                probes=[probes[0].identifier],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': access_token}
+        )
+
+        data = json.loads(res.data)
+
+        operation = self.app.db.operations.find_operation(data["_id"])
+
+        self.assertEqual(operation.operation, "dns")
