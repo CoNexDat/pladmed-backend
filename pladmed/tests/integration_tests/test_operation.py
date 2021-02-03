@@ -241,3 +241,19 @@ class OperationTest(BaseTest):
         operation = self.app.db.operations.find_operation(data["_id"])
 
         self.assertEqual(operation.operation, "dns")
+
+    def test_creates_dns_returns_404_invalid_probes(self):
+        access_token = self.register_user()
+
+        res = self.client.post(
+            '/dns', 
+            json=dict(
+                probes=["test_probe", "another_test_probe"],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': access_token}
+        )
+
+        self.assertEqual(404, res.status_code)
