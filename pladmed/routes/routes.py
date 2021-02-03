@@ -5,19 +5,15 @@ from pladmed.models.user import User
 from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
 
-@api.route('/traceroute', methods=["POST"])
-@user_protected
-def traceroute():
+def create_operation(name): 
     try:
         user = request.user
         data = request.get_json(force=True)
 
-        # TODO Validate data and params
-
         probes = current_app.db.probes.find_selected_probes(data["probes"])
 
         operation = current_app.db.operations.create_operation(
-            "traceroute",
+            name,
             data["params"],
             probes,
             user
@@ -25,61 +21,32 @@ def traceroute():
 
         operation_data = operation.public_data()
 
-        do_operation("traceroute", data)
+        do_operation(name, data)
 
         return make_response(operation_data, 201)
     except:
-        return make_response({"Error": "Invalid data provided"}, 404)
+        return make_response({"Error": "Invalid data provided"}, 404)    
+
+@api.route('/traceroute', methods=["POST"])
+@user_protected
+def traceroute():
+    #TODO Validate params
+
+    return create_operation("traceroute")
 
 @api.route('/ping', methods=["POST"])
 @user_protected
 def ping():
-    try:
-        user = request.user
-        data = request.get_json(force=True)
-        # TODO Validate data and params
+    #TODO Validate params
 
-        probes = current_app.db.probes.find_selected_probes(data["probes"])
-
-        operation = current_app.db.operations.create_operation(
-            "ping",
-            data["params"],
-            probes,
-            user
-        )
-
-        operation_data = operation.public_data()
-
-        do_operation("ping", data)
-
-        return make_response(operation_data, 201)
-    except:
-        return make_response({"Error": "Invalid data provided"}, 404)
+    return create_operation("ping")
 
 @api.route('/dns', methods=["POST"])
 @user_protected
 def dns():
-    try:
-        user = request.user
-        data = request.get_json(force=True)
-        # TODO Validate data and params
+    #TODO Validate params
 
-        probes = current_app.db.probes.find_selected_probes(data["probes"])
-
-        operation = current_app.db.operations.create_operation(
-            "dns",
-            data["params"],
-            probes,
-            user
-        )
-
-        operation_data = operation.public_data()
-
-        do_operation("dns", data)
-
-        return make_response(operation_data, 201)
-    except:
-        return make_response({"Error": "Invalid data provided"}, 404)
+    return create_operation("dns")
 
 def do_operation(operation, data):
     # TODO: Change this, we don't want to travel all the probes...
