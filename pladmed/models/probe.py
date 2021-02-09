@@ -6,3 +6,9 @@ class Probe:
         data = self.__dict__
 
         return data
+
+    def __hash__(self):
+        return hash(self.identifier)
+
+    def __eq__(self, other):
+        return self.identifier == other.identifier

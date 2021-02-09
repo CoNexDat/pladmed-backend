@@ -20,11 +20,13 @@ def on_connect():
         if probe is None:
             raise ConnectionRefusedError('Invalid token')
 
-        current_app.probes[request.sid] = probe
+        current_app.probes[probe] = request.sid
     except DecodeError:
         # Raising something in except is bad, but we can't do it better for now
         raise ConnectionRefusedError('Invalid token')
 
 @socketio.on('disconnect')
 def on_disconnect():
-    del current_app.probes[request.sid]
+    for probe, conn in list(current_app.probes.items()):
+        if conn == request.sid:
+            del current_app.probes[probe]

@@ -21,7 +21,7 @@ def create_operation(name):
 
         operation_data = operation.public_data()
 
-        do_operation(name, operation_data)
+        do_operation(name, probes, operation_data)
 
         return make_response(operation_data, 201)
     except:
@@ -48,12 +48,13 @@ def dns():
 
     return create_operation("dns")
 
-def do_operation(operation, data):
-    # TODO: Change this, we don't want to travel all the probes...
-    for conn, probe in list(current_app.probes.items()):
-        for data_probes in data["probes"]:
-            if probe.identifier == data_probes["identifier"]:
-                emit(operation, data, room=conn, namespace='')
+def do_operation(operation, probes, data):
+    data_to_send = data.copy()
+    del data_to_send["probes"]
+
+    for probe in data["probes"]:
+        if probe in current_app.probes:
+            emit(operation, data_to_send, room=current_app.probes[probe], namespace='')
 
 @api.route('/register', methods=["POST"])
 def create_user():
