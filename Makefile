@@ -5,7 +5,7 @@ all:
 
 build:
 	docker build -f ./Dockerfile --target server -t "server:latest" .
-	docker build -f ./Dockerfile --target chrony -t "chrony" .
+	docker build -f ./time-sync/Dockerfile --target chrony -t "chrony" .
 .PHONY: build
 
 start: build
