@@ -5,7 +5,7 @@ import json
 class OperationTest(BaseTest):
     def test_creates_traceroute(self):
         access_token = self.register_user()
-        self.register_probe(access_token)
+        self.start_connection(access_token)
 
         res_probes = self.client.get('/probes')
 
@@ -31,7 +31,7 @@ class OperationTest(BaseTest):
 
     def test_creates_ping(self):
         access_token = self.register_user()
-        self.register_probe(access_token)
+        self.start_connection(access_token)
 
         res_probes = self.client.get('/probes')
 
@@ -56,7 +56,7 @@ class OperationTest(BaseTest):
 
     def test_creates_dns(self):
         access_token = self.register_user()
-        self.register_probe(access_token)
+        self.start_connection(access_token)
 
         res_probes = self.client.get('/probes')
 
@@ -154,7 +154,7 @@ class OperationTest(BaseTest):
 
     def test_creates_traceroute_saves_operation_in_db(self):
         access_token = self.register_user()
-        self.register_probe(access_token)
+        self.start_connection(access_token)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -179,7 +179,7 @@ class OperationTest(BaseTest):
 
     def test_creates_ping_saves_operation_in_db(self):
         access_token = self.register_user()
-        self.register_probe(access_token)
+        self.start_connection(access_token)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -220,7 +220,7 @@ class OperationTest(BaseTest):
 
     def test_creates_dns_saves_operation_in_db(self):
         access_token = self.register_user()
-        self.register_probe(access_token)
+        self.start_connection(access_token)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -250,6 +250,29 @@ class OperationTest(BaseTest):
                 probes=["test_probe", "another_test_probe"],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': access_token}
+        )
+
+        self.assertEqual(404, res.status_code)
+
+    def test_creates_traceroute_returns_error_if_no_avail_probe(self):
+        access_token = self.register_user()
+        self.register_probe(access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
                 }
             ),
             headers={'access_token': access_token}

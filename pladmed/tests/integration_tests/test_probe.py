@@ -4,17 +4,6 @@ import json
 from pladmed import socketio
 
 class ProbeTest(BaseTest):
-    def start_connection(self, access_token):
-        token = self.register_probe(access_token)
-
-        query = "token=" + token
-
-        return socketio.test_client(
-            self.app,
-            flask_test_client=self.client,
-            query_string=query
-        )
-
     def test_connection_up(self):
         access_token = self.register_user()
         probe = self.start_connection(access_token)

@@ -34,3 +34,14 @@ class BaseTest(unittest.TestCase):
         data = json.loads(res.data)
 
         return data["token"]
+        
+    def start_connection(self, access_token):
+        token = self.register_probe(access_token)
+
+        query = "token=" + token
+
+        return socketio.test_client(
+            self.app,
+            flask_test_client=self.client,
+            query_string=query
+        )
