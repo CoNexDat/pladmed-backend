@@ -279,3 +279,29 @@ class OperationTest(BaseTest):
         )
 
         self.assertEqual(404, res.status_code)
+
+    def test_creates_traceroute_returns_only_avail_probes(self):
+        access_token = self.register_user()
+        self.register_probe(access_token)
+        self.start_connection(access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"], probes[1]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(1, len(data["probes"]))

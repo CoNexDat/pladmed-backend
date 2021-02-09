@@ -29,13 +29,13 @@ def create_operation(name):
         operation = current_app.db.operations.create_operation(
             name,
             data["params"],
-            probes,
+            available_probes,
             user
         )
 
         operation_data = operation.public_data()
 
-        do_operation(name, probes, operation_data)
+        do_operation(name, available_probes, operation_data)
 
         return make_response(operation_data, 201)
     except:
