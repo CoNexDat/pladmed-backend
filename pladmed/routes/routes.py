@@ -5,45 +5,56 @@ from pladmed.models.user import User
 from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
 
+def create_operation(name): 
+    try:
+        user = request.user
+        data = request.get_json(force=True)
+
+        probes = current_app.db.probes.find_selected_probes(data["probes"])
+
+        operation = current_app.db.operations.create_operation(
+            name,
+            data["params"],
+            probes,
+            user
+        )
+
+        operation_data = operation.public_data()
+
+        do_operation(name, probes, operation_data)
+
+        return make_response(operation_data, 201)
+    except:
+        return make_response({"Error": "Invalid data provided"}, 404)    
+
 @api.route('/traceroute', methods=["POST"])
+@user_protected
 def traceroute():
-    data = request.get_json(force=True)
+    #TODO Validate params
 
-    # TODO Validate data and params
-
-    # TODO Save operation in db
-
-    do_operation("traceroute", data)
-
-    return make_response(data, 201)
+    return create_operation("traceroute")
 
 @api.route('/ping', methods=["POST"])
+@user_protected
 def ping():
-    data = request.get_json(force=True)
-    # TODO Validate data and params
+    #TODO Validate params
 
-    # TODO Save operation in db
-    do_operation("ping", data)
-
-    return make_response(data, 201)
+    return create_operation("ping")
 
 @api.route('/dns', methods=["POST"])
+@user_protected
 def dns():
-    data = request.get_json(force=True)
-    # TODO Validate data and params
+    #TODO Validate params
 
-    # TODO Save operation in db
-    do_operation("dns", data)
+    return create_operation("dns")
 
-    return make_response(data, 201)
+def do_operation(operation, probes, data):
+    data_to_send = data.copy()
+    del data_to_send["probes"]
 
-def do_operation(operation, data):
-    # TODO: Change this, we don't want to travel all the probes...
-    for conn, probe in list(current_app.probes.items()):
-        if probe.identifier in data["probes"]:
-            emit(operation, data, room=conn, namespace='')
-
-    return make_response(data, 201)
+    for probe in data["probes"]:
+        if probe in current_app.probes:
+            emit(operation, data_to_send, room=current_app.probes[probe], namespace='')
 
 @api.route('/register', methods=["POST"])
 def create_user():

@@ -2,6 +2,7 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 from pladmed.models.user import User
 import json
+from pladmed.exceptions import InvalidOperation, InvalidProbe
 
 class DatabaseTest(BaseTest):
     def test_creates_users(self):
@@ -84,3 +85,90 @@ class DatabaseTest(BaseTest):
         probes = self.app.db.probes.find_all_probes()
 
         self.assertEqual(len(probes), 0)
+
+    def test_creates_operation(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        op = self.app.db.operations.create_operation(operation, params, probes, user)
+
+        self.assertEqual(hasattr(op, "params"), True)
+
+    def test_find_operation(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        op = self.app.db.operations.create_operation(operation, params, probes, user)
+
+        same_op = self.app.db.operations.find_operation(op._id)
+
+        self.assertEqual(same_op._id, op._id)
+
+    def test_find_operation_no_exists(self):
+        with self.assertRaises(InvalidOperation):
+            self.app.db.operations.find_operation("operation_fake")
+
+    def test_find_selected_probes(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe_1 = self.app.db.probes.create_probe(user)
+        probe_2 = self.app.db.probes.create_probe(user)
+        probe_3 = self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_selected_probes(
+            [probe_1.identifier, probe_2.identifier]
+        )
+
+        self.assertEqual(len(probes), 2)
+
+    def test_find_selected_probes_raises_invalid_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe_1 = self.app.db.probes.create_probe(user)
+
+        with self.assertRaises(InvalidProbe):
+            self.app.db.probes.find_selected_probes(
+                [probe_1.identifier, "5fd93938d1af6852c13aae23"]
+            )
+
+    def test_find_selected_probes_raises_fake_probe(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        probe_1 = self.app.db.probes.create_probe(user)
+
+        with self.assertRaises(InvalidProbe):
+            self.app.db.probes.find_selected_probes(
+                [probe_1.identifier, "1451515"]
+            )

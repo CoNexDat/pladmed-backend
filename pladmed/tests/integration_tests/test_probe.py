@@ -4,8 +4,7 @@ import json
 from pladmed import socketio
 
 class ProbeTest(BaseTest):
-    def start_connection(self):
-        access_token = self.register_user()
+    def start_connection(self, access_token):
         token = self.register_probe(access_token)
 
         query = "token=" + token
@@ -17,32 +16,37 @@ class ProbeTest(BaseTest):
         )
 
     def test_connection_up(self):
-        probe = self.start_connection()
+        access_token = self.register_user()
+        probe = self.start_connection(access_token)
 
         self.assertEqual(len(self.app.probes), 1)
 
     def test_disconnect(self):
-        probe = self.start_connection()
+        access_token = self.register_user()
+        probe = self.start_connection(access_token)
 
         probe.disconnect()
 
         self.assertEqual(len(self.app.probes), 0)
 
     def test_receives_traceroute(self):
-        probe = self.start_connection()
+        access_token = self.register_user()
+        probe = self.start_connection(access_token)
 
         res = self.client.get('/probes')
 
         probes = json.loads(res.data)
 
         self.client.post('/traceroute', json=dict(
-            operation="traceroute",
-            probes=[probes[0]["identifier"]],
-            params={
-                "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
-            }
-        ))
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': access_token}
+        )
 
         received = probe.get_received()
 
@@ -50,19 +54,22 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_ping(self):
-        probe = self.start_connection()
+        access_token = self.register_user()
+        probe = self.start_connection(access_token)
 
         res = self.client.get('/probes')
 
         probes = json.loads(res.data)
 
         self.client.post('/ping', json=dict(
-            operation="ping",
-            probes=[probes[0]["identifier"]],
-            params={
-                "ips": ["192.168.0.0", "192.162.1.1"]
-            }
-        ))
+                operation="ping",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': access_token}
+        )
 
         received = probe.get_received()
 
@@ -70,19 +77,22 @@ class ProbeTest(BaseTest):
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_dns(self):
-        probe = self.start_connection()
+        access_token = self.register_user()
+        probe = self.start_connection(access_token)
         
         res = self.client.get('/probes')
 
         probes = json.loads(res.data)
 
         self.client.post('/dns', json=dict(
-            operation="dns",
-            probes=[probes[0]["identifier"]],
-            params={
-                "ips": ["192.168.0.0", "192.162.1.1"]
-            }
-        ))
+                operation="dns",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': access_token}
+        )
 
         received = probe.get_received()
 
