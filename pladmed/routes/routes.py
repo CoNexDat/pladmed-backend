@@ -5,6 +5,15 @@ from pladmed.models.user import User
 from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
 
+def get_available_probes(probes):
+    avail_probes = []
+
+    for probe in probes:
+        if probe in current_app.probes:
+            avail_probes.append(probe)
+    
+    return avail_probes
+
 def create_operation(name): 
     try:
         user = request.user
@@ -12,16 +21,21 @@ def create_operation(name):
 
         probes = current_app.db.probes.find_selected_probes(data["probes"])
 
+        available_probes = get_available_probes(probes)
+
+        if len(available_probes) == 0:
+            return make_response({"Error": "No available probes"}, 404)
+
         operation = current_app.db.operations.create_operation(
             name,
             data["params"],
-            probes,
+            available_probes,
             user
         )
 
         operation_data = operation.public_data()
 
-        do_operation(name, probes, operation_data)
+        do_operation(name, available_probes, operation_data)
 
         return make_response(operation_data, 201)
     except:
