@@ -1,4 +1,4 @@
-FROM python:3.6.9
+FROM python:3.6.9 AS server
 
 ENV HOME=/home
 WORKDIR $HOME

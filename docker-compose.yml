@@ -27,5 +27,13 @@ services:
     networks:
       - pladmed_net
 
+  chrony:
+    cap_add:
+      - 'SYS_TIME'
+    image: chrony
+    container_name: chrony
+    networks: 
+      - pladmed_net
+
 networks:
   pladmed_net:
