@@ -39,6 +39,15 @@ class ProbeBaseTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 0)
 
+    def test_connection_refuse_fake_token_key(self):
+        probe = socketio.test_client(
+            self.app,
+            flask_test_client=self.client,
+            query_string="token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1ZmQ4NGE1YzY5NzkxYWVkNWNhNjUzYzMiLCJlbWFpbCI6ImZlZGUuZnVuZXM5NkBnbWFpbC5jb20ifQ.72LNISUUAwBO_dLpAJXtLM9Nsco1FuUYTdDiSzvB_Qs"
+        )
+
+        self.assertEqual(len(self.app.probes), 0)
+
 class ProbeTest(BaseTest):
     def setUp(self):
         super().setUp()
