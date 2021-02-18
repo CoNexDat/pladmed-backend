@@ -3,6 +3,8 @@ from flask_socketio import emit
 from flask import current_app, request
 from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
+import subprocess
+from tempfile import NamedTemporaryFile
 
 @socketio.on('connect')
 def on_connect():
@@ -26,3 +28,28 @@ def on_disconnect():
     for probe, conn in list(current_app.probes.items()):
         if conn == request.sid:
             del current_app.probes[probe]
+
+'''@socketio.on('results')
+def on_results(data):
+    # Should validate if that operation_id is from that probe!
+    print("Received: ", data)
+
+    #store_file = 'pladmed/results/' + data["operation_id"]
+
+    tmpfile = NamedTemporaryFile()
+    tmpfile.write(data["content"])
+
+    tmpfile.flush()
+    res = None
+
+    subprocess.run(
+        [
+            "sc_warts2text",
+            tmpfile.name,
+        ],
+        stdout=res
+    )
+
+    #print(res)
+    tmpfile.close()
+'''

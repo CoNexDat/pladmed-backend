@@ -32,3 +32,6 @@ class OperationTest(unittest.TestCase):
 
     def test_operation_has_public_data(self):
         self.assertEqual("_id" in self.operation.public_data(), True)
+
+    def test_operation_includes_results(self):
+        self.assertEqual(len(self.operation.results), 0)

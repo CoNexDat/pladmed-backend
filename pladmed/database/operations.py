@@ -40,3 +40,16 @@ class OperationsCollection:
             )
         except:
             raise InvalidOperation()
+
+    def add_results(self, operation, probe, results):
+        new_results = {
+            "probe": probe.identifier,
+            "results": results
+        }
+
+        self.db.operations.update_one(
+            {"_id": operation._id},
+            {"$push": {"results": new_results}}
+        )
+
+        return operation
