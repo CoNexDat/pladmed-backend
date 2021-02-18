@@ -12,3 +12,11 @@ class Operation:
         del data["operation"]
 
         return data
+
+    def add_results(self, probe, results):
+        new_results = {
+            "probe": probe,
+            "results": results
+        }
+
+        self.results.append(new_results)

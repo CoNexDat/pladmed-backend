@@ -35,3 +35,9 @@ class OperationTest(unittest.TestCase):
 
     def test_operation_includes_results(self):
         self.assertEqual(len(self.operation.results), 0)
+
+    def test_operations_add_results(self):
+        self.operation.add_results(Probe("39232d2"), "Traceroute results")
+
+        self.assertEqual(self.operation.results[0]["probe"], Probe("39232d2"))
+        self.assertEqual(self.operation.results[0]["results"], "Traceroute results")
