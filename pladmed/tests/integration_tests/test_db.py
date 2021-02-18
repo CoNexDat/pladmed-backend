@@ -172,3 +172,58 @@ class DatabaseTest(BaseTest):
             self.app.db.probes.find_selected_probes(
                 [probe_1.identifier, "1451515"]
             )
+
+    def test_add_results_to_operation(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        op = self.app.db.operations.create_operation(operation, params, probes, user)
+
+        results = "Traceroute results..."
+
+        updated_op = self.app.db.operations.add_results(op, probes[0], results)
+
+        self.assertEqual(updated_op._id, op._id)
+        self.assertEqual(updated_op.results[0]["probe"], probes[0])
+        self.assertEqual(updated_op.results[0]["results"], results)
+
+    def test_find_operation_includes_results(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        op = self.app.db.operations.create_operation(operation, params, probes, user)
+
+        results = "Traceroute results..."
+
+        updated_op = self.app.db.operations.add_results(op, probes[0], results)
+
+        same_op = self.app.db.operations.find_operation(op._id)
+
+        self.assertEqual(same_op.results[0]["probe"], probes[0])
+        self.assertEqual(same_op.results[0]["results"], results)

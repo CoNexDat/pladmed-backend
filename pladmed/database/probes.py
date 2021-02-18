@@ -24,9 +24,6 @@ class ProbesCollection:
         try:
             probe = self.db.probes.find_one({"_id": ObjectId(identifier)})
 
-            if not probe:
-                return None
-
             return Probe(str(probe["_id"]))
         except:
             return None

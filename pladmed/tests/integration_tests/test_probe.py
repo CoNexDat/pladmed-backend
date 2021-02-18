@@ -2,6 +2,8 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 from pladmed import socketio
+from unittest import mock
+import pladmed.routes.events as events
 
 class ProbeBaseTest(BaseTest):
     def test_get_all_probes_zero_if_not_created(self):
@@ -131,6 +133,124 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
+    
+    def test_send_operation_results(self):
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
+
+        res = self.client.post('/traceroute', json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        # Discard traceroute received, let's mock the client
+        received = self.probe_conn.get_received()
+
+        operation_id = json.loads(res.data)["_id"]
+
+        with open("pladmed/tests/tests_files/warts_example", 'rb') as f:
+            content = f.read()
+
+            data_to_send = {
+                "operation_id": operation_id,
+                "content": content,
+            }
+
+            ack = self.probe_conn.emit(
+                "results",
+                data_to_send,
+                callback=True
+            )
+
+            self.assertEqual(ack, operation_id)
+
+    def test_send_operation_results_updates_results(self):
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
+
+        res = self.client.post('/traceroute', json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        # Discard traceroute received, let's mock the client
+        received = self.probe_conn.get_received()
+
+        operation_id = json.loads(res.data)["_id"]
+
+        with open("pladmed/tests/tests_files/warts_example", 'rb') as f:
+            content = f.read()
+
+            data_to_send = {
+                "operation_id": operation_id,
+                "content": content,
+            }
+
+            self.probe_conn.emit(
+                "results",
+                data_to_send,
+                callback=True
+            )
+
+        operation = self.app.db.operations.find_operation(operation_id)
+
+        self.assertEqual(operation.results[0]["probe"].identifier, probes[0]["identifier"])
+    
+
+    def test_send_operation_results_fails_if_probe_suddenly_disconnects(self):
+        mock_probe_conn = mock.patch.object(
+            events, 'find_probe_by_session', return_value=None
+        )
+
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
+
+        res = self.client.post('/traceroute', json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        # Discard traceroute received, let's mock the client
+        received = self.probe_conn.get_received()
+
+        operation_id = json.loads(res.data)["_id"]
+
+        with open("pladmed/tests/tests_files/warts_example", 'rb') as f:
+            content = f.read()
+
+            data_to_send = {
+                "operation_id": operation_id,
+                "content": content,
+            }
+            with mock_probe_conn:
+                res = self.probe_conn.emit(
+                    "results",
+                    data_to_send,
+                    callback=True
+                )
+
+                self.assertEqual([], res)
 
     # ---------------------------------------------
     # API Rest test

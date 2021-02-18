@@ -3,6 +3,14 @@ from flask_socketio import emit
 from flask import current_app, request
 from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
+from pladmed.utils.scamper import warts2text
+
+def find_probe_by_session(session):
+    for probe, conn in list(current_app.probes.items()):
+        if conn == session:
+            return probe
+    
+    return None
 
 @socketio.on('connect')
 def on_connect():
@@ -23,6 +31,24 @@ def on_connect():
 
 @socketio.on('disconnect')
 def on_disconnect():
-    for probe, conn in list(current_app.probes.items()):
-        if conn == request.sid:
-            del current_app.probes[probe]
+    probe = find_probe_by_session(request.sid)
+
+    del current_app.probes[probe]
+
+@socketio.on('results')
+def on_results(data):
+    probe = find_probe_by_session(request.sid)
+
+    # Probe suddenly got disconnected so i can't find it's model
+    if probe is None:
+        return None
+
+    operation = current_app.db.operations.find_operation(data["operation_id"])
+
+    #TODO Validate if that operation_id is valid for that probe!
+
+    results = warts2text(data["content"])
+
+    current_app.db.operations.add_results(operation, probe, results)
+
+    return data["operation_id"]

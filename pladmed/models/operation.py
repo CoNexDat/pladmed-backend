@@ -4,6 +4,7 @@ class Operation:
         self.operation = operation
         self.probes = probes
         self.params = params
+        self.results = []
 
     def public_data(self):
         data = self.__dict__
@@ -11,3 +12,11 @@ class Operation:
         del data["operation"]
 
         return data
+
+    def add_results(self, probe, results):
+        new_results = {
+            "probe": probe,
+            "results": results
+        }
+
+        self.results.append(new_results)

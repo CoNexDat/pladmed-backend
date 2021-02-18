@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import logging
 from pladmed.models.operation import Operation
+from pladmed.models.probe import Probe
 from bson.objectid import ObjectId
 from pladmed.exceptions import InvalidOperation
 
@@ -32,11 +33,32 @@ class OperationsCollection:
         try:
             op = self.db.operations.find_one({"_id": ObjectId(identifier)})
 
-            return Operation(
+            operation = Operation(
                 str(op["_id"]),
                 op["operation"],
                 op["params"],
-                op["probes"]
+                [Probe(str(probe)) for probe in op["probes"]]
             )
+
+            if "results" in op:
+                for result in op["results"]:
+                    operation.add_results(Probe(str(result["probe"])), result["results"])
+
+            return operation
         except:
             raise InvalidOperation()
+
+    def add_results(self, operation, probe, results):
+        new_results = {
+            "probe": ObjectId(probe.identifier),
+            "results": results
+        }
+
+        self.db.operations.update_one(
+            {"_id": ObjectId(operation._id)},
+            {"$push": {"results": new_results}}
+        )
+
+        operation.add_results(probe, results)
+
+        return operation
