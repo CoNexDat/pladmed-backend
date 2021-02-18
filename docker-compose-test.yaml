@@ -14,7 +14,7 @@ services:
         echo ;
         echo -e "${GREEN}Coverage reports"
         echo ;
-        coverage report
+        coverage report --omit="*/test*"
         echo ;
     env_file:
       - .env_server
