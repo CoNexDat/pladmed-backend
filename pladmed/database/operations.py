@@ -37,7 +37,7 @@ class OperationsCollection:
                 str(op["_id"]),
                 op["operation"],
                 op["params"],
-                op["probes"]
+                [Probe(str(probe)) for probe in op["probes"]]
             )
 
             if "results" in op:
