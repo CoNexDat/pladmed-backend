@@ -173,7 +173,7 @@ class DatabaseTest(BaseTest):
                 [probe_1.identifier, "1451515"]
             )
 
-    '''def test_add_results_to_operation(self):
+    def test_add_results_to_operation(self):
         self.app.db.users.create_user("juan@gmail.com", "123")
 
         user = self.app.db.users.find_user("juan@gmail.com")
@@ -197,4 +197,5 @@ class DatabaseTest(BaseTest):
         updated_op = self.app.db.operations.add_results(op, probes[0], results)
 
         self.assertEqual(updated_op._id, op._id)
-        self.assertEqual(updated_op.results[0], results)'''
+        self.assertEqual(updated_op.results[0]["probe"], probes[0])
+        self.assertEqual(updated_op.results[0]["results"], results)

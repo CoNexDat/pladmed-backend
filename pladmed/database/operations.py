@@ -52,4 +52,6 @@ class OperationsCollection:
             {"$push": {"results": new_results}}
         )
 
+        operation.add_results(probe, results)
+
         return operation
