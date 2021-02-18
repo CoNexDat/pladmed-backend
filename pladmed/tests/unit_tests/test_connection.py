@@ -9,3 +9,8 @@ class ConnectionTest(unittest.TestCase):
 
     def test_connection_includes_alive_state(self):
         self.assertEqual(True, self.conn.alive)
+
+    def test_connection_disconnect(self):
+        self.conn.disconnect()
+
+        self.assertEqual(False, self.conn.alive)
