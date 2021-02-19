@@ -1,4 +1,4 @@
-from flask import current_app, make_response, jsonify, request
+from flask import current_app, make_response, jsonify, request, Response
 from pladmed.routes import api
 from flask_socketio import emit
 from pladmed.models.user import User
@@ -131,3 +131,9 @@ def all_probes():
     probes = current_app.db.probes.find_all_probes()
 
     return make_response(jsonify(probes), 200)
+
+@api.route('/delete_all', methods=["DELETE"])
+def delete_all():
+    current_app.db.reset_db()
+
+    return Response(status=204)

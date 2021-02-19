@@ -8,7 +8,7 @@ from pladmed.exceptions import InvalidOperation
 
 class OperationsCollection:
     def __init__(self, db):
-        self.db = db
+        self.operationsCol = db.operations
     
     def create_operation(self, operation, params, probes, user):
         data = {
@@ -18,7 +18,7 @@ class OperationsCollection:
             "owner": ObjectId(user._id)
         }
 
-        _id = self.db.operations.insert_one(data)
+        _id = self.operationsCol.insert_one(data)
 
         op = Operation(
             str(_id.inserted_id),
@@ -31,7 +31,7 @@ class OperationsCollection:
 
     def find_operation(self, identifier):
         try:
-            op = self.db.operations.find_one({"_id": ObjectId(identifier)})
+            op = self.operationsCol.find_one({"_id": ObjectId(identifier)})
 
             operation = Operation(
                 str(op["_id"]),
@@ -54,7 +54,7 @@ class OperationsCollection:
             "results": results
         }
 
-        self.db.operations.update_one(
+        self.operationsCol.update_one(
             {"_id": ObjectId(operation._id)},
             {"$push": {"results": new_results}}
         )
