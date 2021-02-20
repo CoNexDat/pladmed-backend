@@ -134,6 +134,9 @@ def all_probes():
 
 @api.route('/delete_all', methods=["DELETE"])
 def delete_all():
+    if current_app.config["ENV"] == "production":
+        return Response(status=404)
+
     current_app.db.reset_db()
 
     return Response(status=204)
