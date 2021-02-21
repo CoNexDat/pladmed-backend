@@ -140,3 +140,13 @@ def delete_all():
     current_app.db.reset_db()
 
     return Response(status=204)
+
+@api.route('/operation', methods=["GET"])
+def operation():
+    op_id = request.args.get('id')
+
+    operation = current_app.db.operations.find_operation(op_id)
+
+    operation_data = operation.public_data()
+
+    return make_response(operation_data, 200)

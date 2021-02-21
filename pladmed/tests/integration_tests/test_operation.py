@@ -286,3 +286,38 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(1, len(data["probes"]))
+
+    def test_get_operation(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data_op = json.loads(res.data)
+
+        params = {
+            'id': data_op["_id"]
+        }
+
+        res = self.client.get(
+            '/operation',
+            query_string=params,
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(data["_id"], data_op["_id"])
