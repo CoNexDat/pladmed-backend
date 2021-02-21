@@ -4,6 +4,9 @@ from flask_socketio import emit
 from pladmed.models.user import User
 from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
+from pladmed.utils.response import (
+    error_response, HTTP_CREATED, HTTP_OK, HTTP_NOT_FOUND, HTTP_BAD_REQUEST
+)
 
 def get_available_probes(probes):
     avail_probes = []
@@ -24,7 +27,7 @@ def create_operation(name):
         available_probes = get_available_probes(probes)
 
         if len(available_probes) == 0:
-            return make_response({"Error": "No available probes"}, 404)
+            return error_response(HTTP_NOT_FOUND, "No available probes")
 
         operation = current_app.db.operations.create_operation(
             name,
@@ -37,9 +40,9 @@ def create_operation(name):
 
         do_operation(name, available_probes, operation_data)
 
-        return make_response(operation_data, 201)
+        return make_response(operation_data, HTTP_CREATED)
     except:
-        return make_response({"Error": "Invalid data provided"}, 404)    
+        return error_response(HTTP_NOT_FOUND, "Invalid data provided")
 
 @api.route('/traceroute', methods=["POST"])
 @user_protected
@@ -86,7 +89,7 @@ def create_user():
 
         return make_response(jsonify(user_data), 201)
     except:
-        return make_response({"Error": "That email is already registered"}, 404)
+        return error_response(HTTP_BAD_REQUEST, "That email is already registered")
 
 @api.route('/login', methods=["POST"])
 def login_user():
@@ -96,7 +99,7 @@ def login_user():
         user = current_app.db.users.find_user(data["email"])
 
         if not user.verify_password(data["password"]):
-            return make_response({"Error": "Invalid email or password"}, 404)
+            return error_response(HTTP_NOT_FOUND, "Invalid email or password")
         
         user_data = user.public_data()
 
@@ -104,7 +107,7 @@ def login_user():
 
         return make_response({"access_token": access_token}, 200)
     except:
-        return make_response({"Error": "Invalid email or password"}, 404)
+        return error_response(HTTP_NOT_FOUND, "Invalid email or password")
 
 @api.route('/users/me', methods=["GET"])
 @user_protected
@@ -152,4 +155,4 @@ def operation():
 
         return make_response(operation_data, 200)
     except:
-        return make_response({"Error": "Operation not exists"}, 404)
+        return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
