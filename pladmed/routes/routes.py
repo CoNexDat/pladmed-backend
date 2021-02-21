@@ -4,6 +4,10 @@ from flask_socketio import emit
 from pladmed.models.user import User
 from pladmed.models.probe import Probe
 from pladmed.utils.decorators import user_protected
+from pladmed.utils.response import (
+    error_response, HTTP_CREATED, HTTP_OK, HTTP_NOT_FOUND, HTTP_BAD_REQUEST,
+    HTTP_NO_CONTENT
+)
 
 def get_available_probes(probes):
     avail_probes = []
@@ -24,7 +28,7 @@ def create_operation(name):
         available_probes = get_available_probes(probes)
 
         if len(available_probes) == 0:
-            return make_response({"Error": "No available probes"}, 404)
+            return error_response(HTTP_NOT_FOUND, "No available probes")
 
         operation = current_app.db.operations.create_operation(
             name,
@@ -37,9 +41,9 @@ def create_operation(name):
 
         do_operation(name, available_probes, operation_data)
 
-        return make_response(operation_data, 201)
+        return make_response(operation_data, HTTP_CREATED)
     except:
-        return make_response({"Error": "Invalid data provided"}, 404)    
+        return error_response(HTTP_NOT_FOUND, "Invalid data provided")
 
 @api.route('/traceroute', methods=["POST"])
 @user_protected
@@ -84,9 +88,9 @@ def create_user():
 
         user_data = user.public_data()
 
-        return make_response(jsonify(user_data), 201)
+        return make_response(jsonify(user_data), HTTP_CREATED)
     except:
-        return make_response({"Error": "That email is already registered"}, 404)
+        return error_response(HTTP_BAD_REQUEST, "That email is already registered")
 
 @api.route('/login', methods=["POST"])
 def login_user():
@@ -96,15 +100,15 @@ def login_user():
         user = current_app.db.users.find_user(data["email"])
 
         if not user.verify_password(data["password"]):
-            return make_response({"Error": "Invalid email or password"}, 404)
+            return error_response(HTTP_NOT_FOUND, "Invalid email or password")
         
         user_data = user.public_data()
 
         access_token = current_app.token.create_token(user_data)
 
-        return make_response({"access_token": access_token}, 200)
+        return make_response({"access_token": access_token}, HTTP_OK)
     except:
-        return make_response({"Error": "Invalid email or password"}, 404)
+        return error_response(HTTP_NOT_FOUND, "Invalid email or password")
 
 @api.route('/users/me', methods=["GET"])
 @user_protected
@@ -113,7 +117,7 @@ def users_me():
 
     user_data = user.public_data()
 
-    return make_response(user_data, 200)
+    return make_response(user_data, HTTP_OK)
 
 @api.route('/probes', methods=["POST"])
 @user_protected
@@ -124,19 +128,32 @@ def register_probe():
 
     token = current_app.token.create_token(probe.public_data())
 
-    return make_response({"token": token}, 201)
+    return make_response({"token": token}, HTTP_CREATED)
 
 @api.route('/probes', methods=["GET"])
 def all_probes():
     probes = current_app.db.probes.find_all_probes()
 
-    return make_response(jsonify(probes), 200)
+    return make_response(jsonify(probes), HTTP_OK)
 
 @api.route('/delete_all', methods=["DELETE"])
 def delete_all():
     if current_app.config["ENV"] == "production":
-        return Response(status=404)
+        return Response(status=HTTP_NOT_FOUND)
 
     current_app.db.reset_db()
 
-    return Response(status=204)
+    return Response(status=HTTP_NO_CONTENT)
+
+@api.route('/operation', methods=["GET"])
+def operation():
+    op_id = request.args.get('id')
+
+    try:
+        operation = current_app.db.operations.find_operation(op_id)
+
+        operation_data = operation.public_data()
+
+        return make_response(operation_data, HTTP_OK)
+    except:
+        return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")

@@ -52,7 +52,7 @@ class AuthenticationTest(BaseTest):
             password="secure_password"
         ))
 
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 400)
 
     def test_login_user_correctly(self):
         self.client.post('/register', json=dict(
