@@ -145,8 +145,11 @@ def delete_all():
 def operation():
     op_id = request.args.get('id')
 
-    operation = current_app.db.operations.find_operation(op_id)
+    try:
+        operation = current_app.db.operations.find_operation(op_id)
 
-    operation_data = operation.public_data()
+        operation_data = operation.public_data()
 
-    return make_response(operation_data, 200)
+        return make_response(operation_data, 200)
+    except:
+        return make_response({"Error": "Operation not exists"}, 404)

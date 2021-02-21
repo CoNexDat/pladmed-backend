@@ -321,3 +321,35 @@ class OperationTest(BaseTest):
 
         self.assertEqual(200, res.status_code)
         self.assertEqual(data["_id"], data_op["_id"])
+
+    def test_get_operation_fails_with_bad_id(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data_op = json.loads(res.data)
+
+        params = {
+            'id': "a fake id"
+        }
+
+        res = self.client.get(
+            '/operation',
+            query_string=params,
+            headers={'access_token': "fake_token"}
+        )
+
+        self.assertEqual(404, res.status_code)
