@@ -33,7 +33,8 @@ def on_connect():
 def on_disconnect():
     probe = find_probe_by_session(request.sid)
 
-    del current_app.probes[probe]
+    if probe is not None:
+        del current_app.probes[probe]
 
 @socketio.on('results')
 def on_results(data):
