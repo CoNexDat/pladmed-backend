@@ -64,3 +64,15 @@ class OperationTest(unittest.TestCase):
         )
 
         self.assertEqual(self.operation.code_exists("another unique code"), False)
+
+    def test_operation_public_data_doesnt_include_results_unique_codes(self):
+        self.operation.add_results(
+            Probe("39232d2"),
+            "Traceroute results",
+            "an unique code"
+        )
+
+        self.assertEqual(
+            "unique_code" in self.operation.public_data()["results"][0],
+            False
+        )

@@ -11,6 +11,9 @@ class Operation:
 
         del data["operation"]
 
+        for result in data["results"]:
+            del result["unique_code"]
+
         return data
 
     def add_results(self, probe, results, unique_code):
