@@ -161,6 +161,7 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
+                "unique_code": "an unique code"
             }
 
             ack = self.probe_conn.emit(
@@ -198,6 +199,7 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
+                "unique_code": "an unique code"
             }
 
             self.probe_conn.emit(
@@ -242,6 +244,7 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
+                "unique_code": "an unique code"
             }
             with mock_probe_conn:
                 res = self.probe_conn.emit(
@@ -251,6 +254,59 @@ class ProbeTest(BaseTest):
                 )
 
                 self.assertEqual([], res)
+
+    def test_send_operation_results_rejects_duplicates(self):
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
+
+        res = self.client.post('/traceroute', json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        # Discard traceroute received, let's mock the client
+        received = self.probe_conn.get_received()
+
+        operation_id = json.loads(res.data)["_id"]
+
+        with open("pladmed/tests/tests_files/warts_example", 'rb') as f:
+            content = f.read()
+
+            data_to_send = {
+                "operation_id": operation_id,
+                "content": content,
+                "unique_code": "an unique code"
+            }
+
+            self.probe_conn.emit(
+                "results",
+                data_to_send,
+                callback=True
+            )
+
+            data_to_send = {
+                "operation_id": operation_id,
+                "content": content,
+                "unique_code": "an unique code"
+            }
+
+            ack = self.probe_conn.emit(
+                "results",
+                data_to_send,
+                callback=True
+            )
+
+            operation = self.app.db.operations.find_operation(operation_id)
+
+            self.assertEqual(len(operation.results), 1)
+            self.assertEqual(ack, operation_id)
 
     # ---------------------------------------------
     # API Rest test

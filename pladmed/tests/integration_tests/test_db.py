@@ -193,8 +193,14 @@ class DatabaseTest(BaseTest):
         op = self.app.db.operations.create_operation(operation, params, probes, user)
 
         results = "Traceroute results..."
+        unique_code = "an unique code"
 
-        updated_op = self.app.db.operations.add_results(op, probes[0], results)
+        updated_op = self.app.db.operations.add_results(
+            op,
+            probes[0],
+            results,
+            unique_code
+        )
 
         self.assertEqual(updated_op._id, op._id)
         self.assertEqual(updated_op.results[0]["probe"], probes[0])
@@ -220,8 +226,14 @@ class DatabaseTest(BaseTest):
         op = self.app.db.operations.create_operation(operation, params, probes, user)
 
         results = "Traceroute results..."
+        unique_code = "an unique code"
 
-        updated_op = self.app.db.operations.add_results(op, probes[0], results)
+        updated_op = self.app.db.operations.add_results(
+            op,
+            probes[0],
+            results,
+            unique_code
+        )
 
         same_op = self.app.db.operations.find_operation(op._id)
 
