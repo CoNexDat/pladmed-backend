@@ -6,6 +6,8 @@ from pladmed.models.token import Token
 import logging
 from flask_socketio import SocketIO
 from pladmed.utils.encoders import JsonEncoder
+import eventlet
+eventlet.monkey_patch()
 
 socketio = SocketIO()
 
