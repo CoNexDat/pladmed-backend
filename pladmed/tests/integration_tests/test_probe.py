@@ -255,7 +255,7 @@ class ProbeTest(BaseTest):
 
                 self.assertEqual([], res)
 
-    '''def test_send_operation_results_rejects_duplicates(self):
+    def test_send_operation_results_rejects_duplicates(self):
         res = self.client.get('/probes')
 
         probes = json.loads(res.data)
@@ -305,7 +305,8 @@ class ProbeTest(BaseTest):
 
             operation = self.app.db.operations.find_operation(operation_id)
 
-            self.assertEqual(len(operation.results), 1)'''
+            self.assertEqual(len(operation.results), 1)
+            self.assertEqual(ack, operation_id)
 
     # ---------------------------------------------
     # API Rest test

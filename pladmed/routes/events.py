@@ -48,6 +48,11 @@ def on_results(data):
 
     operation = current_app.db.operations.find_operation(data["operation_id"])
 
+    if operation.code_exists(unique_code):
+        # If that code already exists, filter it and return operation_id
+        # so that the client doesn't know that it was dup
+        return data["operation_id"]
+
     #TODO Validate if that operation_id is valid for that probe!
 
     results = warts2text(data["content"])
