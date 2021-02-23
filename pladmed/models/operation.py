@@ -13,10 +13,18 @@ class Operation:
 
         return data
 
-    def add_results(self, probe, results):
+    def add_results(self, probe, results, unique_code):
         new_results = {
             "probe": probe,
-            "results": results
+            "results": results,
+            "unique_code": unique_code
         }
 
         self.results.append(new_results)
+
+    def code_exists(self, code):
+        for result in self.results:
+            if code == result["unique_code"]:
+                return True
+        
+        return False

@@ -44,12 +44,14 @@ def on_results(data):
     if probe is None:
         return None
 
+    unique_code = data["unique_code"]
+
     operation = current_app.db.operations.find_operation(data["operation_id"])
 
     #TODO Validate if that operation_id is valid for that probe!
 
     results = warts2text(data["content"])
 
-    current_app.db.operations.add_results(operation, probe, results)
+    current_app.db.operations.add_results(operation, probe, results, unique_code)
 
     return data["operation_id"]

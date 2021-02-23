@@ -42,16 +42,21 @@ class OperationsCollection:
 
             if "results" in op:
                 for result in op["results"]:
-                    operation.add_results(Probe(str(result["probe"])), result["results"])
+                    operation.add_results(
+                        Probe(str(result["probe"])),
+                        result["results"],
+                        result["unique_code"]
+                    )
 
             return operation
         except:
             raise InvalidOperation()
 
-    def add_results(self, operation, probe, results):
+    def add_results(self, operation, probe, results, unique_code):
         new_results = {
             "probe": ObjectId(probe.identifier),
-            "results": results
+            "results": results,
+            "unique_code": unique_code
         }
 
         self.operationsCol.update_one(
@@ -59,6 +64,6 @@ class OperationsCollection:
             {"$push": {"results": new_results}}
         )
 
-        operation.add_results(probe, results)
+        operation.add_results(probe, results, unique_code)
 
         return operation
