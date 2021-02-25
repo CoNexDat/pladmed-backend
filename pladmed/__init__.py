@@ -7,7 +7,7 @@ import logging
 from flask_socketio import SocketIO
 from pladmed.utils.encoders import JsonEncoder
 
-socketio = SocketIO()
+socketio = SocketIO(async_mode="eventlet")
 
 def init_database(config):
     return Database(
