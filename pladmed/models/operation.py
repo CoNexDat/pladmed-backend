@@ -7,7 +7,7 @@ class Operation:
         self.results = []
 
     def public_data(self):
-        data = self.__dict__
+        data = self.__dict__.copy()
 
         del data["operation"]
 

@@ -3,7 +3,7 @@ class Probe:
         self.identifier = identifier
 
     def public_data(self):
-        data = self.__dict__
+        data = self.__dict__.copy()
 
         return data
 

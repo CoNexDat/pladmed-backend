@@ -14,7 +14,7 @@ class User:
         return secure_password.verify(password, self.password)
 
     def public_data(self):
-        data = self.__dict__
+        data = self.__dict__.copy()
         del data["password"]
 
         return data
