@@ -10,7 +10,8 @@ from pladmed.utils.response import (
 )
 from pladmed.utils.credits_operations import (
     calculate_credits_traceroute,
-    calculate_credits_ping
+    calculate_credits_ping,
+    calculate_credits_dns
 )
 
 def get_available_probes(probes):
@@ -79,7 +80,11 @@ def dns():
     #TODO Validate params
     data = request.get_json(force=True)
 
-    return create_operation("dns", data, 0)
+    total_domains = len(data["params"]["dns"])
+
+    credits_ = calculate_credits_ping(total_domains)
+
+    return create_operation("dns", data, credits_)
 
 def do_operation(operation, probes, data):
     data_to_send = data.copy()

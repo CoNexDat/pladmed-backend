@@ -73,7 +73,7 @@ class OperationTest(BaseTest):
                 operation="dns",
                 probes=[probes[0]["identifier"]],
                 params={
-                    "ips": ["192.168.0.0", "192.162.1.1"]
+                    "dns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -124,7 +124,7 @@ class OperationTest(BaseTest):
                 operation="dns",
                 probes=["test_probe", "another_test_probe"],
                 params={
-                    "ips": ["192.168.0.0", "192.162.1.1"]
+                    "dns": ["www.google.com", "www.facebook.com"]
                 }
             )
         )
@@ -215,7 +215,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0].identifier],
                 params={
-                    "ips": ["192.168.0.0", "192.162.1.1"]
+                    "dns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -233,7 +233,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=["test_probe", "another_test_probe"],
                 params={
-                    "ips": ["192.168.0.0", "192.162.1.1"]
+                    "dns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -412,6 +412,27 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data["credits"], 2)
+
+    def test_creates_dns_includes_credits_per_operation(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/dns', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "dns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
