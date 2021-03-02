@@ -9,7 +9,8 @@ from pladmed.utils.response import (
     HTTP_NO_CONTENT
 )
 from pladmed.utils.credits_operations import (
-    calculate_credits_traceroute
+    calculate_credits_traceroute,
+    calculate_credits_ping
 )
 
 def get_available_probes(probes):
@@ -66,7 +67,11 @@ def ping():
     #TODO Validate params
     data = request.get_json(force=True)
 
-    return create_operation("ping", data, 0)
+    total_ips = len(data["params"]["ips"])
+
+    credits_ = calculate_credits_ping(total_ips)
+
+    return create_operation("ping", data, credits_)
 
 @api.route('/dns', methods=["POST"])
 @user_protected

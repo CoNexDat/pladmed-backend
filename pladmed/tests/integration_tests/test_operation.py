@@ -399,3 +399,24 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data["credits"], 30)
+
+    def test_creates_ping_includes_credits_per_operation(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/ping', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data["credits"], 2)
