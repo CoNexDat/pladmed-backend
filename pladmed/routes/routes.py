@@ -8,6 +8,9 @@ from pladmed.utils.response import (
     error_response, HTTP_CREATED, HTTP_OK, HTTP_NOT_FOUND, HTTP_BAD_REQUEST,
     HTTP_NO_CONTENT
 )
+from pladmed.utils.credits_operations import (
+    calculate_credits_traceroute
+)
 
 def get_available_probes(probes):
     avail_probes = []
@@ -18,10 +21,9 @@ def get_available_probes(probes):
     
     return avail_probes
 
-def create_operation(name): 
+def create_operation(name, data, credits_): 
     try:
         user = request.user
-        data = request.get_json(force=True)
 
         probes = current_app.db.probes.find_selected_probes(data["probes"])
 
@@ -35,7 +37,7 @@ def create_operation(name):
             data["params"],
             available_probes,
             user,
-            10
+            credits_
         )
 
         operation_data = operation.public_data()
@@ -50,22 +52,29 @@ def create_operation(name):
 @user_protected
 def traceroute():
     #TODO Validate params
+    data = request.get_json(force=True)
 
-    return create_operation("traceroute")
+    total_ips = len(data["params"]["ips"])
+
+    credits_ = calculate_credits_traceroute(total_ips)
+
+    return create_operation("traceroute", data, credits_)
 
 @api.route('/ping', methods=["POST"])
 @user_protected
 def ping():
     #TODO Validate params
+    data = request.get_json(force=True)
 
-    return create_operation("ping")
+    return create_operation("ping", data, 0)
 
 @api.route('/dns', methods=["POST"])
 @user_protected
 def dns():
     #TODO Validate params
+    data = request.get_json(force=True)
 
-    return create_operation("dns")
+    return create_operation("dns", data, 0)
 
 def do_operation(operation, probes, data):
     data_to_send = data.copy()
