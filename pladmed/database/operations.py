@@ -10,7 +10,7 @@ class OperationsCollection:
     def __init__(self, db):
         self.operationsCol = db.operations
     
-    def create_operation(self, operation, params, probes, user):
+    def create_operation(self, operation, params, probes, user, credits_):
         data = {
             "operation": operation,
             "params": params,
@@ -25,7 +25,7 @@ class OperationsCollection:
             operation,
             params,
             probes,
-            0
+            credits_
         )
 
         return op
