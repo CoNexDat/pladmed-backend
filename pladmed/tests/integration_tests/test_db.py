@@ -103,7 +103,15 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes, user)
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
 
         self.assertEqual(hasattr(op, "params"), True)
 
@@ -124,7 +132,15 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes, user)
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
 
         same_op = self.app.db.operations.find_operation(op._id)
 
@@ -190,7 +206,15 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes, user)
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
 
         results = "Traceroute results..."
         unique_code = "an unique code"
@@ -223,7 +247,15 @@ class DatabaseTest(BaseTest):
             "ips": ["192.168.0.0", "192.168.0.1"]
         }
 
-        op = self.app.db.operations.create_operation(operation, params, probes, user)
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
 
         results = "Traceroute results..."
         unique_code = "an unique code"
@@ -239,3 +271,63 @@ class DatabaseTest(BaseTest):
 
         self.assertEqual(same_op.results[0]["probe"], probes[0])
         self.assertEqual(same_op.results[0]["results"], results)
+
+    def test_creates_operation_includes_credits(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
+
+        self.assertEqual(op.credits, 10)
+
+    def test_find_operation_includes_credits(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
+
+        same_op = self.app.db.operations.find_operation(op._id)
+
+        self.assertEqual(same_op.credits, op.credits)
