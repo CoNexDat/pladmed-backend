@@ -15,7 +15,8 @@ class OperationsCollection:
             "operation": operation,
             "params": params,
             "probes": [ObjectId(probe.identifier) for probe in probes],
-            "owner": ObjectId(user._id)
+            "owner": ObjectId(user._id),
+            "credits": credits_
         }
 
         _id = self.operationsCol.insert_one(data)
@@ -39,7 +40,7 @@ class OperationsCollection:
                 op["operation"],
                 op["params"],
                 [Probe(str(probe)) for probe in op["probes"]],
-                0
+                op["credits"]
             )
 
             if "results" in op:

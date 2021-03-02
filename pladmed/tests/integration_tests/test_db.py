@@ -300,3 +300,34 @@ class DatabaseTest(BaseTest):
         )
 
         self.assertEqual(op.credits, 10)
+
+    def test_find_operation_includes_credits(self):
+        self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user = self.app.db.users.find_user("juan@gmail.com")
+
+        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user)
+
+        probes = self.app.db.probes.find_all_probes()
+
+        operation = "traceroute"
+
+        params = {
+            "confidence": 0.95,
+            "ips": ["192.168.0.0", "192.168.0.1"]
+        }
+
+        credits_ = 10
+
+        op = self.app.db.operations.create_operation(
+            operation,
+            params,
+            probes,
+            user,
+            credits_
+        )
+
+        same_op = self.app.db.operations.find_operation(op._id)
+
+        self.assertEqual(same_op.credits, op.credits)
