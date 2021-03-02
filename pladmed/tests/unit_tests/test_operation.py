@@ -15,7 +15,8 @@ class OperationTest(unittest.TestCase):
             probes=[
                 Probe("39232d2"),
                 Probe("43i4iec")
-            ]
+            ],
+            credits_=10
         )
 
     def test_operation_includes_probes(self):
@@ -76,3 +77,6 @@ class OperationTest(unittest.TestCase):
             "unique_code" in self.operation.public_data()["results"][0],
             False
         )
+
+    def test_operation_includes_credits(self):
+        self.assertEqual(self.operation.credits, 10)

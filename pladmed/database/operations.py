@@ -24,7 +24,8 @@ class OperationsCollection:
             str(_id.inserted_id),
             operation,
             params,
-            probes
+            probes,
+            0
         )
 
         return op
@@ -37,7 +38,8 @@ class OperationsCollection:
                 str(op["_id"]),
                 op["operation"],
                 op["params"],
-                [Probe(str(probe)) for probe in op["probes"]]
+                [Probe(str(probe)) for probe in op["probes"]],
+                0
             )
 
             if "results" in op:
