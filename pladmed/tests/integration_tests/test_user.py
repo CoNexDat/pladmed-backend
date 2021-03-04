@@ -20,7 +20,7 @@ class UserTest(BaseTest):
             '/users/me'
         )
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 401)
 
     def test_get_user_data_fails_invalid_token(self):
         self.register_user()
@@ -32,7 +32,7 @@ class UserTest(BaseTest):
             }
         )
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 401)
 
     def test_get_user_data_returns_user_data(self):
         access_token = self.register_user()

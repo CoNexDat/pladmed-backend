@@ -98,7 +98,7 @@ class OperationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual(403, res.status_code)
+        self.assertEqual(401, res.status_code)
 
     def test_creates_ping_requires_login(self):
         res = self.client.post(
@@ -115,7 +115,7 @@ class OperationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual(403, res.status_code)
+        self.assertEqual(401, res.status_code)
 
     def test_creates_dns_requires_login(self):
         res = self.client.post(
@@ -131,7 +131,7 @@ class OperationTest(BaseTest):
 
         data = json.loads(res.data)
 
-        self.assertEqual(403, res.status_code)
+        self.assertEqual(401, res.status_code)
 
     def test_creates_traceroute_returns_404_invalid_probes(self):
         res = self.client.post(
