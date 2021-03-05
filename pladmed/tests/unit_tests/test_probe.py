@@ -24,3 +24,6 @@ class ProbeTest(unittest.TestCase):
 
     def test_probe_includes_in_use_credits(self):
         self.assertEqual(0, self.probe.in_use_credits)
+
+    def test_probe_public_data_doesnt_include_in_use_credits(self):
+        self.assertEqual("in_use_credits" in self.probe.public_data(), False)

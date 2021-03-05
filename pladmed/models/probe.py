@@ -8,6 +8,7 @@ class Probe:
         data = self.__dict__.copy()
 
         del data["total_credits"]
+        del data["in_use_credits"]
 
         return data
 
