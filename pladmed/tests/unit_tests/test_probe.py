@@ -16,3 +16,6 @@ class ProbeTest(unittest.TestCase):
 
     def test_probe_includes_total_credits(self):
         self.assertEqual(130, self.probe.total_credits)
+
+    def test_probe_public_data_doesnt_include_total_credits(self):
+        self.assertEqual("total_credits" in self.probe.public_data(), False)

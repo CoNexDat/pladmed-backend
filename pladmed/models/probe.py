@@ -6,6 +6,8 @@ class Probe:
     def public_data(self):
         data = self.__dict__.copy()
 
+        del data["total_credits"]
+
         return data
 
     def __hash__(self):
