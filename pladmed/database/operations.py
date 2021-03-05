@@ -39,14 +39,14 @@ class OperationsCollection:
                 str(op["_id"]),
                 op["operation"],
                 op["params"],
-                [Probe(str(probe), 0) for probe in op["probes"]],
+                [Probe(str(probe)) for probe in op["probes"]],
                 op["credits"]
             )
 
             if "results" in op:
                 for result in op["results"]:
                     operation.add_results(
-                        Probe(str(result["probe"]), 0),
+                        Probe(str(result["probe"])),
                         result["results"],
                         result["unique_code"]
                     )

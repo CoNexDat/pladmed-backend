@@ -18,8 +18,8 @@ class EncodersTest(unittest.TestCase):
         self.assertEqual(len(set(a.keys()) - set(c.keys())), 0)
 
     def test_encodes_probes(self):
-        probe_a = Probe("fake_id", 130)
-        probe_b = Probe("another_fake_id", 130)
+        probe_a = Probe("fake_id")
+        probe_b = Probe("another_fake_id")
 
         probes = [probe_a, probe_b]
 
@@ -30,7 +30,7 @@ class EncodersTest(unittest.TestCase):
         self.assertEqual(c[0]["identifier"], "fake_id")
 
     def test_encodes_single_probe(self):
-        probe_a = Probe("fake_id", 130)
+        probe_a = Probe("fake_id")
 
         b = json.dumps(probe_a, cls=JsonEncoder)
 

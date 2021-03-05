@@ -13,8 +13,8 @@ class OperationTest(unittest.TestCase):
 
             },
             probes=[
-                Probe("39232d2", 130),
-                Probe("43i4iec", 130)
+                Probe("39232d2"),
+                Probe("43i4iec")
             ],
             credits_=10
         )
@@ -39,18 +39,18 @@ class OperationTest(unittest.TestCase):
 
     def test_operations_add_results(self):
         self.operation.add_results(
-            Probe("39232d2", 130),
+            Probe("39232d2"),
             "Traceroute results",
             "an unique code"
         )
 
-        self.assertEqual(self.operation.results[0]["probe"], Probe("39232d2", 130))
+        self.assertEqual(self.operation.results[0]["probe"], Probe("39232d2"))
         self.assertEqual(self.operation.results[0]["results"], "Traceroute results")
         self.assertEqual(self.operation.results[0]["unique_code"], "an unique code")
 
     def test_operations_check_existing_unique_code(self):
         self.operation.add_results(
-            Probe("39232d2", 130),
+            Probe("39232d2"),
             "Traceroute results",
             "an unique code"
         )
@@ -59,7 +59,7 @@ class OperationTest(unittest.TestCase):
 
     def test_operations_check_unexisting_unique_code(self):
         self.operation.add_results(
-            Probe("39232d2", 130),
+            Probe("39232d2"),
             "Traceroute results",
             "an unique code"
         )
@@ -68,7 +68,7 @@ class OperationTest(unittest.TestCase):
 
     def test_operation_public_data_doesnt_include_results_unique_codes(self):
         self.operation.add_results(
-            Probe("39232d2", 130),
+            Probe("39232d2"),
             "Traceroute results",
             "an unique code"
         )

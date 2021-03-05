@@ -1,7 +1,7 @@
 class Probe:
-    def __init__(self, identifier, total_credits):
+    def __init__(self, identifier):
         self.identifier = identifier
-        self.total_credits = total_credits
+        self.total_credits = None
 
     def public_data(self):
         data = self.__dict__.copy()
