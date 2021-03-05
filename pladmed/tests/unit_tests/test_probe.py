@@ -8,6 +8,7 @@ class ProbeTest(unittest.TestCase):
         )
 
         self.probe.total_credits = 130
+        self.probe.in_use_credits = 0
 
     def test_probe_includes_identifier(self):
         self.assertEqual("3ap394c", self.probe.identifier)
@@ -20,3 +21,6 @@ class ProbeTest(unittest.TestCase):
 
     def test_probe_public_data_doesnt_include_total_credits(self):
         self.assertEqual("total_credits" in self.probe.public_data(), False)
+
+    def test_probe_includes_in_use_credits(self):
+        self.assertEqual(0, self.probe.in_use_credits)
