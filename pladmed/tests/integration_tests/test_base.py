@@ -43,5 +43,6 @@ class BaseTest(unittest.TestCase):
         return socketio.test_client(
             self.app,
             flask_test_client=self.client,
-            query_string=query
+            query_string=query,
+            headers={"total_credits": 130, "in_use_credits": 0}
         )

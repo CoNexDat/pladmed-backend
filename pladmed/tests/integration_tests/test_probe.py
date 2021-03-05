@@ -18,7 +18,8 @@ class ProbeBaseTest(BaseTest):
     def test_connection_refuse_no_token(self):
         probe = socketio.test_client(
             self.app,
-            flask_test_client=self.client
+            flask_test_client=self.client,
+            headers={"total_credits": 130, "in_use_credits": 0}
         )
 
         self.assertEqual(len(self.app.probes), 0)
@@ -27,7 +28,8 @@ class ProbeBaseTest(BaseTest):
         probe = socketio.test_client(
             self.app,
             flask_test_client=self.client,
-            query_string="token=fake_token"
+            query_string="token=fake_token",
+            headers={"total_credits": 130, "in_use_credits": 0}
         )
 
         self.assertEqual(len(self.app.probes), 0)
@@ -36,7 +38,8 @@ class ProbeBaseTest(BaseTest):
         probe = socketio.test_client(
             self.app,
             flask_test_client=self.client,
-            query_string="token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiNWZkODkwZWIxOTIxMGUxODg0ZWU5NDRmIn0.lcyp89G7GobSTe8qQnCNmDKNFFl1jRtyAWymlWJWpa4"
+            query_string="token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiNWZkODkwZWIxOTIxMGUxODg0ZWU5NDRmIn0.lcyp89G7GobSTe8qQnCNmDKNFFl1jRtyAWymlWJWpa4",
+            headers={"total_credits": 130, "in_use_credits": 0}
         )
 
         self.assertEqual(len(self.app.probes), 0)
@@ -45,7 +48,8 @@ class ProbeBaseTest(BaseTest):
         probe = socketio.test_client(
             self.app,
             flask_test_client=self.client,
-            query_string="token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1ZmQ4NGE1YzY5NzkxYWVkNWNhNjUzYzMiLCJlbWFpbCI6ImZlZGUuZnVuZXM5NkBnbWFpbC5jb20ifQ.72LNISUUAwBO_dLpAJXtLM9Nsco1FuUYTdDiSzvB_Qs"
+            query_string="token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1ZmQ4NGE1YzY5NzkxYWVkNWNhNjUzYzMiLCJlbWFpbCI6ImZlZGUuZnVuZXM5NkBnbWFpbC5jb20ifQ.72LNISUUAwBO_dLpAJXtLM9Nsco1FuUYTdDiSzvB_Qs",
+            headers={"total_credits": 130, "in_use_credits": 0}
         )
 
         self.assertEqual(len(self.app.probes), 0)
@@ -307,6 +311,12 @@ class ProbeTest(BaseTest):
 
             self.assertEqual(len(operation.results), 1)
             self.assertEqual(ack, operation_id)
+
+    def test_connection_sets_max_credits(self):
+        self.assertEqual(next(iter(self.app.probes)).total_credits, 130)
+
+    def test_connection_sets_in_use_credits(self):
+        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 0)
 
     # ---------------------------------------------
     # API Rest test
