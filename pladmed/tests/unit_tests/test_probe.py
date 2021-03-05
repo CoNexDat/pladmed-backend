@@ -4,7 +4,8 @@ from pladmed.models.probe import Probe
 class ProbeTest(unittest.TestCase):
     def setUp(self):
         self.probe = Probe(
-            identifier="3ap394c"
+            identifier="3ap394c",
+            total_credits=130
         )
 
     def test_probe_includes_identifier(self):
@@ -12,3 +13,6 @@ class ProbeTest(unittest.TestCase):
 
     def test_probe_has_public_data(self):
         self.assertEqual("identifier" in self.probe.public_data(), True)
+
+    def test_probe_includes_total_credits(self):
+        self.assertEqual(130, self.probe.total_credits)
