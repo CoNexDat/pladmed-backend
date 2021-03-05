@@ -315,6 +315,9 @@ class ProbeTest(BaseTest):
     def test_connection_sets_max_credits(self):
         self.assertEqual(next(iter(self.app.probes)).total_credits, 130)
 
+    def test_connection_sets_in_use_credits(self):
+        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 0)
+
     # ---------------------------------------------
     # API Rest test
     # ---------------------------------------------
