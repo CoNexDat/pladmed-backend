@@ -15,11 +15,14 @@ def find_probe_by_session(session):
 @socketio.on('connect')
 def on_connect():
     token = request.args.get('token')
+    total_credits = int(request.headers.get("Total-Credits"))
 
     try:
         probe_data = current_app.token.identity(token)
 
         probe = current_app.db.probes.find_probe(probe_data["identifier"])
+
+        probe.total_credits = total_credits
 
         if probe is None:
             raise ConnectionRefusedError('Invalid token')
