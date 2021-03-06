@@ -462,3 +462,25 @@ class OperationTest(BaseTest):
         self.assertEqual(data["credits"], 4)
         
         probe_conn.disconnect()
+
+    def test_creates_operation_includes_credits_per_probe_available(self):
+        self.register_probe(self.access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/dns', 
+            json=dict(
+                probes=[probes[0]["identifier"], probes[1]["identifier"]],
+                params={
+                    "dns": ["www.google.com", "www.facebook.com"]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data["credits"], 2)
