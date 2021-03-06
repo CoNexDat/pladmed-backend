@@ -177,3 +177,19 @@ def operation():
         return make_response(operation_data, HTTP_OK)
     except:
         return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
+
+
+@api.route('/operation', methods=["DELETE"])
+def delete_operation():
+    op_id = request.args.get('id')
+
+    try:
+        operation = current_app.db.operations.find_operation(op_id)
+
+        for probe in operation.public_data()["probes"]:
+            if probe in current_app.probes:
+                emit('delete', operation.public_data(), room=current_app.probes[probe], namespace='')
+
+        return Response(status=HTTP_OK)
+    except:
+        return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
