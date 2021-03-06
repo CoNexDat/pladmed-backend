@@ -23,7 +23,7 @@ def get_available_probes(probes):
     
     return avail_probes
 
-def create_operation(name, data, credits_): 
+def create_operation(name, data, credits_per_probe): 
     try:
         user = request.user
 
@@ -34,17 +34,19 @@ def create_operation(name, data, credits_):
         if len(available_probes) == 0:
             return error_response(HTTP_NOT_FOUND, "No available probes")
 
+        total_credits = credits_per_probe * len(available_probes)
+
         operation = current_app.db.operations.create_operation(
             name,
             data["params"],
             available_probes,
             user,
-            credits_
+            total_credits
         )
 
         operation_data = operation.public_data()
 
-        do_operation(name, available_probes, operation_data)
+        do_operation(name, available_probes, operation_data, credits_per_probe)
 
         return make_response(operation_data, HTTP_CREATED)
     except:
@@ -82,13 +84,16 @@ def dns():
 
     total_domains = len(data["params"]["dns"])
 
-    credits_ = calculate_credits_ping(total_domains)
+    credits_per_probe = calculate_credits_ping(total_domains)
 
-    return create_operation("dns", data, credits_)
+    return create_operation("dns", data, credits_per_probe)
 
-def do_operation(operation, probes, data):
+def do_operation(operation, probes, data, credits_per_probe):
     data_to_send = data.copy()
+
     del data_to_send["probes"]
+
+    data_to_send["credits"] = credits_per_probe
 
     for probe in data["probes"]:
         if probe in current_app.probes:
