@@ -3,14 +3,16 @@ from flask_socketio import emit
 from flask import current_app, request
 from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
-from pladmed.utils.scamper import warts2text
+from pladmed.utils.scamper import warts2text, gzip2text
+
 
 def find_probe_by_session(session):
     for probe, conn in list(current_app.probes.items()):
         if conn == session:
             return probe
-    
+
     return None
+
 
 @socketio.on('connect')
 def on_connect():
@@ -34,12 +36,14 @@ def on_connect():
         # Raising something in except is bad, but we can't do it better for now
         raise ConnectionRefusedError('Invalid token')
 
+
 @socketio.on('disconnect')
 def on_disconnect():
     probe = find_probe_by_session(request.sid)
 
     if probe is not None:
         del current_app.probes[probe]
+
 
 @socketio.on('results')
 def on_results(data):
@@ -58,10 +62,15 @@ def on_results(data):
         # so that the client doesn't know that it was dup
         return data["operation_id"]
 
-    #TODO Validate if that operation_id is valid for that probe!
+    # TODO Validate if that operation_id is valid for that probe!
 
-    results = warts2text(data["content"])
+    results = ""
+    if data["format"] == "warts":
+        results = warts2text(data["content"])
+    elif data["format"] == "gzip":
+        results = gzip2text(data["content"])
 
-    current_app.db.operations.add_results(operation, probe, results, unique_code)
+    current_app.db.operations.add_results(
+        operation, probe, results, unique_code)
 
     return data["operation_id"]
