@@ -336,7 +336,24 @@ class ProbeTest(BaseTest):
             callback=True
         )
 
-        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 30)       
+        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 30)   
+
+    def test_probe_updates_when_new_operation_doesnt_change_other_probe(self):
+        data_to_send = {
+            "credits": 30
+        }
+
+        self.start_connection(self.access_token)
+        
+        self.probe_conn.emit(
+            "new_operation",
+            data_to_send,
+            callback=True
+        )
+
+        probes = list(self.app.probes.keys())
+
+        self.assertEqual(probes[1].in_use_credits, 0)    
 
     # ---------------------------------------------
     # API Rest test
