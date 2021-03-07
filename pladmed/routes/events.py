@@ -65,12 +65,26 @@ def on_results(data):
     # TODO Validate if that operation_id is valid for that probe!
 
     results = ""
+
     if data["format"] == "warts":
         results = warts2text(data["content"])
     elif data["format"] == "gzip":
         results = gzip2text(data["content"])
 
     current_app.db.operations.add_results(
-        operation, probe, results, unique_code)
+        operation, probe, results, unique_code
+    )
 
     return data["operation_id"]
+
+@socketio.on('new_operation')
+def on_new_operation(data):
+    probe = find_probe_by_session(request.sid)
+
+    # Probe suddenly got disconnected so i can't find it's model
+    if probe is None:
+        return None
+
+    credits_ = data["credits"]
+
+    probe.in_use_credits += credits_

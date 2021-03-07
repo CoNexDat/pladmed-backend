@@ -4,6 +4,7 @@ import json
 from pladmed import socketio
 from unittest import mock
 import pladmed.routes.events as events
+import pladmed.routes.routes as routes
 
 class ProbeBaseTest(BaseTest):
     def test_get_all_probes_zero_if_not_created(self):
@@ -165,7 +166,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             ack = self.probe_conn.emit(
@@ -203,7 +205,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             self.probe_conn.emit(
@@ -248,8 +251,10 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
+
             with mock_probe_conn:
                 res = self.probe_conn.emit(
                     "results",
@@ -286,7 +291,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             self.probe_conn.emit(
@@ -298,7 +304,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             ack = self.probe_conn.emit(
@@ -317,6 +324,19 @@ class ProbeTest(BaseTest):
 
     def test_connection_sets_in_use_credits(self):
         self.assertEqual(next(iter(self.app.probes)).in_use_credits, 0)
+
+    def test_probe_updates_when_new_operation(self):
+        data_to_send = {
+            "credits": 30
+        }
+        
+        self.probe_conn.emit(
+            "new_operation",
+            data_to_send,
+            callback=True
+        )
+
+        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 30)       
 
     # ---------------------------------------------
     # API Rest test
