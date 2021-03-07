@@ -3,7 +3,7 @@ from flask_socketio import emit
 from flask import current_app, request
 from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
-from pladmed.utils.scamper import warts2text
+from pladmed.utils.scamper import warts2text, gzip2text
 
 
 def find_probe_by_session(session):
@@ -74,11 +74,3 @@ def on_results(data):
         operation, probe, results, unique_code)
 
     return data["operation_id"]
-
-
-def gzip2text(data):
-    import zlib
-    # 15 + 16 are binary flags which tell zlib to accept gzip data and reject zlib data
-    # The byte array returned by the decompress function is decoded into an UTF-8 string.
-    # This allows newlines and other control characters to be rendered correctly
-    return zlib.decompress(data, 15 + 16).decode("utf-8")
