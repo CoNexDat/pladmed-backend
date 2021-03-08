@@ -441,3 +441,94 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data["credits"], 2)
+
+    def test_delete_operation(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data_op = json.loads(res.data)
+
+        params = {
+            'id': data_op["_id"]
+        }
+
+        res = self.client.delete(
+            '/operation',
+            query_string=params
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(data["_id"], data_op["_id"])
+
+    def test_delete_operation_fails_with_bad_id(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data_op = json.loads(res.data)
+
+        params = {
+            'id': "a fake id"
+        }
+
+        res = self.client.delete(
+            '/operation',
+            query_string=params
+        )
+
+        self.assertEqual(404, res.status_code)
+
+    def test_cancel_operation_fails_with_no_id(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data_op = json.loads(res.data)
+
+        res = self.client.delete(
+            '/operation'
+        )
+
+        self.assertEqual(404, res.status_code)

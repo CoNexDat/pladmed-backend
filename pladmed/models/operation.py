@@ -13,7 +13,8 @@ class Operation:
         del data["operation"]
 
         for result in data["results"]:
-            del result["unique_code"]
+            if "unique_code" in result:
+                del result["unique_code"]
 
         return data
 

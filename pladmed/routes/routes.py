@@ -13,6 +13,8 @@ from pladmed.utils.credits_operations import (
     calculate_credits_ping,
     calculate_credits_dns
 )
+import traceback
+import sys
 
 def get_available_probes(probes):
     avail_probes = []
@@ -20,10 +22,10 @@ def get_available_probes(probes):
     for probe in probes:
         if probe in current_app.probes:
             avail_probes.append(probe)
-    
+
     return avail_probes
 
-def create_operation(name, data, credits_): 
+def create_operation(name, data, credits_):
     try:
         user = request.user
 
@@ -121,7 +123,7 @@ def login_user():
 
         if not user.verify_password(data["password"]):
             return error_response(HTTP_NOT_FOUND, "Invalid email or password")
-        
+
         user_data = user.public_data()
 
         access_token = current_app.token.create_token(user_data)
@@ -185,11 +187,20 @@ def delete_operation():
 
     try:
         operation = current_app.db.operations.find_operation(op_id)
-
-        for probe in operation.public_data()["probes"]:
+        operation_data = operation.public_data()
+        del operation_data["probes"]
+        del operation_data["results"]
+        print(f"Got operation {operation_data}")
+        available_probes = get_available_probes(operation.public_data()["probes"])
+        print(f"available_probes: ${available_probes}")
+        for probe in available_probes:
             if probe in current_app.probes:
-                emit('delete', operation.public_data(), room=current_app.probes[probe], namespace='')
+                print("Emitting delete message")
+                print(f"Current app probes: {current_app.probes}")
+                print(f"Room: {current_app.probes[probe]}")
+                emit('delete', operation_data, room=current_app.probes[probe], namespace='')
 
         return Response(status=HTTP_OK)
     except:
+        traceback.print_exception(*sys.exc_info())
         return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
