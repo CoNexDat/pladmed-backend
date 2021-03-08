@@ -88,3 +88,15 @@ def on_new_operation(data):
     credits_ = data["credits"]
 
     probe.in_use_credits += credits_
+
+@socketio.on('finish_operation')
+def on_finish_operation(data):
+    probe = find_probe_by_session(request.sid)
+
+    # Probe suddenly got disconnected so i can't find it's model
+    if probe is None:
+        return None
+
+    credits_ = data["credits"]
+
+    probe.in_use_credits -= credits_
