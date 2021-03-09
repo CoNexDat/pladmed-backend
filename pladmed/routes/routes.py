@@ -229,7 +229,7 @@ def operation():
 
         return make_response(operation_data, HTTP_OK)
     except:
-        return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
+        return error_response(HTTP_NOT_FOUND, "Operation doesn't exist")
 
 
 @api.route('/credits', methods=["POST"])
