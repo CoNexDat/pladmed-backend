@@ -9,8 +9,8 @@ class UsersCollection:
         self.usersCol = db.users
         self.usersCol.create_index("email", unique=True)
     
-    def create_user(self, email, password):
-        user = User({"email": email, "credits": 0})
+    def create_user(self, email, password, credits_):
+        user = User({"email": email, "credits": credits_})
 
         user.set_password(password)
 

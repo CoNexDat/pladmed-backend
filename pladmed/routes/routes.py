@@ -125,7 +125,8 @@ def create_user():
     try:
         user = current_app.db.users.create_user(
             data["email"],
-            data["password"]
+            data["password"],
+            0
         )
 
         user_data = user.public_data()
