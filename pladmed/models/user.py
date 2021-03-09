@@ -17,6 +17,5 @@ class User:
         data = self.__dict__.copy()
 
         del data["password"]
-        del data["credits"]
 
         return data

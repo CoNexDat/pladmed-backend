@@ -9,8 +9,12 @@ class UsersCollection:
         self.usersCol = db.users
         self.usersCol.create_index("email", unique=True)
     
-    def create_user(self, email, password):
-        user = User({"email": email, "credits": 0})
+    def create_user(self, email, password, is_superuser, credits_):
+        user = User({
+            "email": email,
+            "credits": credits_,
+            "is_superuser": is_superuser
+        })
 
         user.set_password(password)
 
@@ -30,7 +34,8 @@ class UsersCollection:
             "_id": str(user_data["_id"]),
             "email": user_data["email"],
             "password": user_data["password"],
-            "credits": user_data["credits"]
+            "credits": user_data["credits"],
+            "is_superuser": user_data["is_superuser"]
         })
 
     def find_user_by_id(self, id):
@@ -41,7 +46,8 @@ class UsersCollection:
                 "_id": str(user_data["_id"]),
                 "email": user_data["email"],
                 "password": user_data["password"],
-                "credits": user_data["credits"]
+                "credits": user_data["credits"],
+                "is_superuser": user_data["is_superuser"]
             })
         except:
             return None   

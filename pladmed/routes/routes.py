@@ -3,7 +3,7 @@ from pladmed.routes import api
 from flask_socketio import emit
 from pladmed.models.user import User
 from pladmed.models.probe import Probe
-from pladmed.utils.decorators import user_protected
+from pladmed.utils.decorators import user_protected, superuser
 from pladmed.utils.response import (
     error_response, HTTP_CREATED, HTTP_OK, HTTP_NOT_FOUND, HTTP_BAD_REQUEST,
     HTTP_NO_CONTENT
@@ -124,8 +124,10 @@ def create_user():
 
     try:
         user = current_app.db.users.create_user(
-            data["email"],
-            data["password"]
+            email=data["email"],
+            password=data["password"],
+            is_superuser=False,
+            credits_=0
         )
 
         user_data = user.public_data()
@@ -199,3 +201,18 @@ def operation():
         return make_response(operation_data, HTTP_OK)
     except:
         return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
+
+@api.route('/credits', methods=["POST"])
+@superuser
+def give_credits():
+    #TODO Validate params
+    data = request.get_json(force=True)
+
+    try:
+        user = current_app.db.users.find_user_by_id(data["id"])
+
+        current_app.db.users.change_credits(user, user.credits + data["credits"])
+
+        return make_response(user.public_data(), HTTP_OK)
+    except:
+        return error_response(HTTP_NOT_FOUND, "User doesn't exists")
