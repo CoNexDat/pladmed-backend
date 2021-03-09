@@ -1,12 +1,11 @@
 class Probe:
-    def __init__(self, identifier):
+    def __init__(self, identifier, owner_id=None):
         self.identifier = identifier
-        self.total_credits = None
-        self.in_use_credits = 0
+        self.owner_id = owner_id
 
     def public_data(self):
         data = self.__dict__.copy()
-        
+
         return data
 
     def __hash__(self):

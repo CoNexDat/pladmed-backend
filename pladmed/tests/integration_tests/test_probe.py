@@ -217,7 +217,7 @@ class ProbeTest(BaseTest):
 
         operation = self.app.db.operations.find_operation(operation_id)
 
-        self.assertEqual(operation.results[0]["probe"].identifier, probes[0]["identifier"])
+        self.assertEqual(operation.results[0]["probe"], probes[0]["identifier"])
     
 
     def test_send_operation_results_fails_if_probe_suddenly_disconnects(self):
@@ -349,9 +349,9 @@ class ProbeTest(BaseTest):
             data_to_send
         )
 
-        probes = list(self.app.probes.keys())
+        conns = list(self.app.probes.values())
 
-        self.assertEqual(probes[1].in_use_credits, 0)
+        self.assertEqual(conns[1].in_use_credits, 0)
 
     def test_probe_updates_when_finish_operation(self):
         data_to_send = {
@@ -371,8 +371,9 @@ class ProbeTest(BaseTest):
             "finish_operation",
             data_to_send
         )
+        conns = list(self.app.probes.values())
 
-        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 0)
+        self.assertEqual(conns[0].in_use_credits, 0)
 
     # ---------------------------------------------
     # API Rest test

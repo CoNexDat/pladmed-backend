@@ -227,7 +227,7 @@ class DatabaseTest(BaseTest):
         )
 
         self.assertEqual(updated_op._id, op._id)
-        self.assertEqual(updated_op.results[0]["probe"], probes[0])
+        self.assertEqual(updated_op.results[0]["probe"], probes[0].identifier)
         self.assertEqual(updated_op.results[0]["results"], results)
 
     def test_find_operation_includes_results(self):
@@ -269,7 +269,7 @@ class DatabaseTest(BaseTest):
 
         same_op = self.app.db.operations.find_operation(op._id)
 
-        self.assertEqual(same_op.results[0]["probe"], probes[0])
+        self.assertEqual(same_op.results[0]["probe"], probes[0].identifier)
         self.assertEqual(same_op.results[0]["results"], results)
 
     def test_creates_operation_includes_credits(self):
