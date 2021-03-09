@@ -1,11 +1,12 @@
 class Operation:
-    def __init__(self, _id, operation, params, probes, credits_):
+    def __init__(self, _id, operation, params, probes, credits_, result_format):
         self._id = _id
         self.operation = operation
         self.probes = probes
         self.params = params
         self.results = []
         self.credits = credits_
+        self.result_format = result_format
 
     def public_data(self):
         data = self.__dict__.copy()

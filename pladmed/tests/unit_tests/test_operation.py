@@ -16,7 +16,8 @@ class OperationTest(unittest.TestCase):
                 Probe("39232d2", 1),
                 Probe("43i4iec", 1)
             ],
-            credits_=10
+            credits_=10,
+            result_format="json"
         )
 
     def test_operation_includes_probes(self):
@@ -80,3 +81,6 @@ class OperationTest(unittest.TestCase):
 
     def test_operation_includes_credits(self):
         self.assertEqual(self.operation.credits, 10)
+
+    def test_operation_includes_result_format(self):
+        self.assertEqual(self.operation.result_format, "json")

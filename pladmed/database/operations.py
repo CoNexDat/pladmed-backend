@@ -10,13 +10,14 @@ class OperationsCollection:
     def __init__(self, db):
         self.operationsCol = db.operations
     
-    def create_operation(self, operation, params, probes, user, credits_):
+    def create_operation(self, operation, params, probes, user, credits_, format_):
         data = {
             "operation": operation,
             "params": params,
             "probes": [ObjectId(probe.identifier) for probe in probes],
             "owner": ObjectId(user._id),
-            "credits": credits_
+            "credits": credits_,
+            "result_format": format_
         }
 
         _id = self.operationsCol.insert_one(data)
@@ -26,7 +27,8 @@ class OperationsCollection:
             operation,
             params,
             probes,
-            credits_
+            credits_,
+            format_
         )
 
         return op
@@ -40,7 +42,8 @@ class OperationsCollection:
                 op["operation"],
                 op["params"],
                 [Probe(str(probe), str(op["owner"])) for probe in op["probes"]],
-                op["credits"]
+                op["credits"],
+                op["result_format"]
             )
 
             if "results" in op:
