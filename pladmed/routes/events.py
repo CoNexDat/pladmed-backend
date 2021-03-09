@@ -3,7 +3,7 @@ from flask_socketio import emit
 from flask import current_app, request
 from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
-from pladmed.utils.scamper import warts2text, gzip2text
+from pladmed.utils.scamper import gzip2text, warts2json, warts2dump
 from pladmed.models.connection import Connection
 from pladmed.utils.credits_operations import CREDITS_PER_RESULT
 
@@ -67,7 +67,7 @@ def on_results(data):
     results = ""
 
     if data["format"] == "warts":
-        results = warts2text(data["content"])
+        results = warts2dump(data["content"])
     elif data["format"] == "gzip":
         results = gzip2text(data["content"])
 

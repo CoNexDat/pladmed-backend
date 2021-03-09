@@ -10,7 +10,7 @@ class OperationsCollection:
     def __init__(self, db):
         self.operationsCol = db.operations
     
-    def create_operation(self, operation, params, probes, user, credits_):
+    def create_operation(self, operation, params, probes, user, credits_,):
         data = {
             "operation": operation,
             "params": params,
@@ -26,7 +26,8 @@ class OperationsCollection:
             operation,
             params,
             probes,
-            credits_
+            credits_,
+            "json"
         )
 
         return op
@@ -40,7 +41,8 @@ class OperationsCollection:
                 op["operation"],
                 op["params"],
                 [Probe(str(probe), str(op["owner"])) for probe in op["probes"]],
-                op["credits"]
+                op["credits"],
+                "json"
             )
 
             if "results" in op:
