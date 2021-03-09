@@ -208,8 +208,11 @@ def give_credits():
     #TODO Validate params
     data = request.get_json(force=True)
 
-    user = current_app.db.users.find_user_by_id(data["id"])
+    try:
+        user = current_app.db.users.find_user_by_id(data["id"])
 
-    current_app.db.users.change_credits(user, user.credits + data["credits"])
+        current_app.db.users.change_credits(user, user.credits + data["credits"])
 
-    return make_response(user.public_data(), HTTP_OK)
+        return make_response(user.public_data(), HTTP_OK)
+    except:
+        return error_response(HTTP_NOT_FOUND, "User doesn't exists")

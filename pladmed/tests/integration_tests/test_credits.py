@@ -33,3 +33,20 @@ class CreditsTest(BaseTest):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["credits"], 410)
+
+    def test_give_credits_to_fake_user_returns_error(self):
+        access_token = self.register_superuser()
+
+        user = self.app.db.users.find_user("diego@gmail.com")
+
+        res = self.client.post('/credits',
+            json=dict(
+                id="nice fake user",
+                credits=10
+            ),
+            headers={'access_token': access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
