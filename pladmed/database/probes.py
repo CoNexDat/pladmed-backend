@@ -7,6 +7,7 @@ from pladmed.exceptions import InvalidProbe
 
 class ProbesCollection:
     def __init__(self, db):
+        self.usersCol = db.users
         self.probesCol = db.probes
     
     def create_probe(self, user):
@@ -16,7 +17,7 @@ class ProbesCollection:
 
         _id = self.probesCol.insert_one(data)
 
-        probe = Probe(str(_id.inserted_id))
+        probe = Probe(str(_id.inserted_id), user._id)
 
         return probe
 
@@ -24,7 +25,7 @@ class ProbesCollection:
         try:
             probe = self.probesCol.find_one({"_id": ObjectId(identifier)})
 
-            return Probe(str(probe["_id"]))
+            return Probe(str(probe["_id"]), str(probe["owner"]))
         except:
             return None
 
@@ -32,7 +33,7 @@ class ProbesCollection:
         probes = []
 
         for probe in self.probesCol.find():
-            probes.append(Probe(str(probe["_id"])))
+            probes.append(Probe(str(probe["_id"]), str(probe["owner"])))
             
         return probes
 
@@ -45,7 +46,7 @@ class ProbesCollection:
             raise InvalidProbe()
 
         for probe in self.probesCol.find({ "_id": { "$in": probes_ids } }):
-            probes.append(Probe(str(probe["_id"])))
+            probes.append(Probe(str(probe["_id"]), str(probe["owner"])))
 
         if len(probes_ids) != len(probes):
             raise InvalidProbe()

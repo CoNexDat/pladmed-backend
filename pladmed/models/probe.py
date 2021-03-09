@@ -1,14 +1,10 @@
 class Probe:
-    def __init__(self, identifier):
+    def __init__(self, identifier, owner_id=None):
         self.identifier = identifier
-        self.total_credits = None
-        self.in_use_credits = None
+        self.owner_id = owner_id
 
     def public_data(self):
         data = self.__dict__.copy()
-
-        del data["total_credits"]
-        del data["in_use_credits"]
 
         return data
 

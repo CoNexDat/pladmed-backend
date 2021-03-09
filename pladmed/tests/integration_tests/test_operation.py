@@ -386,7 +386,6 @@ class OperationTest(BaseTest):
         res = self.client.post(
             '/traceroute', 
             json=dict(
-                operation="traceroute",
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
@@ -408,7 +407,6 @@ class OperationTest(BaseTest):
         res = self.client.post(
             '/ping', 
             json=dict(
-                operation="traceroute",
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"]
@@ -429,7 +427,6 @@ class OperationTest(BaseTest):
         res = self.client.post(
             '/dns', 
             json=dict(
-                operation="traceroute",
                 probes=[probes[0]["identifier"]],
                 params={
                     "dns": ["www.google.com", "www.facebook.com"]
@@ -441,3 +438,117 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data["credits"], 2)
+
+    def test_creates_operation_includes_credits_per_probe(self):
+        probe_conn = self.start_connection(self.access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/dns', 
+            json=dict(
+                probes=[probes[0]["identifier"], probes[1]["identifier"]],
+                params={
+                    "dns": ["www.google.com", "www.facebook.com"]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data["credits"], 4)
+        
+        probe_conn.disconnect()
+
+    def test_creates_operation_includes_credits_per_probe_available(self):
+        self.register_probe(self.access_token)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/dns', 
+            json=dict(
+                probes=[probes[0]["identifier"], probes[1]["identifier"]],
+                params={
+                    "dns": ["www.google.com", "www.facebook.com"]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data["credits"], 2)
+
+    def test_creates_operation_removes_probe_not_enough_credits(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [
+                        "192.168.1.0", "192.168.1.0",
+                        "192.168.1.0", "192.168.1.0"
+                    ]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        self.assertEqual(res.status_code, 404)
+
+    def test_creates_traceroute_fails_without_enough_credits(self):
+        user = self.app.db.users.find_user("agustin@gmail.com")
+        self.app.db.users.change_credits(user, 5)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(400, res.status_code)
+
+    def test_creates_operation_changes_credits_for_user(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        user = self.app.db.users.find_user("agustin@gmail.com")
+
+        self.assertEqual(user.credits, 370)

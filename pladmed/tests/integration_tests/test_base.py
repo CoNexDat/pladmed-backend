@@ -23,6 +23,9 @@ class BaseTest(unittest.TestCase):
             password="secure_password"
         ))
 
+        user = self.app.db.users.find_user("agustin@gmail.com")
+        self.app.db.users.change_credits(user, 400)
+
         return json.loads(res.data)["access_token"]    
 
     def register_probe(self, token):
@@ -44,5 +47,5 @@ class BaseTest(unittest.TestCase):
             self.app,
             flask_test_client=self.client,
             query_string=query,
-            headers={"total_credits": 130, "in_use_credits": 0}
+            headers={"total_credits": 40, "in_use_credits": 0}
         )

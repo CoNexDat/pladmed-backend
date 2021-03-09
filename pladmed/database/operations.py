@@ -39,14 +39,14 @@ class OperationsCollection:
                 str(op["_id"]),
                 op["operation"],
                 op["params"],
-                [Probe(str(probe)) for probe in op["probes"]],
+                [Probe(str(probe), str(op["owner"])) for probe in op["probes"]],
                 op["credits"]
             )
 
             if "results" in op:
                 for result in op["results"]:
                     operation.add_results(
-                        Probe(str(result["probe"])),
+                        str(result["probe"]),
                         result["results"],
                         result["unique_code"]
                     )
@@ -67,6 +67,6 @@ class OperationsCollection:
             {"$push": {"results": new_results}}
         )
 
-        operation.add_results(probe, results, unique_code)
+        operation.add_results(probe.identifier, results, unique_code)
 
         return operation

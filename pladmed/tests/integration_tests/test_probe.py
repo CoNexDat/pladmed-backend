@@ -4,6 +4,7 @@ import json
 from pladmed import socketio
 from unittest import mock
 import pladmed.routes.events as events
+import pladmed.routes.routes as routes
 
 class ProbeBaseTest(BaseTest):
     def test_get_all_probes_zero_if_not_created(self):
@@ -165,7 +166,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             ack = self.probe_conn.emit(
@@ -203,7 +205,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             self.probe_conn.emit(
@@ -214,8 +217,7 @@ class ProbeTest(BaseTest):
 
         operation = self.app.db.operations.find_operation(operation_id)
 
-        self.assertEqual(operation.results[0]["probe"].identifier, probes[0]["identifier"])
-    
+        self.assertEqual(operation.results[0]["probe"], probes[0]["identifier"])
 
     def test_send_operation_results_fails_if_probe_suddenly_disconnects(self):
         mock_probe_conn = mock.patch.object(
@@ -248,8 +250,10 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
+
             with mock_probe_conn:
                 res = self.probe_conn.emit(
                     "results",
@@ -286,7 +290,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             self.probe_conn.emit(
@@ -298,7 +303,8 @@ class ProbeTest(BaseTest):
             data_to_send = {
                 "operation_id": operation_id,
                 "content": content,
-                "unique_code": "an unique code"
+                "unique_code": "an unique code",
+                "format": "warts"
             }
 
             ack = self.probe_conn.emit(
@@ -313,10 +319,101 @@ class ProbeTest(BaseTest):
             self.assertEqual(ack, operation_id)
 
     def test_connection_sets_max_credits(self):
-        self.assertEqual(next(iter(self.app.probes)).total_credits, 130)
+        self.assertEqual(list(self.app.probes.values())[0].total_credits, 40)
 
     def test_connection_sets_in_use_credits(self):
-        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 0)
+        self.assertEqual(list(self.app.probes.values())[0].in_use_credits, 0)
+
+    def test_probe_updates_when_new_operation(self):
+        data_to_send = {
+            "credits": 30
+        }
+        
+        self.probe_conn.emit(
+            "new_operation",
+            data_to_send
+        )
+
+        self.assertEqual(list(self.app.probes.values())[0].in_use_credits, 30)   
+
+    def test_probe_updates_when_new_operation_doesnt_change_other_probe(self):
+        data_to_send = {
+            "credits": 30
+        }
+
+        self.start_connection(self.access_token)
+        
+        self.probe_conn.emit(
+            "new_operation",
+            data_to_send
+        )
+
+        conns = list(self.app.probes.values())
+
+        self.assertEqual(conns[1].in_use_credits, 0)
+
+    def test_probe_updates_when_finish_operation(self):
+        data_to_send = {
+            "credits": 30
+        }
+        
+        self.probe_conn.emit(
+            "new_operation",
+            data_to_send
+        )
+
+        data_to_send = {
+            "credits": 30
+        }
+        
+        self.probe_conn.emit(
+            "finish_operation",
+            data_to_send
+        )
+        conns = list(self.app.probes.values())
+
+        self.assertEqual(conns[0].in_use_credits, 0)
+
+    def test_send_operation_results_gives_owner_credits(self):
+        res = self.client.get('/probes')
+
+        probes = json.loads(res.data)
+
+        res = self.client.post('/traceroute', json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        # Discard traceroute received, let's mock the client
+        received = self.probe_conn.get_received()
+
+        operation_id = json.loads(res.data)["_id"]
+
+        with open("pladmed/tests/tests_files/warts_example", 'rb') as f:
+            content = f.read()
+
+            data_to_send = {
+                "operation_id": operation_id,
+                "content": content,
+                "unique_code": "an unique code",
+                "format": "warts"
+            }
+
+            self.probe_conn.emit(
+                "results",
+                data_to_send,
+                callback=True
+            )
+
+        user = self.app.db.users.find_user("agustin@gmail.com")
+
+        self.assertEqual(user.credits, 380)
 
     # ---------------------------------------------
     # API Rest test

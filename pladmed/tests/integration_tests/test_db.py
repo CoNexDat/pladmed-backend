@@ -20,7 +20,19 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.assertEqual(user.email, "juan@gmail.com")        
+        self.assertEqual(user.email, "juan@gmail.com")   
+
+    def test_find_users_by_id(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user_found = self.app.db.users.find_user_by_id(user._id)
+
+        self.assertEqual(user_found.email, "juan@gmail.com")   
+
+    def test_gets_no_user_by_id_if_not_created(self):
+        user = self.app.db.users.find_user_by_id("Fake id")
+
+        self.assertEqual(user, None)
 
     def test_reset_db(self):
         self.app.db.users.create_user("juan@gmail.com", "123")
@@ -227,7 +239,7 @@ class DatabaseTest(BaseTest):
         )
 
         self.assertEqual(updated_op._id, op._id)
-        self.assertEqual(updated_op.results[0]["probe"], probes[0])
+        self.assertEqual(updated_op.results[0]["probe"], probes[0].identifier)
         self.assertEqual(updated_op.results[0]["results"], results)
 
     def test_find_operation_includes_results(self):
@@ -269,7 +281,7 @@ class DatabaseTest(BaseTest):
 
         same_op = self.app.db.operations.find_operation(op._id)
 
-        self.assertEqual(same_op.results[0]["probe"], probes[0])
+        self.assertEqual(same_op.results[0]["probe"], probes[0].identifier)
         self.assertEqual(same_op.results[0]["results"], results)
 
     def test_creates_operation_includes_credits(self):
@@ -331,3 +343,24 @@ class DatabaseTest(BaseTest):
         same_op = self.app.db.operations.find_operation(op._id)
 
         self.assertEqual(same_op.credits, op.credits)
+
+    def test_user_created_has_no_credits(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        self.assertEqual(user.credits, 0)
+
+    def test_updates_user_credits(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user_upd = self.app.db.users.change_credits(user, 30)
+
+        self.assertEqual(user_upd.credits, 30)
+
+    def test_updates_user_credits_changes_db(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        self.app.db.users.change_credits(user, 30)
+
+        user_find = self.app.db.users.find_user("juan@gmail.com")
+
+        self.assertEqual(user_find.credits, 30)
