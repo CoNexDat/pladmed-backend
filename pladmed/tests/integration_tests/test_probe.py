@@ -136,8 +136,6 @@ class ProbeTest(BaseTest):
 
         received = self.probe_conn.get_received()
 
-        print(received)
-
         self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]["params"]["dns"][0], "www.google.com")
     
