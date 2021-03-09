@@ -343,3 +343,12 @@ class DatabaseTest(BaseTest):
         user_upd = self.app.db.users.change_credits(user, 30)
 
         self.assertEqual(user_upd.credits, 30)
+
+    def test_updates_user_credits_changes_db(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        self.app.db.users.change_credits(user, 30)
+
+        user_find = self.app.db.users.find_user("juan@gmail.com")
+
+        self.assertEqual(user_find.credits, 30)
