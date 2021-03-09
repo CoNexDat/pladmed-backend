@@ -206,5 +206,10 @@ def operation():
 @superuser
 def give_credits():
     #TODO Validate params
+    data = request.get_json(force=True)
 
-    return make_response({"Ok": "Ok"}, HTTP_OK)
+    user = current_app.db.users.find_user_by_id(data["id"])
+
+    current_app.db.users.change_credits(user, user.credits + data["credits"])
+
+    return make_response(user.public_data(), HTTP_OK)
