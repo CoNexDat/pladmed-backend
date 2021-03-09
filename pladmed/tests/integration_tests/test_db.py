@@ -331,3 +331,15 @@ class DatabaseTest(BaseTest):
         same_op = self.app.db.operations.find_operation(op._id)
 
         self.assertEqual(same_op.credits, op.credits)
+
+    def test_user_created_has_no_credits(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        self.assertEqual(user.credits, 0)
+
+    def test_updates_user_credits(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user_upd = self.app.db.users.change_credits(user, 30)
+
+        self.assertEqual(user_upd.credits, 30)

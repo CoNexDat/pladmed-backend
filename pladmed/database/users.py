@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import logging
 from pladmed.models.user import User
+from bson.objectid import ObjectId
 
 class UsersCollection:
     def __init__(self, db):
@@ -31,3 +32,13 @@ class UsersCollection:
             "password": user_data["password"],
             "credits": user_data["credits"]
         })
+
+    def change_credits(self, user, credits_):
+        self.usersCol.update_one(
+            {"_id": ObjectId(user._id)},
+            {"$set": {"credits": credits_}}
+        )
+
+        user.credits = credits_
+
+        return user
