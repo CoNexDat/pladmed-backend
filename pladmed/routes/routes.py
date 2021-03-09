@@ -3,7 +3,7 @@ from pladmed.routes import api
 from flask_socketio import emit
 from pladmed.models.user import User
 from pladmed.models.probe import Probe
-from pladmed.utils.decorators import user_protected
+from pladmed.utils.decorators import user_protected, superuser
 from pladmed.utils.response import (
     error_response, HTTP_CREATED, HTTP_OK, HTTP_NOT_FOUND, HTTP_BAD_REQUEST,
     HTTP_NO_CONTENT
@@ -201,3 +201,10 @@ def operation():
         return make_response(operation_data, HTTP_OK)
     except:
         return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
+
+@api.route('/credits', methods=["POST"])
+@superuser
+def give_credits():
+    #TODO Validate params
+
+    return make_response({"Ok": "Ok"}, HTTP_OK)
