@@ -56,6 +56,8 @@ def create_operation(name, data, credits_per_probe):
         if user.credits - total_credits < 0:
             return error_response(HTTP_BAD_REQUEST, "Not enough credits")
 
+        current_app.db.users.change_credits(user, user.credits - total_credits)
+
         do_operation(name, available_probes, operation_data, credits_per_probe)
 
         return make_response(operation_data, HTTP_CREATED)
