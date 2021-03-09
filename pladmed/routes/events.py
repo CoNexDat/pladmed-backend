@@ -67,7 +67,10 @@ def on_results(data):
     results = ""
 
     if data["format"] == "warts":
-        results = warts2dump(data["content"])
+        if operation.result_format == "json":
+            results = warts2json(data["content"])
+        elif operation.result_format == "dump":
+            results = warts2dump(data["content"])
     elif data["format"] == "gzip":
         results = gzip2text(data["content"])
 

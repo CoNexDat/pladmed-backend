@@ -89,7 +89,8 @@ class ProbeTest(BaseTest):
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
-                }
+                },
+                result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
@@ -150,7 +151,8 @@ class ProbeTest(BaseTest):
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
-                }
+                },
+                result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
@@ -189,7 +191,8 @@ class ProbeTest(BaseTest):
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
-                }
+                },
+                result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
@@ -234,7 +237,8 @@ class ProbeTest(BaseTest):
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
-                }
+                },
+                result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
@@ -274,7 +278,8 @@ class ProbeTest(BaseTest):
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
-                }
+                },
+                result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
@@ -385,7 +390,8 @@ class ProbeTest(BaseTest):
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
                     "confidence": 0.95
-                }
+                },
+                result_format="json"
             ),
             headers={'access_token': self.access_token}
         )

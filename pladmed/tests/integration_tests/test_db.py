@@ -122,7 +122,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         self.assertEqual(hasattr(op, "params"), True)
@@ -151,7 +152,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         same_op = self.app.db.operations.find_operation(op._id)
@@ -225,7 +227,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         results = "Traceroute results..."
@@ -266,7 +269,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         results = "Traceroute results..."
@@ -308,7 +312,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         self.assertEqual(op.credits, 10)
@@ -337,7 +342,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         same_op = self.app.db.operations.find_operation(op._id)
