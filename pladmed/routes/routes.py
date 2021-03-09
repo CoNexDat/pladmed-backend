@@ -53,6 +53,9 @@ def create_operation(name, data, credits_per_probe):
 
         operation_data = operation.public_data()
 
+        if user.credits - total_credits < 0:
+            return error_response(HTTP_BAD_REQUEST, "Not enough credits")
+
         do_operation(name, available_probes, operation_data, credits_per_probe)
 
         return make_response(operation_data, HTTP_CREATED)

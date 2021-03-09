@@ -23,6 +23,9 @@ class BaseTest(unittest.TestCase):
             password="secure_password"
         ))
 
+        user = self.app.db.users.find_user("agustin@gmail.com")
+        self.app.db.users.change_credits(user, 400)
+
         return json.loads(res.data)["access_token"]    
 
     def register_probe(self, token):

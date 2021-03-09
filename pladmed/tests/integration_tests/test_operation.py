@@ -505,3 +505,28 @@ class OperationTest(BaseTest):
         )
 
         self.assertEqual(res.status_code, 404)
+
+    def test_creates_traceroute_fails_without_enough_credits(self):
+        user = self.app.db.users.find_user("agustin@gmail.com")
+        self.app.db.users.change_credits(user, 5)
+
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "confidence": 0.95
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(400, res.status_code)
