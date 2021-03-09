@@ -112,3 +112,13 @@ class AuthenticationTest(BaseTest):
         user = self.app.db.users.find_user("agustin@gmail.com")
 
         self.assertEqual(user.credits, 0)
+
+    def test_register_user_creates_without_superuser(self):
+        res = self.client.post('/register', json=dict(
+            email="agustin@gmail.com",
+            password="secure_password"
+        ))
+
+        user = self.app.db.users.find_user("agustin@gmail.com")
+
+        self.assertEqual(user.is_superuser, False)
