@@ -316,8 +316,6 @@ class OperationTest(BaseTest):
             query_string=params
         )
 
-        print(res)
-
         data = json.loads(res.data)
 
         self.assertEqual(200, res.status_code)

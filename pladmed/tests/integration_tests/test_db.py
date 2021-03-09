@@ -20,7 +20,19 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.assertEqual(user.email, "juan@gmail.com")        
+        self.assertEqual(user.email, "juan@gmail.com")   
+
+    def test_find_users_by_id(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123")
+
+        user_found = self.app.db.users.find_user_by_id(user._id)
+
+        self.assertEqual(user_found.email, "juan@gmail.com")   
+
+    def test_gets_no_user_by_id_if_not_created(self):
+        user = self.app.db.users.find_user_by_id("Fake id")
+
+        self.assertEqual(user, None)
 
     def test_reset_db(self):
         self.app.db.users.create_user("juan@gmail.com", "123")

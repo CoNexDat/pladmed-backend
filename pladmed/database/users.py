@@ -33,6 +33,19 @@ class UsersCollection:
             "credits": user_data["credits"]
         })
 
+    def find_user_by_id(self, id):
+        try:
+            user_data = self.usersCol.find_one({"_id": ObjectId(id)})
+
+            return User({
+                "_id": str(user_data["_id"]),
+                "email": user_data["email"],
+                "password": user_data["password"],
+                "credits": user_data["credits"]
+            })
+        except:
+            return None   
+
     def change_credits(self, user, credits_):
         self.usersCol.update_one(
             {"_id": ObjectId(user._id)},

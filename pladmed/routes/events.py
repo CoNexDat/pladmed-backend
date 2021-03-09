@@ -5,6 +5,7 @@ from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
 from pladmed.utils.scamper import warts2text, gzip2text
 from pladmed.models.connection import Connection
+from pladmed.utils.credits_operations import CREDITS_PER_RESULT
 
 def find_probe_by_session(session):
     for probe, conn in list(current_app.probes.items()):
@@ -73,6 +74,10 @@ def on_results(data):
     current_app.db.operations.add_results(
         operation, probe, results, unique_code
     )
+
+    user = current_app.db.users.find_user_by_id(probe.owner_id)
+
+    current_app.db.users.change_credits(user, user.credits + CREDITS_PER_RESULT)
 
     return data["operation_id"]
 
