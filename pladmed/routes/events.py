@@ -20,6 +20,9 @@ def on_connect():
     total_credits = int(request.headers.get("Total-Credits"))
     in_use_credits = int(request.headers.get("In-Use-Credits"))
 
+    print("Total credits: ", total_credits)
+    print("In use: ", in_use_credits)
+
     try:
         probe_data = current_app.token.identity(token)
 
@@ -83,7 +86,7 @@ def on_new_operation(data):
 
     # Probe suddenly got disconnected so i can't find it's model
     if probe is None:
-        return None
+        return
 
     credits_ = data["credits"]
 
@@ -95,7 +98,7 @@ def on_finish_operation(data):
 
     # Probe suddenly got disconnected so i can't find it's model
     if probe is None:
-        return None
+        return
 
     credits_ = data["credits"]
 

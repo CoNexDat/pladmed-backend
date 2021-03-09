@@ -98,17 +98,11 @@ def do_operation(operation, probes, data, credits_per_probe):
 
     for probe in data["probes"]:
         if probe in current_app.probes:
-            def ack_emit(accepted):
-                if accepted:
-                    print("Probe: ", probe, " updated credits by: ", credits_per_probe)
-                    current_app.probes[probe].in_use_credits += credits_per_probe
-
             socketio.emit(
                 operation,
                 data_to_send,
                 room=current_app.probes[probe],
-                namespace='',
-                callback=ack_emit
+                namespace=''
             )
 
 @api.route('/register', methods=["POST"])
