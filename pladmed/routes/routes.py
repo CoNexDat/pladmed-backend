@@ -246,4 +246,4 @@ def give_credits():
 
         return make_response(user.public_data(), HTTP_OK)
     except:
-        return error_response(HTTP_NOT_FOUND, "User doesn't exists")
+        return error_response(HTTP_NOT_FOUND, "User doesn't exist")
