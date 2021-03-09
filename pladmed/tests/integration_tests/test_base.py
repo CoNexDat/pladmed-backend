@@ -44,5 +44,5 @@ class BaseTest(unittest.TestCase):
             self.app,
             flask_test_client=self.client,
             query_string=query,
-            headers={"total_credits": 130, "in_use_credits": 0}
+            headers={"total_credits": 40, "in_use_credits": 0}
         )

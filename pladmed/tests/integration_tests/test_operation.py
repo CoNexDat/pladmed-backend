@@ -484,3 +484,24 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data["credits"], 2)
+
+    def test_creates_operation_removes_probe_not_enough_credits(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/traceroute', 
+            json=dict(
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [
+                        "192.168.1.0", "192.168.1.0",
+                        "192.168.1.0", "192.168.1.0"
+                    ]
+                }
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        self.assertEqual(res.status_code, 404)

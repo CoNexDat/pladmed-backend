@@ -15,11 +15,17 @@ from pladmed.utils.credits_operations import (
 )
 from pladmed import socketio
 
-def get_available_probes(probes):
+def got_enough_credits(conn, credits_):
+    return conn.in_use_credits + credits_ <= conn.total_credits
+
+def get_available_probes(probes, credits_):
     avail_probes = []
 
     for probe in probes:
-        if probe in current_app.probes:
+        if (
+            probe in current_app.probes and
+            got_enough_credits(current_app.probes[probe], credits_)
+        ):
             avail_probes.append(probe)
     
     return avail_probes
@@ -30,7 +36,7 @@ def create_operation(name, data, credits_per_probe):
 
         probes = current_app.db.probes.find_selected_probes(data["probes"])
 
-        available_probes = get_available_probes(probes)
+        available_probes = get_available_probes(probes, credits_per_probe)
 
         if len(available_probes) == 0:
             return error_response(HTTP_NOT_FOUND, "No available probes")
@@ -101,7 +107,7 @@ def do_operation(operation, probes, data, credits_per_probe):
             socketio.emit(
                 operation,
                 data_to_send,
-                room=current_app.probes[probe],
+                room=current_app.probes[probe].sid,
                 namespace=''
             )
 

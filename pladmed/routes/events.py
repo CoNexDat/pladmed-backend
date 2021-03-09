@@ -4,11 +4,11 @@ from flask import current_app, request
 from pladmed.models.probe import Probe
 from flask_socketio import ConnectionRefusedError
 from pladmed.utils.scamper import warts2text, gzip2text
-
+from pladmed.models.connection import Connection
 
 def find_probe_by_session(session):
     for probe, conn in list(current_app.probes.items()):
-        if conn == session:
+        if conn.sid == session:
             return probe
 
     return None
@@ -20,21 +20,17 @@ def on_connect():
     total_credits = int(request.headers.get("Total-Credits"))
     in_use_credits = int(request.headers.get("In-Use-Credits"))
 
-    print("Total credits: ", total_credits)
-    print("In use: ", in_use_credits)
-
     try:
         probe_data = current_app.token.identity(token)
 
         probe = current_app.db.probes.find_probe(probe_data["identifier"])
 
-        probe.total_credits = total_credits
-        probe.in_use_credits = in_use_credits
-
         if probe is None:
             raise ConnectionRefusedError('Invalid token')
 
-        current_app.probes[probe] = request.sid
+        conn = Connection(request.sid, total_credits, in_use_credits)
+
+        current_app.probes[probe] = conn
     except:
         # Raising something in except is bad, but we can't do it better for now
         raise ConnectionRefusedError('Invalid token')
@@ -90,7 +86,7 @@ def on_new_operation(data):
 
     credits_ = data["credits"]
 
-    probe.in_use_credits += credits_
+    current_app.probes[probe].in_use_credits += credits_
 
 @socketio.on('finish_operation')
 def on_finish_operation(data):
@@ -102,4 +98,4 @@ def on_finish_operation(data):
 
     credits_ = data["credits"]
 
-    probe.in_use_credits -= credits_
+    current_app.probes[probe].in_use_credits -= credits_

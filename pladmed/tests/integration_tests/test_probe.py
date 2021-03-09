@@ -136,6 +136,8 @@ class ProbeTest(BaseTest):
 
         received = self.probe_conn.get_received()
 
+        print(received)
+
         self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]["params"]["dns"][0], "www.google.com")
     
@@ -320,10 +322,10 @@ class ProbeTest(BaseTest):
             self.assertEqual(ack, operation_id)
 
     def test_connection_sets_max_credits(self):
-        self.assertEqual(next(iter(self.app.probes)).total_credits, 130)
+        self.assertEqual(list(self.app.probes.values())[0].total_credits, 40)
 
     def test_connection_sets_in_use_credits(self):
-        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 0)
+        self.assertEqual(list(self.app.probes.values())[0].in_use_credits, 0)
 
     def test_probe_updates_when_new_operation(self):
         data_to_send = {
@@ -335,7 +337,7 @@ class ProbeTest(BaseTest):
             data_to_send
         )
 
-        self.assertEqual(next(iter(self.app.probes)).in_use_credits, 30)   
+        self.assertEqual(list(self.app.probes.values())[0].in_use_credits, 30)   
 
     def test_probe_updates_when_new_operation_doesnt_change_other_probe(self):
         data_to_send = {
