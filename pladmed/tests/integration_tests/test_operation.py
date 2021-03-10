@@ -2,6 +2,8 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 
+# TODO Reduce code duplication
+
 
 class OperationTest(BaseTest):
     def setUp(self):
