@@ -33,7 +33,7 @@ def get_available_probes(probes, credits_):
     return avail_probes
 
 
-def create_operation(name, data, credits_per_probe):
+def create_operation(name, data, credits_per_probe, result_format):
     try:
         user = request.user
 
@@ -51,7 +51,8 @@ def create_operation(name, data, credits_per_probe):
             data["params"],
             available_probes,
             user,
-            total_credits
+            total_credits,
+            result_format
         )
 
         operation_data = operation.public_data()
@@ -80,7 +81,7 @@ def traceroute():
 
     credits_ = calculate_credits_traceroute(total_destinations)
 
-    return create_operation("traceroute", data, credits_)
+    return create_operation("traceroute", data, credits_, data["result_format"])
 
 
 @api.route('/ping', methods=["POST"])
@@ -95,7 +96,7 @@ def ping():
 
     credits_ = calculate_credits_ping(total_destinations)
 
-    return create_operation("ping", data, credits_)
+    return create_operation("ping", data, credits_, "json")
 
 
 @api.route('/dns', methods=["POST"])
@@ -110,7 +111,7 @@ def dns():
 
     credits_per_probe = calculate_credits_dns(total_destinations)
 
-    return create_operation("dns", data, credits_per_probe)
+    return create_operation("dns", data, credits_per_probe, "text")
 
 
 def count_destinations(params):
