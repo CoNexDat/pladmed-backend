@@ -150,6 +150,34 @@ class OperationTest(BaseTest):
 
         self.assertEqual(404, res.status_code)
 
+    def test_create_traceroute_fails_without_ips_or_dns(self):
+        self.create_operation_fails_without_ips_or_dns("traceroute")
+
+    def test_create_ping_fails_without_ips_or_dns(self):
+        self.create_operation_fails_without_ips_or_dns("ping")
+
+    def test_create_dns_fails_without_ips_or_dns(self):
+        self.create_operation_fails_without_ips_or_dns("dns")
+
+    def create_operation_fails_without_ips_or_dns(self, operation):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            f'/{operation}',
+            json=dict(
+                operation=operation,
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "domains": []
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
     def test_creates_traceroute_saves_operation_in_db(self):
         probes = self.app.db.probes.find_all_probes()
 
