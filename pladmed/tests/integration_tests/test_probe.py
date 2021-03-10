@@ -6,6 +6,7 @@ from unittest import mock
 import pladmed.routes.events as events
 import pladmed.routes.routes as routes
 
+
 class ProbeBaseTest(BaseTest):
     def test_get_all_probes_zero_if_not_created(self):
         res = self.client.get(
@@ -55,10 +56,11 @@ class ProbeBaseTest(BaseTest):
 
         self.assertEqual(len(self.app.probes), 0)
 
+
 class ProbeTest(BaseTest):
     def setUp(self):
         super().setUp()
-        
+
         self.access_token = self.register_user()
         self.probe_conn = self.start_connection(self.access_token)
 
@@ -67,7 +69,7 @@ class ProbeTest(BaseTest):
             self.probe_conn.disconnect()
         except:
             pass
-        
+
         super().tearDown()
 
     def test_connection_up(self):
@@ -84,21 +86,22 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         self.client.post('/traceroute', json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            ),
+            operation="traceroute",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            },
+            result_format="json"
+        ),
             headers={'access_token': self.access_token}
         )
 
         received = self.probe_conn.get_received()
 
         self.assertEqual(received[0]["name"], "traceroute")
-        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
+        self.assertEqual(received[0]["args"][0]
+                         ["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_ping(self):
         res = self.client.get('/probes')
@@ -106,19 +109,20 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         self.client.post('/ping', json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"]
-                }
-            ),
+            operation="ping",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"]
+            }
+        ),
             headers={'access_token': self.access_token}
         )
 
         received = self.probe_conn.get_received()
 
         self.assertEqual(received[0]["name"], "ping")
-        self.assertEqual(received[0]["args"][0]["params"]["ips"][0], "192.168.0.0")
+        self.assertEqual(received[0]["args"][0]
+                         ["params"]["ips"][0], "192.168.0.0")
 
     def test_receives_dns(self):
         res = self.client.get('/probes')
@@ -126,34 +130,35 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         self.client.post('/dns', json=dict(
-                operation="dns",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "dns": ["www.google.com", "www.facebook.com"]
-                }
-            ),
+            operation="dns",
+            probes=[probes[0]["identifier"]],
+            params={
+                "domains": ["www.google.com", "www.facebook.com"]
+            }
+        ),
             headers={'access_token': self.access_token}
         )
 
         received = self.probe_conn.get_received()
 
         self.assertEqual(received[0]["name"], "dns")
-        self.assertEqual(received[0]["args"][0]["params"]["dns"][0], "www.google.com")
-    
+        self.assertEqual(received[0]["args"][0]
+                         ["params"]["domains"][0], "www.google.com")
+
     def test_send_operation_results(self):
         res = self.client.get('/probes')
 
         probes = json.loads(res.data)
 
         res = self.client.post('/traceroute', json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            ),
+            operation="traceroute",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            },
+            result_format="json"
+        ),
             headers={'access_token': self.access_token}
         )
 
@@ -186,14 +191,14 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         res = self.client.post('/traceroute', json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            ),
+            operation="traceroute",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            },
+            result_format="json"
+        ),
             headers={'access_token': self.access_token}
         )
 
@@ -220,7 +225,8 @@ class ProbeTest(BaseTest):
 
         operation = self.app.db.operations.find_operation(operation_id)
 
-        self.assertEqual(operation.results[0]["probe"], probes[0]["identifier"])
+        self.assertEqual(operation.results[0]
+                         ["probe"], probes[0]["identifier"])
 
     def test_send_operation_results_fails_if_probe_suddenly_disconnects(self):
         mock_probe_conn = mock.patch.object(
@@ -232,14 +238,14 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         res = self.client.post('/traceroute', json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            ),
+            operation="traceroute",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            },
+            result_format="json"
+        ),
             headers={'access_token': self.access_token}
         )
 
@@ -273,14 +279,14 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         res = self.client.post('/traceroute', json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            ),
+            operation="traceroute",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            },
+            result_format="json"
+        ),
             headers={'access_token': self.access_token}
         )
 
@@ -333,13 +339,13 @@ class ProbeTest(BaseTest):
         data_to_send = {
             "credits": 30
         }
-        
+
         self.probe_conn.emit(
             "new_operation",
             data_to_send
         )
 
-        self.assertEqual(list(self.app.probes.values())[0].in_use_credits, 30)   
+        self.assertEqual(list(self.app.probes.values())[0].in_use_credits, 30)
 
     def test_probe_updates_when_new_operation_doesnt_change_other_probe(self):
         data_to_send = {
@@ -347,7 +353,7 @@ class ProbeTest(BaseTest):
         }
 
         self.start_connection(self.access_token)
-        
+
         self.probe_conn.emit(
             "new_operation",
             data_to_send
@@ -361,7 +367,7 @@ class ProbeTest(BaseTest):
         data_to_send = {
             "credits": 30
         }
-        
+
         self.probe_conn.emit(
             "new_operation",
             data_to_send
@@ -370,7 +376,7 @@ class ProbeTest(BaseTest):
         data_to_send = {
             "credits": 30
         }
-        
+
         self.probe_conn.emit(
             "finish_operation",
             data_to_send
@@ -385,14 +391,14 @@ class ProbeTest(BaseTest):
         probes = json.loads(res.data)
 
         res = self.client.post('/traceroute', json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            ),
+            operation="traceroute",
+            probes=[probes[0]["identifier"]],
+            params={
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "confidence": 0.95
+            },
+            result_format="json"
+        ),
             headers={'access_token': self.access_token}
         )
 

@@ -15,8 +15,10 @@ from pladmed.utils.credits_operations import (
 )
 from pladmed import socketio
 
+
 def got_enough_credits(conn, credits_):
     return conn.in_use_credits + credits_ <= conn.total_credits
+
 
 def get_available_probes(probes, credits_):
     avail_probes = []
@@ -27,10 +29,11 @@ def get_available_probes(probes, credits_):
             got_enough_credits(current_app.probes[probe], credits_)
         ):
             avail_probes.append(probe)
-    
+
     return avail_probes
 
-def create_operation(name, data, credits_per_probe, result_format): 
+
+def create_operation(name, data, credits_per_probe, result_format):
     try:
         user = request.user
 
@@ -65,41 +68,60 @@ def create_operation(name, data, credits_per_probe, result_format):
     except:
         return error_response(HTTP_NOT_FOUND, "Invalid data provided")
 
+
 @api.route('/traceroute', methods=["POST"])
 @user_protected
 def traceroute():
-    #TODO Validate params
+    # TODO Validate params
     data = request.get_json(force=True)
 
-    total_ips = len(data["params"]["ips"])
+    total_destinations = count_destinations(data["params"])
+    if total_destinations == 0:
+        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/domains specified")
 
-    credits_ = calculate_credits_traceroute(total_ips)
+    credits_ = calculate_credits_traceroute(total_destinations)
 
     return create_operation("traceroute", data, credits_, data["result_format"])
+
 
 @api.route('/ping', methods=["POST"])
 @user_protected
 def ping():
-    #TODO Validate params
+    # TODO Validate params
     data = request.get_json(force=True)
 
-    total_ips = len(data["params"]["ips"])
+    total_destinations = count_destinations(data["params"])
+    if total_destinations == 0:
+        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/domains specified")
 
-    credits_ = calculate_credits_ping(total_ips)
+    credits_ = calculate_credits_ping(total_destinations)
 
     return create_operation("ping", data, credits_, "json")
+
 
 @api.route('/dns', methods=["POST"])
 @user_protected
 def dns():
-    #TODO Validate params
+    # TODO Validate params
     data = request.get_json(force=True)
 
-    total_domains = len(data["params"]["dns"])
+    total_destinations = count_destinations(data["params"])
+    if total_destinations == 0:
+        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/domains specified")
 
-    credits_per_probe = calculate_credits_ping(total_domains)
+    credits_per_probe = calculate_credits_dns(total_destinations)
 
     return create_operation("dns", data, credits_per_probe, "text")
+
+
+def count_destinations(params):
+    total_destinations = 0
+    if "domains" in params:
+        total_destinations += len(params["domains"])
+    if "ips" in params:
+        total_destinations += len(params["ips"])
+    return total_destinations
+
 
 def do_operation(operation, probes, data, credits_per_probe):
     data_to_send = data.copy()
@@ -116,6 +138,7 @@ def do_operation(operation, probes, data, credits_per_probe):
                 room=current_app.probes[probe].sid,
                 namespace=''
             )
+
 
 @api.route('/register', methods=["POST"])
 def create_user():
@@ -137,6 +160,7 @@ def create_user():
     except:
         return error_response(HTTP_BAD_REQUEST, "That email is already registered")
 
+
 @api.route('/login', methods=["POST"])
 def login_user():
     data = request.get_json(force=True)
@@ -146,7 +170,7 @@ def login_user():
 
         if not user.verify_password(data["password"]):
             return error_response(HTTP_NOT_FOUND, "Invalid email or password")
-        
+
         user_data = user.public_data()
 
         access_token = current_app.token.create_token(user_data)
@@ -154,6 +178,7 @@ def login_user():
         return make_response({"access_token": access_token}, HTTP_OK)
     except:
         return error_response(HTTP_NOT_FOUND, "Invalid email or password")
+
 
 @api.route('/users/me', methods=["GET"])
 @user_protected
@@ -163,6 +188,7 @@ def users_me():
     user_data = user.public_data()
 
     return make_response(user_data, HTTP_OK)
+
 
 @api.route('/probes', methods=["POST"])
 @user_protected
@@ -175,11 +201,13 @@ def register_probe():
 
     return make_response({"token": token}, HTTP_CREATED)
 
+
 @api.route('/probes', methods=["GET"])
 def all_probes():
     probes = current_app.db.probes.find_all_probes()
 
     return make_response(jsonify(probes), HTTP_OK)
+
 
 @api.route('/delete_all', methods=["DELETE"])
 def delete_all():
@@ -189,6 +217,7 @@ def delete_all():
     current_app.db.reset_db()
 
     return Response(status=HTTP_NO_CONTENT)
+
 
 @api.route('/operation', methods=["GET"])
 def operation():
@@ -201,19 +230,21 @@ def operation():
 
         return make_response(operation_data, HTTP_OK)
     except:
-        return error_response(HTTP_NOT_FOUND, "Operation doesn't exists")
+        return error_response(HTTP_NOT_FOUND, "Operation doesn't exist")
+
 
 @api.route('/credits', methods=["POST"])
 @superuser
 def give_credits():
-    #TODO Validate params
+    # TODO Validate params
     data = request.get_json(force=True)
 
     try:
         user = current_app.db.users.find_user_by_id(data["id"])
 
-        current_app.db.users.change_credits(user, user.credits + data["credits"])
+        current_app.db.users.change_credits(
+            user, user.credits + data["credits"])
 
         return make_response(user.public_data(), HTTP_OK)
     except:
-        return error_response(HTTP_NOT_FOUND, "User doesn't exists")
+        return error_response(HTTP_NOT_FOUND, "User doesn't exist")

@@ -2,10 +2,13 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 
+# TODO Reduce code duplication
+
+
 class OperationTest(BaseTest):
     def setUp(self):
         super().setUp()
-        
+
         self.access_token = self.register_user()
         self.probe_conn = self.start_connection(self.access_token)
 
@@ -14,7 +17,7 @@ class OperationTest(BaseTest):
             self.probe_conn.disconnect()
         except:
             pass
-        
+
         super().tearDown()
 
     def test_creates_traceroute(self):
@@ -23,7 +26,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
@@ -47,7 +50,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/ping', 
+            '/ping',
             json=dict(
                 operation="ping",
                 probes=[probes[0]["identifier"]],
@@ -74,7 +77,7 @@ class OperationTest(BaseTest):
                 operation="dns",
                 probes=[probes[0]["identifier"]],
                 params={
-                    "dns": ["www.google.com", "www.facebook.com"]
+                    "domains": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -86,7 +89,7 @@ class OperationTest(BaseTest):
 
     def test_creates_traceroute_requires_login(self):
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=["test_probe", "another_test_probe"],
@@ -104,7 +107,7 @@ class OperationTest(BaseTest):
 
     def test_creates_ping_requires_login(self):
         res = self.client.post(
-            '/ping', 
+            '/ping',
             json=dict(
                 operation="ping",
                 probes=["test_probe", "another_test_probe"],
@@ -137,7 +140,7 @@ class OperationTest(BaseTest):
 
     def test_creates_traceroute_returns_404_invalid_probes(self):
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=["test_probe", "another_test_probe"],
@@ -152,11 +155,39 @@ class OperationTest(BaseTest):
 
         self.assertEqual(404, res.status_code)
 
+    def test_create_traceroute_fails_without_ips_or_dns(self):
+        self.create_operation_fails_without_ips_or_dns("traceroute")
+
+    def test_create_ping_fails_without_ips_or_dns(self):
+        self.create_operation_fails_without_ips_or_dns("ping")
+
+    def test_create_dns_fails_without_ips_or_dns(self):
+        self.create_operation_fails_without_ips_or_dns("dns")
+
+    def create_operation_fails_without_ips_or_dns(self, operation):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            f'/{operation}',
+            json=dict(
+                operation=operation,
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "domains": []
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
     def test_creates_traceroute_saves_operation_in_db(self):
         probes = self.app.db.probes.find_all_probes()
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0].identifier],
@@ -179,7 +210,7 @@ class OperationTest(BaseTest):
         probes = self.app.db.probes.find_all_probes()
 
         res = self.client.post(
-            '/ping', 
+            '/ping',
             json=dict(
                 probes=[probes[0].identifier],
                 params={
@@ -198,7 +229,7 @@ class OperationTest(BaseTest):
 
     def test_creates_ping_returns_404_invalid_probes(self):
         res = self.client.post(
-            '/ping', 
+            '/ping',
             json=dict(
                 probes=["test_probe", "another_test_probe"],
                 params={
@@ -215,11 +246,11 @@ class OperationTest(BaseTest):
         probes = self.app.db.probes.find_all_probes()
 
         res = self.client.post(
-            '/dns', 
+            '/dns',
             json=dict(
                 probes=[probes[0].identifier],
                 params={
-                    "dns": ["www.google.com", "www.facebook.com"]
+                    "domains": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -233,11 +264,11 @@ class OperationTest(BaseTest):
 
     def test_creates_dns_returns_404_invalid_probes(self):
         res = self.client.post(
-            '/dns', 
+            '/dns',
             json=dict(
                 probes=["test_probe", "another_test_probe"],
                 params={
-                    "dns": ["www.google.com", "www.facebook.com"]
+                    "domains": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -247,13 +278,13 @@ class OperationTest(BaseTest):
 
     def test_creates_traceroute_returns_error_if_no_avail_probe(self):
         self.probe_conn.disconnect()
-        
+
         res_probes = self.client.get('/probes')
 
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
@@ -276,7 +307,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
@@ -299,7 +330,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
@@ -334,7 +365,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
@@ -366,7 +397,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
@@ -380,7 +411,7 @@ class OperationTest(BaseTest):
         )
 
         data_op = json.loads(res.data)
-        
+
         res = self.client.get(
             '/operation'
         )
@@ -393,7 +424,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
@@ -415,7 +446,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/ping', 
+            '/ping',
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
@@ -435,11 +466,11 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/dns', 
+            '/dns',
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
-                    "dns": ["www.google.com", "www.facebook.com"]
+                    "domains": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -457,11 +488,11 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/dns', 
+            '/dns',
             json=dict(
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
-                    "dns": ["www.google.com", "www.facebook.com"]
+                    "domains": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -470,7 +501,7 @@ class OperationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data["credits"], 4)
-        
+
         probe_conn.disconnect()
 
     def test_creates_operation_includes_credits_per_probe_available(self):
@@ -481,11 +512,11 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/dns', 
+            '/dns',
             json=dict(
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
-                    "dns": ["www.google.com", "www.facebook.com"]
+                    "domains": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -501,7 +532,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
@@ -526,7 +557,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
@@ -549,7 +580,7 @@ class OperationTest(BaseTest):
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute', 
+            '/traceroute',
             json=dict(
                 operation="traceroute",
                 probes=[probes[0]["identifier"]],
