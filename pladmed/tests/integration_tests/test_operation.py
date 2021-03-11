@@ -77,7 +77,7 @@ class OperationTest(BaseTest):
                 operation="dns",
                 probes=[probes[0]["identifier"]],
                 params={
-                    "domains": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -174,7 +174,7 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": [],
-                    "domains": []
+                    "fqdns": []
                 },
                 result_format="json"
             ),
@@ -250,7 +250,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0].identifier],
                 params={
-                    "domains": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -268,7 +268,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=["test_probe", "another_test_probe"],
                 params={
-                    "domains": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -470,7 +470,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
-                    "domains": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -492,7 +492,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
-                    "domains": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
@@ -516,7 +516,7 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
-                    "domains": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"]
                 }
             ),
             headers={'access_token': self.access_token}
