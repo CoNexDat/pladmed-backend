@@ -133,7 +133,7 @@ class ProbeTest(BaseTest):
             operation="dns",
             probes=[probes[0]["identifier"]],
             params={
-                "domains": ["www.google.com", "www.facebook.com"]
+                "fqdns": ["www.google.com", "www.facebook.com"]
             }
         ),
             headers={'access_token': self.access_token}
@@ -143,7 +143,7 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(received[0]["name"], "dns")
         self.assertEqual(received[0]["args"][0]
-                         ["params"]["domains"][0], "www.google.com")
+                         ["params"]["fqdns"][0], "www.google.com")
 
     def test_send_operation_results(self):
         res = self.client.get('/probes')

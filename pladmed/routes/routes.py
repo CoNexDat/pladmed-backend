@@ -77,7 +77,7 @@ def traceroute():
 
     total_destinations = count_destinations(data["params"])
     if total_destinations == 0:
-        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/domains specified")
+        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/fqdns specified")
 
     credits_ = calculate_credits_traceroute(total_destinations)
 
@@ -92,7 +92,7 @@ def ping():
 
     total_destinations = count_destinations(data["params"])
     if total_destinations == 0:
-        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/domains specified")
+        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/fqdns specified")
 
     credits_ = calculate_credits_ping(total_destinations)
 
@@ -107,7 +107,7 @@ def dns():
 
     total_destinations = count_destinations(data["params"])
     if total_destinations == 0:
-        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/domains specified")
+        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/fqdns specified")
 
     credits_per_probe = calculate_credits_dns(total_destinations)
 
@@ -116,8 +116,8 @@ def dns():
 
 def count_destinations(params):
     total_destinations = 0
-    if "domains" in params:
-        total_destinations += len(params["domains"])
+    if "fqdns" in params:
+        total_destinations += len(params["fqdns"])
     if "ips" in params:
         total_destinations += len(params["ips"])
     return total_destinations
