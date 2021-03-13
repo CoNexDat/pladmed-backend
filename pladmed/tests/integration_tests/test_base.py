@@ -12,6 +12,21 @@ class BaseTest(unittest.TestCase):
     def tearDown(self):
         self.app.db.reset_db()
 
+    def register_superuser(self):
+        user = self.app.db.users.create_user(
+            email="diego@gmail.com",
+            password="123",
+            is_superuser=True,
+            credits_=400
+        )   
+
+        res = self.client.post('/login', json=dict(
+            email="diego@gmail.com",
+            password="123"
+        ))
+
+        return json.loads(res.data)["access_token"] 
+
     def register_user(self):
         self.client.post('/register', json=dict(
             email="agustin@gmail.com",
@@ -22,6 +37,9 @@ class BaseTest(unittest.TestCase):
             email="agustin@gmail.com",
             password="secure_password"
         ))
+
+        user = self.app.db.users.find_user("agustin@gmail.com")
+        self.app.db.users.change_credits(user, 400)
 
         return json.loads(res.data)["access_token"]    
 
@@ -44,5 +62,5 @@ class BaseTest(unittest.TestCase):
             self.app,
             flask_test_client=self.client,
             query_string=query,
-            headers={"total_credits": 130, "in_use_credits": 0}
+            headers={"total_credits": 40, "in_use_credits": 0}
         )

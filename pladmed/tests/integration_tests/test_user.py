@@ -46,7 +46,9 @@ class UserTest(BaseTest):
 
         expected_data = (
             "_id",
-            "email"
+            "email",
+            "credits",
+            "is_superuser"
         )
         
-        self.assertEqual(len(expected_data - data.keys()), 0)
+        self.assertEqual(len(data.keys() - expected_data), 0)

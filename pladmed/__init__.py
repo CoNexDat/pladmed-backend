@@ -53,9 +53,10 @@ def create_app(test_config=None):
     app.token = Token(app.config["SECRET_KEY"])
     app.json_encoder = JsonEncoder
 
-    from pladmed.routes import api
+    from pladmed.routes import api, superuser
     app.register_blueprint(api)
-  
+    app.register_blueprint(superuser)
+
     CORS(app)
 
     socketio.init_app(app)

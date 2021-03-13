@@ -15,6 +15,7 @@ class User:
 
     def public_data(self):
         data = self.__dict__.copy()
+
         del data["password"]
 
         return data

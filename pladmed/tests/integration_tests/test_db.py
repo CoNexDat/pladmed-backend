@@ -6,7 +6,7 @@ from pladmed.exceptions import InvalidOperation, InvalidProbe
 
 class DatabaseTest(BaseTest):
     def test_creates_users(self):
-        user = self.app.db.users.create_user("juan@gmail.com", "123")
+        user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         self.assertEqual(user.email, "juan@gmail.com")
 
@@ -16,14 +16,26 @@ class DatabaseTest(BaseTest):
         self.assertEqual(user, None)
 
     def test_find_users(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.assertEqual(user.email, "juan@gmail.com")        
+        self.assertEqual(user.email, "juan@gmail.com")   
+
+    def test_find_users_by_id(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
+
+        user_found = self.app.db.users.find_user_by_id(user._id)
+
+        self.assertEqual(user_found.email, "juan@gmail.com")   
+
+    def test_gets_no_user_by_id_if_not_created(self):
+        user = self.app.db.users.find_user_by_id("Fake id")
+
+        self.assertEqual(user, None)
 
     def test_reset_db(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         self.app.db.reset_db()
 
@@ -32,7 +44,7 @@ class DatabaseTest(BaseTest):
         self.assertEqual(user, None)
 
     def test_password_is_secure(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -40,7 +52,7 @@ class DatabaseTest(BaseTest):
         self.assertEqual(user.verify_password("123"), True)
 
     def test_creates_probes(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -49,7 +61,7 @@ class DatabaseTest(BaseTest):
         self.assertEqual(hasattr(probe, "identifier"), True)
 
     def test_find_probe(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -70,7 +82,7 @@ class DatabaseTest(BaseTest):
         self.assertEqual(probe, None)        
 
     def test_find_all_probes(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -87,7 +99,7 @@ class DatabaseTest(BaseTest):
         self.assertEqual(len(probes), 0)
 
     def test_creates_operation(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -110,13 +122,14 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         self.assertEqual(hasattr(op, "params"), True)
 
     def test_find_operation(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -139,7 +152,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         same_op = self.app.db.operations.find_operation(op._id)
@@ -151,7 +165,7 @@ class DatabaseTest(BaseTest):
             self.app.db.operations.find_operation("operation_fake")
 
     def test_find_selected_probes(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -166,7 +180,7 @@ class DatabaseTest(BaseTest):
         self.assertEqual(len(probes), 2)
 
     def test_find_selected_probes_raises_invalid_probe(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -178,7 +192,7 @@ class DatabaseTest(BaseTest):
             )
 
     def test_find_selected_probes_raises_fake_probe(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -190,7 +204,7 @@ class DatabaseTest(BaseTest):
             )
 
     def test_add_results_to_operation(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -213,7 +227,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         results = "Traceroute results..."
@@ -227,11 +242,11 @@ class DatabaseTest(BaseTest):
         )
 
         self.assertEqual(updated_op._id, op._id)
-        self.assertEqual(updated_op.results[0]["probe"], probes[0])
+        self.assertEqual(updated_op.results[0]["probe"], probes[0].identifier)
         self.assertEqual(updated_op.results[0]["results"], results)
 
     def test_find_operation_includes_results(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -254,7 +269,8 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         results = "Traceroute results..."
@@ -269,11 +285,11 @@ class DatabaseTest(BaseTest):
 
         same_op = self.app.db.operations.find_operation(op._id)
 
-        self.assertEqual(same_op.results[0]["probe"], probes[0])
+        self.assertEqual(same_op.results[0]["probe"], probes[0].identifier)
         self.assertEqual(same_op.results[0]["results"], results)
 
     def test_creates_operation_includes_credits(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -296,13 +312,14 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         self.assertEqual(op.credits, 10)
 
     def test_find_operation_includes_credits(self):
-        self.app.db.users.create_user("juan@gmail.com", "123")
+        self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
@@ -325,9 +342,31 @@ class DatabaseTest(BaseTest):
             params,
             probes,
             user,
-            credits_
+            credits_,
+            "json"
         )
 
         same_op = self.app.db.operations.find_operation(op._id)
 
         self.assertEqual(same_op.credits, op.credits)
+
+    def test_user_created_has_no_credits(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
+
+        self.assertEqual(user.credits, 0)
+
+    def test_updates_user_credits(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
+
+        user_upd = self.app.db.users.change_credits(user, 30)
+
+        self.assertEqual(user_upd.credits, 30)
+
+    def test_updates_user_credits_changes_db(self):
+        user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
+
+        self.app.db.users.change_credits(user, 30)
+
+        user_find = self.app.db.users.find_user("juan@gmail.com")
+
+        self.assertEqual(user_find.credits, 30)
