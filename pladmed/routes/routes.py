@@ -14,6 +14,9 @@ from pladmed.utils.credits_operations import (
     calculate_credits_dns
 )
 from pladmed import socketio
+from pladmed.validators.route_validator import (
+    validate_traceroute, validate_ping, validate_dns
+)
 
 
 def got_enough_credits(conn, credits_):
@@ -72,12 +75,12 @@ def create_operation(name, data, credits_per_probe, result_format):
 @api.route('/traceroute', methods=["POST"])
 @user_protected
 def traceroute():
-    # TODO Validate params
     data = request.get_json(force=True)
 
+    #if not validate_traceroute(data):
+    #    return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+
     total_destinations = count_destinations(data["params"])
-    if total_destinations == 0:
-        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/fqdns specified")
 
     credits_ = calculate_credits_traceroute(total_destinations)
 
@@ -90,9 +93,10 @@ def ping():
     # TODO Validate params
     data = request.get_json(force=True)
 
+    if not validate_ping(data):
+        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+
     total_destinations = count_destinations(data["params"])
-    if total_destinations == 0:
-        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/fqdns specified")
 
     credits_ = calculate_credits_ping(total_destinations)
 
@@ -102,12 +106,12 @@ def ping():
 @api.route('/dns', methods=["POST"])
 @user_protected
 def dns():
-    # TODO Validate params
     data = request.get_json(force=True)
 
+    #if not validate_dns(data):
+    #    return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+
     total_destinations = count_destinations(data["params"])
-    if total_destinations == 0:
-        return error_response(HTTP_BAD_REQUEST, "No destinations (ips/fqdns specified")
 
     credits_per_probe = calculate_credits_dns(total_destinations)
 
