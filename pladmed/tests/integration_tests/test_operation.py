@@ -183,6 +183,461 @@ class OperationTest(BaseTest):
         json.loads(res.data)
         self.assertEqual(400, res.status_code)
 
+    def test_create_dns_fails_without_params(self):
+        self.create_operation_fails_without_params("dns")
+
+    def test_create_ping_fails_without_params(self):
+        self.create_operation_fails_without_params("ping")
+
+    def test_create_traceroute_fails_without_params(self):
+        self.create_operation_fails_without_params("traceroute")
+
+    def create_operation_fails_without_params(self, operation):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            f'/{operation}',
+            json=dict(
+                operation=operation,
+                probes=[probes[0]["identifier"]],
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_dns_fails_without_probes(self):
+        self.create_operation_fails_without_probes("dns")
+
+    def test_create_ping_fails_without_probes(self):
+        self.create_operation_fails_without_probes("ping")
+
+    def test_create_traceroute_fails_without_probes(self):
+        self.create_operation_fails_without_probes("traceroute")
+
+    def create_operation_fails_without_probes(self, operation):
+        res = self.client.post(
+            f'/{operation}',
+            json=dict(
+                operation=operation,
+                params={
+                    "ips": [],
+                    "fqdns": ["www.google.com"]
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_dns_fails_with_empty_probes(self):
+        self.create_operation_fails_with_empty_probes("dns")
+
+    def test_create_ping_fails_with_empty_probes(self):
+        self.create_operation_fails_with_empty_probes("ping")
+
+    def test_create_traceroute_fails_with_empty_probes(self):
+        self.create_operation_fails_with_empty_probes("traceroute")
+
+    def create_operation_fails_with_empty_probes(self, operation):
+        res = self.client.post(
+            f'/{operation}',
+            json=dict(
+                operation=operation,
+                params={
+                    "ips": [],
+                    "fqdns": ["www.google.com"]
+                },
+                result_format="json",
+                probes=[]
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_confidence_greater_or_equals_than_one_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "confidence": 1
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_confidence_lower_than_zero_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "confidence": -0.01
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_valid_confidence(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "confidence": 0.99
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_icp_method(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "method": "icp"
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_udp_paris_method(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "method": "udp-paris"
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_icmp_paris_method(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "method": "icmp-paris"
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_invlaid_method_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "method": "thisIsAnInvalidMethod"
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_maxttl_greater_than_255_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "maxttl": 256
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_maxttl_lower_than_one_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "maxttl": 0
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_valid_maxttl(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "maxttl": 5
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_attempts_greater_than_10_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "attempts": 11
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_attempts_lower_than_one_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "attempts": 0
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_valid_attempts(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "attempts": 5
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_wait_greater_than_20_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "wait": 21
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_wait_lower_than_one_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "wait": 0
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_valid_wait(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "wait": 5
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
+    def test_create_traceroute_with_wait_probe_greater_than_20_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "wait-probe": 101
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_wait_probe_lower_than_one_gets_rejected(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "wait-probe": 0
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_valid_wait_probe(self):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": [],
+                    "fqdns": ["www.facebook.com"],
+                    "wait-probe": 5
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(201, res.status_code)
+
     def test_creates_traceroute_saves_operation_in_db(self):
         probes = self.app.db.probes.find_all_probes()
 
