@@ -42,5 +42,6 @@ DNS_PARAMS = {
 }
 
 GENERAL_PARAMS = {
-    "ips": AnyValidator()
+    "ips": AnyValidator(),
+    "fqdns": AnyValidator()
 }
