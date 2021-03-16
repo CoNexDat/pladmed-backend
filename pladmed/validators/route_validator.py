@@ -14,11 +14,11 @@ def validate_params(data, valid_params):
 
 
 def validate_probes(data):
-    return len(data["probes"]) > 0
+    return len(data) > 0
 
 
 def validate_destinations(data):
-    if "fqdns" not in data or "ips" not in data:
+    if "fqdns" not in data and "ips" not in data:
         return False
     total_destinations = 0
     if "fqdns" in data:
@@ -38,8 +38,7 @@ def validate_traceroute(data):
 def validate_ping(data):
     if "probes" not in data or "params" not in data:
         return False
-    return validate_probes(data["probes"]) and validate_params(data["params"], PING_PARAMS) and validate_destinations(
-        data["params"])
+    return validate_probes(data["probes"]) and validate_destinations(data["params"]) and validate_params(data["params"], PING_PARAMS)
 
 
 def validate_dns(data):

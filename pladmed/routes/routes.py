@@ -77,8 +77,8 @@ def create_operation(name, data, credits_per_probe, result_format):
 def traceroute():
     data = request.get_json(force=True)
 
-    #if not validate_traceroute(data):
-    #    return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+    if not validate_traceroute(data):
+        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
 
     total_destinations = count_destinations(data["params"])
 
@@ -90,7 +90,6 @@ def traceroute():
 @api.route('/ping', methods=["POST"])
 @user_protected
 def ping():
-    # TODO Validate params
     data = request.get_json(force=True)
 
     if not validate_ping(data):
@@ -108,8 +107,8 @@ def ping():
 def dns():
     data = request.get_json(force=True)
 
-    #if not validate_dns(data):
-    #    return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+    if not validate_dns(data):
+        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
 
     total_destinations = count_destinations(data["params"])
 
