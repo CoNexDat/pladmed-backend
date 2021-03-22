@@ -1,5 +1,24 @@
 language: python
 services:
   - docker
+before_script:
+- touch .env_server
+- echo PYTHONUNBUFFERED=$PYTHONUNBUFFERED >> .env_server
+- echo DEBUG=$DEBUG >> .env_server
+- echo PORT=$PORT >> .env_server
+- echo HOST=$HOST >> .env_server
+- echo FLASK_ENV=$FLASK_ENV >> .env_server
+- echo FLASK_APP=$FLASK_APP >> .env_server
+- echo SECRET_KEY=$SECRET_KEY >> .env_server
+- echo DATABASE=$DATABASE >> .env_server
+- echo MONGO_USERNAME=$MONGO_USERNAME >> .env_server
+- echo MONGO_PASSWORD=$MONGO_PASSWORD >> .env_server
+- echo MONGO_DATABASE=$MONGO_DATABASE >> .env_server
+- echo MONGO_HOST=$MONGO_HOST >> .env_server
+- echo MONGO_PORT=$MONGO_PORT >> .env_server
+- touch .env_database
+- echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env_database
+- echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env_database
+- echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
 script:
 - make test
