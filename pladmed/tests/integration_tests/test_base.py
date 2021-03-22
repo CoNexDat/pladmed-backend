@@ -3,6 +3,7 @@ from pladmed import create_app
 from pladmed import socketio
 import json
 
+
 class BaseTest(unittest.TestCase):
     def setUp(self):
         # It would be better to use setUpClass
@@ -18,14 +19,14 @@ class BaseTest(unittest.TestCase):
             password="123",
             is_superuser=True,
             credits_=400
-        )   
+        )
 
         res = self.client.post('/login', json=dict(
             email="diego@gmail.com",
             password="123"
         ))
 
-        return json.loads(res.data)["access_token"] 
+        return json.loads(res.data)["access_token"]
 
     def register_user(self):
         self.client.post('/register', json=dict(
@@ -41,20 +42,21 @@ class BaseTest(unittest.TestCase):
         user = self.app.db.users.find_user("agustin@gmail.com")
         self.app.db.users.change_credits(user, 400)
 
-        return json.loads(res.data)["access_token"]    
+        return json.loads(res.data)["access_token"]
 
-    def register_probe(self, token):
+    def register_probe(self, token, location):
         res = self.client.post(
             '/probes',
-            headers={'access_token': token}
+            headers={'access_token': token},
+            json=dict(location=location)
         )
 
         data = json.loads(res.data)
 
         return data["token"]
-        
-    def start_connection(self, access_token):
-        token = self.register_probe(access_token)
+
+    def start_connection(self, access_token, location):
+        token = self.register_probe(access_token, location)
 
         query = "token=" + token
 

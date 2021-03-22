@@ -8,6 +8,7 @@ import pladmed.routes.routes as routes
 
 
 class ProbeBaseTest(BaseTest):
+
     def test_get_all_probes_zero_if_not_created(self):
         res = self.client.get(
             '/probes'
@@ -58,11 +59,14 @@ class ProbeBaseTest(BaseTest):
 
 
 class ProbeTest(BaseTest):
+    LOCATION = {"longitude": 58.411217, "latitude": 40.181038}
+
     def setUp(self):
         super().setUp()
 
         self.access_token = self.register_user()
-        self.probe_conn = self.start_connection(self.access_token)
+        self.probe_conn = self.start_connection(
+            self.access_token, self.LOCATION)
 
     def tearDown(self):
         try:
@@ -351,8 +355,7 @@ class ProbeTest(BaseTest):
         data_to_send = {
             "credits": 30
         }
-
-        self.start_connection(self.access_token)
+        self.start_connection(self.access_token, self.LOCATION)
 
         self.probe_conn.emit(
             "new_operation",
@@ -428,13 +431,14 @@ class ProbeTest(BaseTest):
         self.assertEqual(user.credits, 380)
 
     # ---------------------------------------------
-    # API Rest test
+    # REST API test
     # ---------------------------------------------
 
     def test_register_probe_correctly(self):
         res = self.client.post(
             '/probes',
-            headers={'access_token': self.access_token}
+            headers={'access_token': self.access_token},
+            json=dict(location=self.LOCATION)
         )
 
         self.assertEqual(res.status_code, 201)

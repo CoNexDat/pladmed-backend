@@ -6,11 +6,14 @@ import json
 
 
 class OperationTest(BaseTest):
+    LOCATION = {"longitude": 58.411217, "latitude": 40.181038}
+
     def setUp(self):
         super().setUp()
 
         self.access_token = self.register_user()
-        self.probe_conn = self.start_connection(self.access_token)
+        self.probe_conn = self.start_connection(
+            self.access_token, self.LOCATION)
 
     def tearDown(self):
         try:
@@ -300,7 +303,7 @@ class OperationTest(BaseTest):
         self.assertEqual(404, res.status_code)
 
     def test_creates_traceroute_returns_only_avail_probes(self):
-        self.register_probe(self.access_token)
+        self.register_probe(self.access_token, self.LOCATION)
 
         res_probes = self.client.get('/probes')
 
@@ -481,7 +484,7 @@ class OperationTest(BaseTest):
         self.assertEqual(data["credits"], 2)
 
     def test_creates_operation_includes_credits_per_probe(self):
-        probe_conn = self.start_connection(self.access_token)
+        probe_conn = self.start_connection(self.access_token, self.LOCATION)
 
         res_probes = self.client.get('/probes')
 
@@ -505,7 +508,7 @@ class OperationTest(BaseTest):
         probe_conn.disconnect()
 
     def test_creates_operation_includes_credits_per_probe_available(self):
-        self.register_probe(self.access_token)
+        self.register_probe(self.access_token, self.LOCATION)
 
         res_probes = self.client.get('/probes')
 
