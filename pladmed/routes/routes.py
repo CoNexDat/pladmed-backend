@@ -15,7 +15,7 @@ from pladmed.utils.credits_operations import (
 )
 from pladmed import socketio
 from pladmed.validators.route_validator import (
-    validate_traceroute, validate_ping, validate_dns
+    validate_traceroute, validate_ping, validate_dns, validate_user_data, validate_credits
 )
 
 
@@ -147,7 +147,8 @@ def do_operation(operation, probes, data, credits_per_probe):
 def create_user():
     data = request.get_json(force=True)
 
-    # TODO Validate data and params
+    if not validate_user_data(data):
+        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
 
     try:
         user = current_app.db.users.create_user(
@@ -167,6 +168,9 @@ def create_user():
 @api.route('/login', methods=["POST"])
 def login_user():
     data = request.get_json(force=True)
+
+    if not validate_user_data(data):
+        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
 
     try:
         user = current_app.db.users.find_user(data["email"])
@@ -239,8 +243,10 @@ def operation():
 @api.route('/credits', methods=["POST"])
 @superuser
 def give_credits():
-    # TODO Validate params
     data = request.get_json(force=True)
+
+    if not validate_credits(data):
+        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
 
     try:
         user = current_app.db.users.find_user_by_id(data["id"])

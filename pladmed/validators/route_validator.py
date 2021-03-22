@@ -46,3 +46,10 @@ def validate_operation(data, valid_params):
     return validate_probes(data["probes"]) and validate_params(data["params"], valid_params) and validate_destinations(
         data["params"])
 
+
+def validate_user_data(data):
+    return "email" in data and data["email"] != "" and "password" in data and data["password"] != ""
+
+
+def validate_credits(data):
+    return "id" in data and data["id"] != "" and "credits" in data and data["credits"] > 0
