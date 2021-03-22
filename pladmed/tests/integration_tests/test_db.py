@@ -4,7 +4,10 @@ from pladmed.models.user import User
 import json
 from pladmed.exceptions import InvalidOperation, InvalidProbe
 
+
 class DatabaseTest(BaseTest):
+    LOCATION = {"longitude": 58.411217, "latitude": 40.181038}
+
     def test_creates_users(self):
         user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
@@ -20,14 +23,14 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.assertEqual(user.email, "juan@gmail.com")   
+        self.assertEqual(user.email, "juan@gmail.com")
 
     def test_find_users_by_id(self):
         user = self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user_found = self.app.db.users.find_user_by_id(user._id)
 
-        self.assertEqual(user_found.email, "juan@gmail.com")   
+        self.assertEqual(user_found.email, "juan@gmail.com")
 
     def test_gets_no_user_by_id_if_not_created(self):
         user = self.app.db.users.find_user_by_id("Fake id")
@@ -56,7 +59,7 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        probe = self.app.db.probes.create_probe(user)
+        probe = self.app.db.probes.create_probe(user, self.LOCATION)
 
         self.assertEqual(hasattr(probe, "identifier"), True)
 
@@ -65,7 +68,7 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        probe = self.app.db.probes.create_probe(user)
+        probe = self.app.db.probes.create_probe(user, self.LOCATION)
 
         ret_probe = self.app.db.probes.find_probe(probe.identifier)
 
@@ -79,15 +82,15 @@ class DatabaseTest(BaseTest):
     def test_find_probe_no_exists(self):
         probe = self.app.db.probes.find_probe("5fd88dcaa1fe1d28abe9e154")
 
-        self.assertEqual(probe, None)        
+        self.assertEqual(probe, None)
 
     def test_find_all_probes(self):
         self.app.db.users.create_user("juan@gmail.com", "123", False, 0)
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -103,8 +106,8 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -133,8 +136,8 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -169,9 +172,9 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        probe_1 = self.app.db.probes.create_probe(user)
-        probe_2 = self.app.db.probes.create_probe(user)
-        probe_3 = self.app.db.probes.create_probe(user)
+        probe_1 = self.app.db.probes.create_probe(user, self.LOCATION)
+        probe_2 = self.app.db.probes.create_probe(user, self.LOCATION)
+        probe_3 = self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_selected_probes(
             [probe_1.identifier, probe_2.identifier]
@@ -184,7 +187,7 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        probe_1 = self.app.db.probes.create_probe(user)
+        probe_1 = self.app.db.probes.create_probe(user, self.LOCATION)
 
         with self.assertRaises(InvalidProbe):
             self.app.db.probes.find_selected_probes(
@@ -196,7 +199,7 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        probe_1 = self.app.db.probes.create_probe(user)
+        probe_1 = self.app.db.probes.create_probe(user, self.LOCATION)
 
         with self.assertRaises(InvalidProbe):
             self.app.db.probes.find_selected_probes(
@@ -208,8 +211,8 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -250,8 +253,8 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -293,8 +296,8 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 
@@ -323,8 +326,8 @@ class DatabaseTest(BaseTest):
 
         user = self.app.db.users.find_user("juan@gmail.com")
 
-        self.app.db.probes.create_probe(user)
-        self.app.db.probes.create_probe(user)
+        self.app.db.probes.create_probe(user, self.LOCATION)
+        self.app.db.probes.create_probe(user, self.LOCATION)
 
         probes = self.app.db.probes.find_all_probes()
 

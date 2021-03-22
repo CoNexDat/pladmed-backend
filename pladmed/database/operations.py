@@ -6,10 +6,11 @@ from pladmed.models.probe import Probe
 from bson.objectid import ObjectId
 from pladmed.exceptions import InvalidOperation
 
+
 class OperationsCollection:
     def __init__(self, db):
         self.operationsCol = db.operations
-    
+
     def create_operation(self, operation, params, probes, user, credits_, format_):
         data = {
             "operation": operation,
@@ -41,7 +42,8 @@ class OperationsCollection:
                 str(op["_id"]),
                 op["operation"],
                 op["params"],
-                [Probe(str(probe), str(op["owner"])) for probe in op["probes"]],
+                [Probe(str(probe), str(op["owner"]), None)
+                 for probe in op["probes"]],
                 op["credits"],
                 op["result_format"]
             )

@@ -194,8 +194,10 @@ def users_me():
 @user_protected
 def register_probe():
     user = request.user
+    location_json = request.get_json(force=True)
+    location = location_json["location"]
 
-    probe = current_app.db.probes.create_probe(user)
+    probe = current_app.db.probes.create_probe(user, location)
 
     token = current_app.token.create_token(probe.public_data())
 
