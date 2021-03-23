@@ -4,7 +4,7 @@ services:
   - docker
 
 install:
-- pip install python-coveralls==2.9.3
+- pip install coveralls==3.0.1
 
 before_script:
 - touch .env_server
