@@ -17,10 +17,6 @@ services:
         coverage report --omit="*/test*"
         echo ;
         env
-        if [ "$CI" == "true" ]
-        then
-          coveralls
-        fi
     env_file:
       - .env_server
     volumes:
