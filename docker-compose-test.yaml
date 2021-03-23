@@ -19,7 +19,7 @@ services:
         echo "LOCURA"
         env
         echo $CI
-        if [ "$CI" == "1" ]
+        if [ "$CI" == "true" ]
         then
           echo "--->IIIIRRRMAA"
           coveralls
