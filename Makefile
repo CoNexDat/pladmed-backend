@@ -32,5 +32,6 @@ test: build
 	docker-compose -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml up \
 	--abort-on-container-exit
 	COMPOSE_PROJECT_NAME=testing \
+	docker cp pladmed-testing:/home/coverage.xml coverage.xml
 	docker-compose -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml down
 .PHONY: test

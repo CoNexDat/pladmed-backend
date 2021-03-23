@@ -28,7 +28,6 @@ before_script:
 
 script:
 - make test
-- docker cp pladmed-testing:/home/coverage.xml coverage.xml
 - coveralls --data_file coverage.xml
 
 #after_success:
