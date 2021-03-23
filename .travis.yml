@@ -29,5 +29,6 @@ before_script:
 script:
 - make test
 - coveralls debug
+- coveralls
 
 #after_success:
