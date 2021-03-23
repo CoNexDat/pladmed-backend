@@ -16,9 +16,15 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
+        echo "LOCURA"
+        env
+        echo $CI
         if [ "$CI" == "1" ]
         then
+          echo "--->IIIIRRRMAA"
           coveralls
+        elif
+          echo "--->WIIILLLBUUURR"
         fi
     env_file:
       - .env_server
