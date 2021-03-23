@@ -28,7 +28,6 @@ before_script:
 
 script:
 - make test
-- ls
-- coveralls --data_file coverage.xml
+- coveralls
 
 #after_success:
