@@ -18,11 +18,11 @@ before_script:
 - echo MONGO_DATABASE=$MONGO_DATABASE >> .env_server
 - echo MONGO_HOST=$MONGO_HOST >> .env_server
 - echo MONGO_PORT=$MONGO_PORT >> .env_server
+- echo CI=1 >> .env_server
 - touch .env_database
 - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env_database
 - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env_database
 - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
 
 script:
-- env
 - make test

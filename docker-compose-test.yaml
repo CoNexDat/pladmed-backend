@@ -16,7 +16,10 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
-        env
+        if [ "$CI" == "1" ]
+        then
+          coveralls
+        fi
     env_file:
       - .env_server
     volumes:
