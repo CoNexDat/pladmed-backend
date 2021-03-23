@@ -3,9 +3,6 @@ language: python
 services:
   - docker
 
-install:
-- pip install coveralls==3.0.1
-
 before_script:
 - touch .env_server
 - echo PYTHONUNBUFFERED=$PYTHONUNBUFFERED >> .env_server
@@ -27,8 +24,5 @@ before_script:
 - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
 
 script:
+- env
 - make test
-- coveralls debug
-- coveralls
-
-#after_success:

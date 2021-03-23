@@ -16,6 +16,7 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
+        env
     env_file:
       - .env_server
     volumes:
