@@ -31,4 +31,6 @@ script:
 
 after_success:
 - docker cp pladmed-testing:/home/coverage.xml coverage.xml
+- touch .coveralls.yml
+- echo "repo_token: $COVERALLS_TOKEN" >> .coveralls.yml
 - coveralls --data_file coverage.xml
