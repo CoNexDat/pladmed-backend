@@ -1,6 +1,11 @@
 language: python
+
 services:
   - docker
+
+install:
+- pip install python-coveralls==2.9.3
+
 before_script:
 - touch .env_server
 - echo PYTHONUNBUFFERED=$PYTHONUNBUFFERED >> .env_server
@@ -20,5 +25,10 @@ before_script:
 - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env_database
 - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env_database
 - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
+
 script:
 - make test
+
+after_success:
+- docker cp pladmed-testing:/home/coverage.xml coverage.xml
+- coveralls --data_file coverage.xml
