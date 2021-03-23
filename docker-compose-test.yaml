@@ -16,6 +16,7 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
+        bash <(curl -s https://codecov.io/bash)
     env_file:
       - .env_server
     volumes:
