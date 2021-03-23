@@ -50,3 +50,31 @@ class CreditsTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
+
+    def test_give_credits_should_have_userId(self):
+        access_token = self.register_superuser()
+
+        user = self.app.db.users.find_user("diego@gmail.com")
+
+        res = self.client.post('/credits',
+            json=dict(
+                credits=10
+            ),
+            headers={'access_token': access_token}
+        )
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_give_credits_should_have_credits_amount(self):
+        access_token = self.register_superuser()
+
+        user = self.app.db.users.find_user("diego@gmail.com")
+
+        res = self.client.post('/credits',
+            json=dict(
+                id="nice fake user"
+            ),
+            headers={'access_token': access_token}
+        )
+
+        self.assertEqual(res.status_code, 400)

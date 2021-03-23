@@ -40,6 +40,20 @@ class AuthenticationTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual("password" in data, False)
+
+    def test_register_should_have_email(self):
+        res = self.client.post('/register', json=dict(
+            password="secure_password"
+        ))
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_register_should_have_password(self):
+        res = self.client.post('/register', json=dict(
+            email="agustin@gmail.com"
+        ))
+
+        self.assertEqual(res.status_code, 400)
         
     def test_unique_users(self):
         self.client.post('/register', json=dict(
@@ -66,6 +80,22 @@ class AuthenticationTest(BaseTest):
         ))
 
         self.assertEqual(res.status_code, 200)
+
+    def test_login_user_requires_email(self):
+
+        res = self.client.post('/login', json=dict(
+            password="secure_password"
+        ))
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_login_user_requires_password(self):
+
+        res = self.client.post('/login', json=dict(
+            email="agustin@gmail.com"
+        ))
+
+        self.assertEqual(res.status_code, 400)
 
     def test_login_fails_no_user_exists(self):
         res = self.client.post('/login', json=dict(
