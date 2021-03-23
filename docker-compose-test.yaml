@@ -23,7 +23,7 @@ services:
         then
           echo "--->IIIIRRRMAA"
           coveralls
-        elif
+        else
           echo "--->WIIILLLBUUURR"
         fi
     env_file:
