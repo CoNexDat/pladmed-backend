@@ -16,7 +16,6 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
-# This generates the /home/coverage.xml file, which can retrieved using docker cp
         coverage xml --omit="*/test*"
     env_file:
       - .env_server
