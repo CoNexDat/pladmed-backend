@@ -3,7 +3,7 @@ FROM python:3.6.9 AS server
 COPY ./scamper ./scamper
 
 RUN apt-get install -y gcc g++ libffi-dev \
-    && cd scamper && ./configure && make && make install 
+    && cd scamper && ./configure && make && make install && git
 
 RUN ldconfig
 RUN chmod -R +x scamper/
@@ -17,6 +17,8 @@ RUN apt-get update \
 COPY ./requirements.txt .
 COPY ./docker-entrypoint.sh .
 COPY ./main.py .
+RUN MKDIR .git
+COPY .git/ .git/
 
 RUN pip install -r requirements.txt
 
