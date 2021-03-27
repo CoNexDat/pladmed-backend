@@ -16,7 +16,7 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
-        if [ "$CI" == "1" ]
+        if [ "$CI" == "true" ]
         then
           coverage xml --omit="*/test*"
           bash <(curl -s https://codecov.io/bash) -f coverage.xml
