@@ -18,8 +18,6 @@ before_script:
 - echo MONGO_DATABASE=$MONGO_DATABASE >> .env_server
 - echo MONGO_HOST=$MONGO_HOST >> .env_server
 - echo MONGO_PORT=$MONGO_PORT >> .env_server
-- ci_env=`bash <(curl -s https://codecov.io/env)`
-- echo ci_env=$ci_env >> .env_server
 - echo CODECOV_TOKEN=$CODECOV_TOKEN >> .env_server
 - touch .env_database
 - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env_database
@@ -27,4 +25,5 @@ before_script:
 - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
 
 script:
+- ci_env=`bash <(curl -s https://codecov.io/env)`
 - make test

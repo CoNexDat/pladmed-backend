@@ -27,6 +27,9 @@ debug: build
 .PHONY: debug
 
 test: build
+	echo "***RUCUCU"
+	echo ${ci_env}
+	echo "/***RUCUCU"
 	-COMPOSE_PROJECT_NAME=testing \
 	GREEN="\033[32m" \
 	docker-compose ${ci_env} -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml up \
