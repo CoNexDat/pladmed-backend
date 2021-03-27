@@ -25,5 +25,5 @@ before_script:
 - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
 
 script:
-- ci_env=`bash <(curl -s https://codecov.io/env)`
+- export CI_ENV=`bash <(curl -s https://codecov.io/env)`
 - make test

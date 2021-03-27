@@ -28,11 +28,11 @@ debug: build
 
 test: build
 	command echo "***RUCUCU"
-	command echo $(ci_env)
+	command echo $(CI_ENV)
 	command echo "/***RUCUCU"
 	-COMPOSE_PROJECT_NAME=testing \
 	GREEN="\033[32m" \
-	docker-compose $(ci_env) -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml up \
+	docker-compose $(CI_ENV) -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml up \
 	--abort-on-container-exit
 	COMPOSE_PROJECT_NAME=testing \
 	docker-compose -p COMPOSE_PROJECT_NAME -f docker-compose-test.yaml down
