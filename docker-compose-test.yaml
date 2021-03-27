@@ -19,6 +19,10 @@ services:
         echo "---><ENV>"
         env
         echo "---></ENV>"
+        echo "---><DIR>"
+        echo $PWD
+        ls
+        echo "---></ENV>"
         pip install --user codecov && /home/.local/bin/codecov -t $CODECOV_TOKEN
     env_file:
       - .env_server
