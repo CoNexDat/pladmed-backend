@@ -17,7 +17,7 @@ RUN apt-get update \
 COPY ./requirements.txt .
 COPY ./docker-entrypoint.sh .
 COPY ./main.py .
-RUN MKDIR .git
+RUN mkdir .git
 COPY .git/ .git/
 
 RUN pip install -r requirements.txt
