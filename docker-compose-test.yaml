@@ -16,8 +16,11 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
-        coverage xml --omit="*/test*"
-        bash <(curl -s https://codecov.io/bash) -f coverage.xml
+        if [ "$CI" == "1" ]
+        then
+          coverage xml --omit="*/test*"
+          bash <(curl -s https://codecov.io/bash) -f coverage.xml
+        fi
     env_file:
       - .env_server
     volumes:

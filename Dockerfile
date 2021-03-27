@@ -17,6 +17,8 @@ RUN apt-get update \
 COPY ./requirements.txt .
 COPY ./docker-entrypoint.sh .
 COPY ./main.py .
+
+# This is needed by codecov to collect Git info
 RUN mkdir .git
 COPY .git/ .git/
 
