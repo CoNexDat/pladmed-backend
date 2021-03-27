@@ -16,14 +16,7 @@ services:
         echo ;
         coverage report --omit="*/test*"
         echo ;
-        echo "---><ENV>"
-        env
-        echo "---></ENV>"
-        echo "---><DIR>"
-        echo $PWD
-        ls
-        echo "---></ENV>"
-        pip install --user codecov && /home/.local/bin/codecov -t $CODECOV_TOKEN
+        bash <(curl -s https://codecov.io/bash)
     env_file:
       - .env_server
     volumes:
