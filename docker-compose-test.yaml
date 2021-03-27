@@ -19,7 +19,7 @@ services:
         echo "---><ENV>"
         env
         echo "---></ENV>"
-        pip install --user codecov && codecov -t $CODECOV_TOKEN
+        pip install --user codecov && /home/.local/bin/codecov -t $CODECOV_TOKEN
     env_file:
       - .env_server
     volumes:
