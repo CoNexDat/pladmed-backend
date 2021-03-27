@@ -19,14 +19,10 @@ before_script:
 - echo MONGO_HOST=$MONGO_HOST >> .env_server
 - echo MONGO_PORT=$MONGO_PORT >> .env_server
 - echo CODECOV_TOKEN=$CODECOV_TOKEN >> .env_server
-- CI_ENV=`bash <(curl -s https://codecov.io/env)`
-- CI_ENV=(${CI_ENV//-e/})
-- for i in \"${CI_ENV[@]}\"; do echo $i= >> .env_server; done
 - touch .env_database
 - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env_database
 - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env_database
 - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env_database
 
 script:
-- export 
 - make test

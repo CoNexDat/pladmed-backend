@@ -17,9 +17,6 @@ services:
         coverage report --omit="*/test*"
         echo ;
         coverage xml --omit="*/test*"
-        echo "*** ENV"
-        env
-        echo "*** /ENV"
         bash <(curl -s https://codecov.io/bash) -f coverage.xml
     env_file:
       - .env_server
