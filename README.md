@@ -11,7 +11,8 @@ You can run everything through Docker:
 
 Accessible (default) at http://localhost:5000/
 
-####Configuración
+#### Configuration
+
 Si se utiliza la base de datos incluída en el docker-compose, se deben configurar los parámetros de dicha base en el archivo `.env_database`:
 ```
 MONGO_INITDB_DATABASE=<database-name:pladmed> #Nombre de la base de datos
