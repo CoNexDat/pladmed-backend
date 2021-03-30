@@ -13,51 +13,72 @@ Accessible (default) at http://localhost:5000/
 
 #### Configuration
 
-Si se utiliza la base de datos incluída en el docker-compose, se deben configurar los parámetros de dicha base en el archivo `.env_database`:
-```
-MONGO_INITDB_DATABASE=<database-name:pladmed> #Nombre de la base de datos
-MONGO_INITDB_ROOT_USERNAME=<database-root-user> #Usuario root para la utilizacion de la base
-MONGO_INITDB_ROOT_PASSWORD=<database-password> #Contraseña del usuario
-```
-Luego, para configurar el servidor se deberá crear el archivo `.env_server`, conteniendo las siguientes variables de entorno:
-```
-PYTHONUNBUFFERED=1 #Necesario para enviar el log al container
+To configure the Mongo database that will run in a separate Docker container via docker-compose, a file named `.env_database` will need to be created at the repository's root level. This file will contain the environment variables for configuring the database container. See `.env_database.example` for the default values.
 
-DEBUG=1 #Nivel de debug
-PORT=<app_port:5000> #Puerto utilizado
-HOST=<app_host:0.0.0.0> #Host en el que corre la app 
-FLASK_ENV=<development|production> #Indica el entorno de ejecución
-FLASK_APP=main.py #Necesaria para iniciar la aplicación Flask
+```
+MONGO_INITDB_DATABASE=<database-name:pladmed> #Database name
+MONGO_INITDB_ROOT_USERNAME=<database-root-user> #root user for this database
+MONGO_INITDB_ROOT_PASSWORD=<database-password> #root user password
+```
 
-SECRET_KEY=<secret-key-for-tokens> #Clave secreta utilizada para generar los tokens
+Similarly, to configure the server itself, a file named `.env_server` will need to exist at the root level. It will need to contain the following environment variables:
+
+```
+PYTHONUNBUFFERED=1 #Needed to send logs to container
+
+DEBUG=1 #Debug level
+PORT=<app_port:5000> #TCP port (internal to Docker where the server will listen for requests)
+HOST=<app_host:0.0.0.0> #IP address, internal to Docker network, where the server will run
+FLASK_ENV=<development|production> #Define execution environment
+FLASK_APP=main.py #Required by Flask framework
+
+SECRET_KEY=<secret-key-for-tokens> #Used to generate security tokens
 
 DATABASE=mongo
 
-MONGO_USERNAME=<database-root-user> #Usuario root para la utilizacion de la base
-MONGO_PASSWORD=<database-password> #Contraseña del usuario
-MONGO_DATABASE=<database-name:pladmed> #Nombre de la base de datos
-MONGO_HOST=<mongo-host:db> #Host de la base de datos
-MONGO_PORT=<mongo-port:27017> #Puerto en el que corre la base de datos
+MONGO_USERNAME=<database-root-user> #root user for connecting to database
+MONGO_PASSWORD=<database-password> #root user password
+MONGO_DATABASE=<database-name:pladmed> #Mongo database name
+MONGO_HOST=<mongo-host:db> #Database host
+MONGO_PORT=<mongo-port:27017> #Database service port
 
-LOG_FILE=server.log #Archivo de log
+LOG_FILE=server.log #Log file location
 ```
 
 ####Arquitectura
-##### Robustez y características del sistema
-En el diagrama se puede ver a grandes rasgos cómo funciona la robustez del sistema. Por un lado, tenemos los actores que pueden desencadenar eventos a través de un endpoint del sistema. Esto desencadena acciones en cualquiera de los nodos levantados (configurable a través de docker-compose), los cuales se conectan con MongoDB para la persistencia de datos y con Chrony para la sincronización de tiempos. En caso de corresponder, los servidores se comunicarán con las sondas mediante sockets.
- ![Diagrama de Robustez](docs/robustez-pladmed.png)
-##### Despliegue del sistema
-Veamos entonces cómo es el despligue del sistema. Por un lado, tenemos los distintos clientes que correrán el frontend en su propio navegador a través de un servidor web. Además, cada uno de los clientes puede ejecutar su propia sonda mediante la instalación de la misma (Ver [documentación](https://github.com/fedefunes96/pladmed-client)).
-![Diagrama de despliegue](docs/despliegue.png)
 
-En este caso, los "Coordination servers" son aquellos que ejecutan el servidor, coordinan los tiempos y las mediciones. Los disintos clientes serán que consultan los servidores a través del frontend, o las sondas.
+##### Robustness and system characteristics
 
-##### Coordinación de tiempos
-La coordinación de tiempos se realiza mediante Chrony, utilizándolo como cliente NTP para sincronizar el reloj. Además, el servidor funciona como servidor NTP para la sincronización de las sondas, de forma tan de no sobrecargar los servidores públicos.
-Veamos entonces un diagrama de los distintos estratos de NTP y cómo encajan nuestros sistemas:
- ![Diagrama de NTP](docs/time-sync.png)
+![Robustness diagram](docs/robustness-diagram.png)
+
+In this diagram, the system's architectural focus on robustness can be appreciated. For starters, there's the actors who trigger events by sending messages against an instance of pladmed-backend. On the full system, this will be done by pladmed-frontend. Each instance of pladmed-backend will use MongoDB for persisting its data, and a Chrony server/client for time synchronization.
+
+MongoDB was chosen because it's well suited for the unstructured nature of the operation results' data. It's simple to use, which speeds up development. Reliability can be achieved by using WriteConcern, and scalability and fault tolerance with replicas.
+
+Regarding Chrony, it can act both as a client (for adjusting the server's clock) and as a server (to provide time to the probes in a scalable way). Clock drift is not critical to pladmed, since measurements deal with time differences. So NTP is good enough in this aspect.
+
+The servers communicate with the probes via web sockets; this simplifies communication, since objects can be sent straight away and there is no need to design an internal protocol, or middleware. For scaling up, adding more servers and a publisher/subscriber broker (Redis, Kafka, RabbitMQ) is the way to go.
+
+
+##### Deployment
+
+![Deployment diagram](docs/deployment-diagram.png)
+
+Firstly, users can run pladmed-frontend in their own browser via a web service. On the other hands, those same users, or different ones, can run their own probes by installing them in their system (see [the probe documentation](https://github.com/fedefunes96/pladmed-client)) for details.
+
+In this case, "coordination servers" are those which run instances of pladmed-backend, coordinating timing and measurements. The clients will interact with it via the frontend (requesting measurements) or via probes (running measurements and uploading their results) to the servers.
+avés del frontend, o las sondas.
+
+##### Time synchronization
+
+This is performed using [Chrony](https://github.com/mlichvar/chrony). A Chrony instance is ran inside its own Docker container, ideally in the same host and Docker network as pladmed-backend, using it as a client for adjusting the server's clock. Since a Chrony instance can act both as an NTP client and NTP server, it does so, acting as an NTP server to the probes, improving the system scalability and reducing the load on public NTP servers. Visually:
+
+![NTP architecture](docs/time-sync.png)
+
+Assuming there's a public NTP server in the p stratum, then a pladmed-backend instance which sync with it will be in stratum (p+1). Since the same Chrony instance will act as an NTP server for the probes, all of them will be in stratum p+2. This is fine because probes measure relative times: clock drift doesn't affect them critically.
  
-Por un lado, vemos que NTP está en un estrato p. Entonces, nuestro servidor será parte del estrato p+1. Gracias a que también funciona como servidor, las distintas sondas serán parte del estrato p+2.
- 
-####Endpoints 
-Dentro de la carpeta `docs/endpoints` se encuentra el archivo .yaml necesario para correr en Swagger y ver los distintos endpoints con sus parámetros.
+#### Endpoints / pladmed-backend web API documentation
+
+Inside the  `docs/endpoints` directory, there's a .yaml [Swagger](https://swagger.io/tools/swagger-ui/) file which can be used for viewing and testing the web API endpoints.
+
+Alternatively, in the same directory, there is a [Postman](https://www.postman.com/) collection, which can be imported and used in Postman.
