@@ -1,6 +1,6 @@
 # Pladmed backend
 
-####How to run
+#### How to run
 You can run everything through Docker:
 
 - make start: Starts the server
