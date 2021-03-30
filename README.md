@@ -1,6 +1,6 @@
 # Pladmed backend
 
-####How to run
+#### How to run
 You can run everything through Docker:
 
 - make start: Starts the server
@@ -12,52 +12,52 @@ You can run everything through Docker:
 Accessible (default) at http://localhost:5000/
 
 #### Configuration
-
-Si se utiliza la base de datos incluída en el docker-compose, se deben configurar los parámetros de dicha base en el archivo `.env_database`:
+If you want to use the database that is included in docker-compose, you must set its parameters in file `.env_database`:
 ```
-MONGO_INITDB_DATABASE=<database-name:pladmed> #Nombre de la base de datos
-MONGO_INITDB_ROOT_USERNAME=<database-root-user> #Usuario root para la utilizacion de la base
-MONGO_INITDB_ROOT_PASSWORD=<database-password> #Contraseña del usuario
+MONGO_INITDB_DATABASE=<database-name:pladmed> # Database name
+MONGO_INITDB_ROOT_USERNAME=<database-root-user> # Root database user
+MONGO_INITDB_ROOT_PASSWORD=<database-password> # Database password
 ```
-Luego, para configurar el servidor se deberá crear el archivo `.env_server`, conteniendo las siguientes variables de entorno:
+Then, to set the server properties you should create the `.env_server` file, containing these environment properties:
 ```
-PYTHONUNBUFFERED=1 #Necesario para enviar el log al container
+PYTHONUNBUFFERED=1 # Ensures the python output is sent directly to the container log
 
-DEBUG=1 #Nivel de debug
-PORT=<app_port:5000> #Puerto utilizado
-HOST=<app_host:0.0.0.0> #Host en el que corre la app 
-FLASK_ENV=<development|production> #Indica el entorno de ejecución
-FLASK_APP=main.py #Necesaria para iniciar la aplicación Flask
+DEBUG=1 # Debug level
+PORT=<app_port:5000> # Used port
+HOST=<app_host:0.0.0.0> # The server host 
+FLASK_ENV=<development|production> # Execution environment
+FLASK_APP=main.py # Required to init Flask application
 
-SECRET_KEY=<secret-key-for-tokens> #Clave secreta utilizada para generar los tokens
+SECRET_KEY=<secret-key-for-tokens> #Secret key used for token generation
 
 DATABASE=mongo
 
-MONGO_USERNAME=<database-root-user> #Usuario root para la utilizacion de la base
-MONGO_PASSWORD=<database-password> #Contraseña del usuario
-MONGO_DATABASE=<database-name:pladmed> #Nombre de la base de datos
-MONGO_HOST=<mongo-host:db> #Host de la base de datos
-MONGO_PORT=<mongo-port:27017> #Puerto en el que corre la base de datos
+MONGO_USERNAME=<database-root-user> # Databse user
+MONGO_PASSWORD=<database-password> #Databse user password
+MONGO_DATABASE=<database-name:pladmed> #Databse name
+MONGO_HOST=<mongo-host:db> #Database host
+MONGO_PORT=<mongo-port:27017> #Database port
 
-LOG_FILE=server.log #Archivo de log
+LOG_FILE=server.log #Log file
 ```
 
-####Arquitectura
-##### Robustez y características del sistema
-En el diagrama se puede ver a grandes rasgos cómo funciona la robustez del sistema. Por un lado, tenemos los actores que pueden desencadenar eventos a través de un endpoint del sistema. Esto desencadena acciones en cualquiera de los nodos levantados (configurable a través de docker-compose), los cuales se conectan con MongoDB para la persistencia de datos y con Chrony para la sincronización de tiempos. En caso de corresponder, los servidores se comunicarán con las sondas mediante sockets.
- ![Diagrama de Robustez](docs/robustez-pladmed.png)
-##### Despliegue del sistema
-Veamos entonces cómo es el despligue del sistema. Por un lado, tenemos los distintos clientes que correrán el frontend en su propio navegador a través de un servidor web. Además, cada uno de los clientes puede ejecutar su propia sonda mediante la instalación de la misma (Ver [documentación](https://github.com/fedefunes96/pladmed-client)).
-![Diagrama de despliegue](docs/despliegue.png)
-
-En este caso, los "Coordination servers" son aquellos que ejecutan el servidor, coordinan los tiempos y las mediciones. Los disintos clientes serán que consultan los servidores a través del frontend, o las sondas.
-
-##### Coordinación de tiempos
-La coordinación de tiempos se realiza mediante Chrony, utilizándolo como cliente NTP para sincronizar el reloj. Además, el servidor funciona como servidor NTP para la sincronización de las sondas, de forma tan de no sobrecargar los servidores públicos.
-Veamos entonces un diagrama de los distintos estratos de NTP y cómo encajan nuestros sistemas:
- ![Diagrama de NTP](docs/time-sync.png)
+#### Architecture
+##### Robustness and system characteristics
+This diagram show the system robustness. First, we have the actors that can trigger events through an endpoint. This triggers actions in any of the nodes, which are connected to a MongoDB databasefor data persistency and to Chrony for time synchronization. If needed, serves communicate with the clients through sockets.
+ ![Robustness diagram](docs/robustez-pladmed.png)
  
-Por un lado, vemos que NTP está en un estrato p. Entonces, nuestro servidor será parte del estrato p+1. Gracias a que también funciona como servidor, las distintas sondas serán parte del estrato p+2.
+##### Deploy
+Now, let's see the system deploy. We have the different clients that will run the frontend app in their own browrsers. Also, every client can run a probe (See [probe documentation](https://github.com/fedefunes96/pladmed-client) for installation guide).
+ ![Deploy diagram](docs/despliegue.png)
+
+In this scenario, "coordination servers" are those which run the server, do the time coordination and measurements. Different clients make requests to the server through the frontend app or the probes.
+
+##### Time synchronization
+Time synchronization is achieved via Chrony, using it as a NTP client. Also, the server works as a NTP server for probe time synchronization, so we don't overload public servers.
+Out system has this stratum diagram:
+ ![NTP Diagram](docs/time-sync.png)
  
-####Endpoints 
-Dentro de la carpeta `docs/endpoints` se encuentra el archivo .yaml necesario para correr en Swagger y ver los distintos endpoints con sus parámetros.
+We can see that NTP servers are part of p-stratum. So, out server will be part of p+1-stratum. As it works as a NTP server, the probes will be part of p+2-stratum.
+ 
+#### Endpoints 
+Inside directory `docs/endpoints` you will find the .yaml file that will serve as input for Swagger and check every available endpoint.
