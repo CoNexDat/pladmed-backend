@@ -1,8 +1,8 @@
 # Pladmed backend
 
-[![Build Status](https://travis-ci.com/dario-ramos/pladmed-backend.svg?branch=travis-badge)](https://travis-ci.com/dario-ramos/pladmed-backend)
+[![Build Status](https://travis-ci.com/fedefunes96/pladmed-backend.svg?branch=travis-badge)](https://travis-ci.com/fedefunes96/pladmed-backend)
 
-[![codecov](https://codecov.io/gh/dario-ramos/pladmed-backend/branch/master/graph/badge.svg?token=DFRBWSDQPT)](https://codecov.io/gh/dario-ramos/pladmed-backend)
+[![codecov](https://codecov.io/gh/fedefunes96/pladmed-backend/branch/master/graph/badge.svg?token=YTU6E27H7T)](https://codecov.io/gh/fedefunes96/pladmed-backend)
 
 **How to run**
 You can run everything through Docker:
