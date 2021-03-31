@@ -59,6 +59,9 @@ Regarding Chrony, it can act both as a client (for adjusting the server's clock)
 
 The servers communicate with the probes via web sockets; this simplifies communication, since objects can be sent straight away and there is no need to design an internal protocol, or middleware. For scaling up, adding more servers and a publisher/subscriber broker (Redis, Kafka, RabbitMQ) is the way to go.
 
+#### Class Diagram
+
+[pladmed-backend class diagram](docs/class-diagram.md)
 
 ##### Deployment
 
