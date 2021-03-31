@@ -69,10 +69,15 @@ The servers communicate with the probes via web sockets; this simplifies communi
 
 ![Deployment diagram](docs/deployment-diagram.png)
 
-Firstly, users can run pladmed-frontend in their own browser via a web service. On the other hands, those same users, or different ones, can run their own probes by installing them in their system (see [the probe documentation](https://github.com/fedefunes96/pladmed-client)) for details.
+This diagram depicts the recommended deployment strategy for the system as a whole.
 
-In this case, "coordination servers" are those which run instances of pladmed-backend, coordinating timing and measurements. The clients will interact with it via the frontend (requesting measurements) or via probes (running measurements and uploading their results) to the servers.
-avés del frontend, o las sondas.
+Firstly, pladmed-frontend can be served via any web server (Apache2, nginx) so users can access it in their own browser across the Internet. On the other hand, those same users, or different ones, can run their own probes by installing them in their system (see [the probe documentation](https://github.com/fedefunes96/pladmed-client)) for details.
+
+Secondly, each server will have three docker containers:
+
+1. server: Runs a pladmed-backend instance, including a web server which will listen for HTTP requests from the frontend, and web socket connections from probes.
+2. db: Runs a MongoDB database instance for persisting users, operations and their results.
+3. chrony: Runs a Chrony client/server. Acts as an NTP client for pladmed-backend, and as an NTP server for probes.
 
 ##### Time synchronization
 
