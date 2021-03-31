@@ -1,0 +1,287 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:5000'
+    description: ''
+    variables: {}
+info:
+  version: 55ff2a52-75ff-4308-849f-3e9ec17666b3
+  title: PladMed
+  description: ''
+  termsOfService: ''
+  contact: {}
+  license:
+    name: ''
+paths:
+  /traceroute:
+    post:
+      summary: Traceroute
+      operationId: Traceroute
+      parameters:
+        - $ref: '#/components/parameters/access_token'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example:
+                operation: traceroute
+                probes:
+                  - 6047c91ef391a23bca4c31d8
+                params:
+                  cron: '* * * * *'
+                  times_per_minute: 1
+                  stop_time: '07/03/2021 05:56'
+                  firsthop: 5
+                  ips:
+                    - 179.60.195.36
+                  fqdns:
+                    - ar.yahoo.com
+            example: "{\n\t\"operation\": \"traceroute\",\n\t\"probes\": [\"6047c91ef391a23bca4c31d8\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"07/03/2021 05:56\",\n\t\t\"firsthop\": 5,\n\t\t\"ips\": [\"179.60.195.36\"],\n        \"fqdns\": [\"ar.yahoo.com\"]\n\t}\n}"
+  /dns:
+    post:
+      summary: DNS
+      operationId: DNS
+      parameters:
+        - name: access_token
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: >-
+              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDI1ZWY0MWIwNjg5MTFlYjYyNjQzNmIiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIn0.KVvkiBYnGqnWVCQQE4yM4F-re3eBJA7BLILtyr41nmc
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example:
+                operation: dns
+                probes:
+                  - 6047e7202a003d6b564ab99a
+                params:
+                  cron: '* * * * *'
+                  times_per_minute: 1
+                  stop_time: '09/03/2021 23:59'
+                  fqns:
+                    - www.google.com
+                    - ar.yahoo.com
+            example: "{\n\t\"operation\": \"dns\",\n\t\"probes\": [\"6047e7202a003d6b564ab99a\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"09/03/2021 23:59\",\n        \"fqns\": [\"www.google.com\", \"ar.yahoo.com\"]\n    }\n}"
+  /ping:
+    post:
+      summary: Ping
+      operationId: Ping
+      parameters:
+        - name: access_token
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: >-
+              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example:
+                operation: ping
+                probes:
+                  - 6047e38e2a003d6b564ab999
+                params:
+                  cron: '* * * * *'
+                  times_per_minute: 1
+                  stop_time: '11/03/2021 23:59'
+                  fqdns:
+                    - www.google.com
+                    - ar.yahoo.com
+                  ips:
+                    - 104.21.234.2
+                  result_format: json
+            example: "{\n\t\"operation\": \"ping\",\n\t\"probes\": [\"6047e38e2a003d6b564ab999\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"11/03/2021 23:59\",\n        \"fqdns\": [\"www.google.com\", \"ar.yahoo.com\"],\n        \"ips\": [\"104.21.234.2\"],\n        \"result_format\": \"json\"\n    }\n}"
+  /register:
+    post:
+      summary: Register
+      operationId: Register
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example:
+                email: deramos@fi.uba.ar
+                password: zaRandaja57
+            example: |-
+              {
+                  "email": "deramos@fi.uba.ar",
+                  "password": "zaRandaja57"
+              }
+  /login:
+    post:
+      summary: Login
+      operationId: Login
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example:
+                email: deramos@fi.uba.ar
+                password: zaRandaja57
+            example: |-
+              {
+                  "email": "deramos@fi.uba.ar",
+                  "password": "zaRandaja57"
+              }
+  /probes:
+    get:
+      summary: Get Probes
+      operationId: GetProbes
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+    post:
+      summary: Register Probe
+      operationId: RegisterProbe
+      parameters:
+        - name: access_token
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: >-
+              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /users/me:
+    get:
+      summary: User
+      description: Get user description
+      operationId: User
+      parameters:
+        - name: access_token
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: >-
+              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /operation:
+    get:
+      summary: Operation
+      operationId: Operation
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /delete_all:
+    delete:
+      summary: Delete All
+      operationId: DeleteAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /credits:
+    post:
+      summary: Credits
+      operationId: Credits
+      parameters:
+        - name: access_token
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: >-
+              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTYyYWVkMzc2MGM5MjA4MGVlZWEiLCJlbWFpbCI6ImRlcmFtb3Nfc3VwZXJAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjp0cnVlfQ.xfpSFP8dSlB3w0ItsjAW1uUvzQDW6kvt1Uh8HjD_2D0
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example:
+                id: 6047e33c2a003d6b564ab998
+                credits: 100000
+            example: |-
+              {
+                  "id": "6047e33c2a003d6b564ab998",
+                  "credits": 100000
+              }
+components:
+  parameters:
+    access_token:
+      name: access_token
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: >-
+          eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDI1ZWY0MWIwNjg5MTFlYjYyNjQzNmIiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIn0.KVvkiBYnGqnWVCQQE4yM4F-re3eBJA7BLILtyr41nmc
+    id:
+      name: id
+      in: query
+      required: true
+      style: form
+      schema:
+        type: string
+        example: 6047e7202a003d6b564ab99a
+security: []
+tags: []
+externalDocs:
+  url: ''
+  description: ''
+warnings:
+  - >-
+    Two GET or two POST methods for the same path are not allowed in OpenAPI
+    specification : posthttp://localhost:5000/login
+  - >-
+    Two GET or two POST methods for the same path are not allowed in OpenAPI
+    specification : gethttp://localhost:5000/users/me

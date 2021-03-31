@@ -1,0 +1,378 @@
+{
+	"info": {
+		"_postman_id": "55ff2a52-75ff-4308-849f-3e9ec17666b3",
+		"name": "PladMed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Traceroute",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "access_token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDI1ZWY0MWIwNjg5MTFlYjYyNjQzNmIiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIn0.KVvkiBYnGqnWVCQQE4yM4F-re3eBJA7BLILtyr41nmc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"operation\": \"traceroute\",\n\t\"probes\": [\"6047c91ef391a23bca4c31d8\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"07/03/2021 05:56\",\n\t\t\"firsthop\": 5,\n\t\t\"ips\": [\"179.60.195.36\"],\n        \"fqdns\": [\"ar.yahoo.com\"]\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/traceroute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"traceroute"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DNS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "access_token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDI1ZWY0MWIwNjg5MTFlYjYyNjQzNmIiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIn0.KVvkiBYnGqnWVCQQE4yM4F-re3eBJA7BLILtyr41nmc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"operation\": \"dns\",\n\t\"probes\": [\"6047e7202a003d6b564ab99a\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"09/03/2021 23:59\",\n        \"fqns\": [\"www.google.com\", \"ar.yahoo.com\"]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/dns",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"dns"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ping",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "access_token",
+						"type": "text",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"operation\": \"ping\",\n\t\"probes\": [\"6047e38e2a003d6b564ab999\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"11/03/2021 23:59\",\n        \"fqdns\": [\"www.google.com\", \"ar.yahoo.com\"],\n        \"ips\": [\"104.21.234.2\"],\n        \"result_format\": \"json\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/ping",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"deramos@fi.uba.ar\",\n    \"password\": \"zaRandaja57\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"deramos@fi.uba.ar\",\n    \"password\": \"zaRandaja57\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Superuser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"deramos_super@fi.uba.ar\",\n    \"password\": \"test123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Probes",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "access_token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiNjAyNWYwNDFiMDY4OTExZWI2MjY0MzZjIn0.snsFWduiH6S3bYzMeKSDzrhCmEz3Fy_Zcm2FKKmB_-U",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/probes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"probes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Probe",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "access_token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/probes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"probes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "access_token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/users/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"users",
+						"me"
+					]
+				},
+				"description": "Get user description"
+			},
+			"response": []
+		},
+		{
+			"name": "User (Super)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "access_token",
+						"type": "text",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZDQwNTA3NjBkOTg2ZjU4M2IwMDYiLCJlbWFpbCI6ImRlcmFtb3Nfc3VwZXJAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjp0cnVlfQ.Qy9E259OVwee7jlbcgopu5bZYTpaBzemmUpDaB-HBcU"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/users/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"users",
+						"me"
+					]
+				},
+				"description": "Get user description"
+			},
+			"response": []
+		},
+		{
+			"name": "Operation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/operation?id=6047e7202a003d6b564ab99a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"operation"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "6047e7202a003d6b564ab99a"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/delete_all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"delete_all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Credits",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "access_token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTYyYWVkMzc2MGM5MjA4MGVlZWEiLCJlbWFpbCI6ImRlcmFtb3Nfc3VwZXJAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjp0cnVlfQ.xfpSFP8dSlB3w0ItsjAW1uUvzQDW6kvt1Uh8HjD_2D0",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"6047e33c2a003d6b564ab998\",\n    \"credits\": 100000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/credits",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"credits"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
