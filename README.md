@@ -51,7 +51,7 @@ LOG_FILE=server.log #Log file location
 
 ##### Architecture and robustness considerations
 
-![Robustness diagram](docs/robustness-diagram.png)
+![Architecture diagram](docs/architecture-diagram.png)
 
 In this diagram, the system's architectural focus on robustness can be appreciated. For starters, there's the actors who trigger events by sending messages against an instance of pladmed-backend. On the full system, this will be done by pladmed-frontend. Each instance of pladmed-backend will use MongoDB for persisting its data, and a Chrony server/client for time synchronization.
 
