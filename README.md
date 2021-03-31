@@ -49,9 +49,7 @@ MONGO_PORT=<mongo-port:27017> #Database service port
 LOG_FILE=server.log #Log file location
 ```
 
-####Arquitectura
-
-##### Robustness and system characteristics
+##### Architecture and robustness considerations
 
 ![Robustness diagram](docs/robustness-diagram.png)
 
