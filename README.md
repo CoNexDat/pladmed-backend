@@ -5,14 +5,15 @@
 [![codecov](https://codecov.io/gh/fedefunes96/pladmed-backend/branch/master/graph/badge.svg?token=YTU6E27H7T)](https://codecov.io/gh/fedefunes96/pladmed-backend)
 
 - [Pladmed backend](#pladmed-backend)
-      - [Configuration](#configuration)
-        - [Architecture and robustness considerations](#architecture-and-robustness-considerations)
-      - [Class Diagram](#class-diagram)
-        - [Deployment](#deployment)
-        - [Time synchronization](#time-synchronization)
-      - [Endpoints / pladmed-backend web API documentation](#endpoints--pladmed-backend-web-api-documentation)
+  - [How to run locally](#how-to-run-locally)
+  - [Configuration](#configuration)
+  - [Architecture and robustness considerations](#architecture-and-robustness-considerations)
+  - [Class Diagram](#class-diagram)
+  - [Deployment](#deployment)
+  - [Time synchronization](#time-synchronization)
+  - [Endpoints / pladmed-backend web API documentation](#endpoints--pladmed-backend-web-api-documentation)
 
-**How to run**
+## How to run locally
 You can run everything through Docker:
 
 - make start: Starts the server
@@ -23,7 +24,7 @@ You can run everything through Docker:
 
 Accessible (default) at http://localhost:5000/
 
-#### Configuration
+## Configuration
 
 To configure the Mongo database that will run in a separate Docker container via docker-compose, a file named `.env_database` will need to be created at the repository's root level. This file will contain the environment variables for configuring the database container. See `.env_database.example` for the default values.
 
@@ -57,7 +58,7 @@ MONGO_PORT=<mongo-port:27017> #Database service port
 LOG_FILE=server.log #Log file location
 ```
 
-##### Architecture and robustness considerations
+## Architecture and robustness considerations
 
 ![Architecture diagram](docs/architecture-diagram.png)
 
@@ -69,11 +70,11 @@ Regarding Chrony, it can act both as a client (for adjusting the server's clock)
 
 The servers communicate with the probes via web sockets; this simplifies communication, since objects can be sent straight away and there is no need to design an internal protocol, or middleware. For scaling up, adding more servers and a publisher/subscriber broker (Redis, Kafka, RabbitMQ) is the way to go.
 
-#### Class Diagram
+## Class Diagram
 
 [pladmed-backend class diagram](docs/class-diagram.md)
 
-##### Deployment
+## Deployment
 
 ![Deployment diagram](docs/deployment-diagram.png)
 
@@ -87,7 +88,7 @@ Secondly, each server will have three docker containers:
 2. db: Runs a MongoDB database instance for persisting users, operations and their results.
 3. chrony: Runs a Chrony client/server. Acts as an NTP client for pladmed-backend, and as an NTP server for probes.
 
-##### Time synchronization
+## Time synchronization
 
 This is performed using [Chrony](https://github.com/mlichvar/chrony). A Chrony instance is ran inside its own Docker container, ideally in the same host and Docker network as pladmed-backend, using it as a client for adjusting the server's clock. Since a Chrony instance can act both as an NTP client and NTP server, it does so, acting as an NTP server to the probes, improving the system scalability and reducing the load on public NTP servers. Visually:
 
@@ -95,7 +96,7 @@ This is performed using [Chrony](https://github.com/mlichvar/chrony). A Chrony i
 
 Assuming there's a public NTP server in the p stratum, then a pladmed-backend instance which sync with it will be in stratum (p+1). Since the same Chrony instance will act as an NTP server for the probes, all of them will be in stratum p+2. This is fine because probes measure relative times: clock drift doesn't affect them critically.
  
-#### Endpoints / pladmed-backend web API documentation
+## Endpoints / pladmed-backend web API documentation
 
 Inside the  `docs/endpoints` directory, there's a .yaml [Swagger](https://swagger.io/tools/swagger-ui/) file which can be used for viewing and testing the web API endpoints.
 
