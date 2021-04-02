@@ -2,7 +2,7 @@
 
 ## A possible deployment strategy
 
-![Deployment diagram](docs/deployment-diagram.png)
+![Deployment diagram](deployment-diagram.png)
 
 This diagram depicts the recommended deployment strategy for the system as a whole.
 
@@ -14,6 +14,21 @@ Secondly, each server will have three docker containers:
 2. db: Runs a MongoDB database instance for persisting users, operations and their results.
 3. chrony: Runs a Chrony client/server. Acts as an NTP client for pladmed-backend, and as an NTP server for probes.
 
-## pladmed-backend installation in a server environment
+## pladmed-backend installation in an Apache2 server environment
 
-TODO
+Since pladmed-backend is dockerized, the simplest way to run it inside Apache2 is to use a reverse proxy. That requires adding the following modules (assuming a Debian-like Linux distro for the server):
+
+```
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+sudo a2enmod proxy_balancer
+sudo a2enmod lbmethod_byrequests
+```
+
+Then, when configuring the Apache2 virtual host, the following directives will be necessary (assuming pladmed-backend is running on port 5000):
+
+```
+ProxyRequests On
+ProxyPass /api http://0.0.0.0:5000/
+ProxyPassReverse /api http://0.0.0.0:5000/
+```
