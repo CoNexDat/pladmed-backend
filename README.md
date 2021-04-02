@@ -4,6 +4,14 @@
 
 [![codecov](https://codecov.io/gh/fedefunes96/pladmed-backend/branch/master/graph/badge.svg?token=YTU6E27H7T)](https://codecov.io/gh/fedefunes96/pladmed-backend)
 
+- [Pladmed backend](#pladmed-backend)
+      - [Configuration](#configuration)
+        - [Architecture and robustness considerations](#architecture-and-robustness-considerations)
+      - [Class Diagram](#class-diagram)
+        - [Deployment](#deployment)
+        - [Time synchronization](#time-synchronization)
+      - [Endpoints / pladmed-backend web API documentation](#endpoints--pladmed-backend-web-api-documentation)
+
 **How to run**
 You can run everything through Docker:
 
