@@ -62,6 +62,7 @@ Alternatively, in the same directory, there is a [Postman](https://www.postman.c
 
 ## Additional documentation
 
+- [Creating a super user](docs/super-user.md)
 - [Architecture](docs/architecture.md)
 - [Class diagram and class responsibilites](docs/class-diagram.md)
 - [Deployment/installation](docs/deployment.md)
