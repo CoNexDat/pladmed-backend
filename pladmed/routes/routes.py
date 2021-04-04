@@ -215,7 +215,17 @@ def register_probe():
 def all_probes():
     probes = current_app.db.probes.find_all_probes()
 
-    return make_response(jsonify(probes), HTTP_OK)
+    probes_data = []
+
+    for probe in probes:
+        data = probe.public_data()
+
+        if probe in current_app.probes:
+            data["connected"] = True
+        
+        probes_data.append(data)
+
+    return make_response(jsonify(probes_data), HTTP_OK)
 
 
 @api.route('/delete_all', methods=["DELETE"])
