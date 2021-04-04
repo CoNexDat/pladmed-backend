@@ -5,6 +5,9 @@ from pladmed import socketio
 from unittest import mock
 import pladmed.routes.events as events
 import pladmed.routes.routes as routes
+from pladmed.utils.response import (
+    HTTP_OK, HTTP_NO_AUTH, HTTP_CREATED
+)
 
 
 class ProbeBaseTest(BaseTest):
@@ -441,12 +444,12 @@ class ProbeTest(BaseTest):
             json=dict(location=self.LOCATION)
         )
 
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, HTTP_CREATED)
 
     def test_register_probe_doesnt_work_without_token(self):
         res = self.client.post('/probes')
 
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, HTTP_NO_AUTH)
 
     def test_register_probe_doesnt_work_without_invalid_token(self):
         res = self.client.post(
@@ -454,7 +457,7 @@ class ProbeTest(BaseTest):
             headers={'access_token': "fake_token"}
         )
 
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, HTTP_NO_AUTH)
 
     def test_register_probe_correctly_gets_token(self):
         self.assertEqual(len(self.access_token) > 0, True)
@@ -463,6 +466,18 @@ class ProbeTest(BaseTest):
         res = self.client.get(
             '/probes'
         )
+        self.assertEqual(res.status_code, HTTP_OK)
+
+        data = json.loads(res.data)
+
+        self.assertEqual(len(data), 1)
+
+    def test_get_user_probes(self):
+        res = self.client.get(
+            '/probes/me',
+            headers={'access_token': self.access_token},
+        )
+        self.assertEqual(res.status_code, HTTP_OK)
 
         data = json.loads(res.data)
 
