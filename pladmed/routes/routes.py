@@ -215,7 +215,21 @@ def register_probe():
 def all_probes():
     probes = current_app.db.probes.find_all_probes()
 
-    return make_response(jsonify(probes), HTTP_OK)
+    probes_data = []
+
+    for probe in probes:
+        data = probe.public_data()
+        data["connected"] = False
+
+        if probe in current_app.probes:
+            conn = current_app.probes[probe]
+
+            data["connected"] = True
+            data["availability"] = 1.0 - conn.in_use_credits / conn.total_credits
+        
+        probes_data.append(data)
+
+    return make_response(jsonify(probes_data), HTTP_OK)
 
 
 @api.route('/probes/me', methods=["GET"])
