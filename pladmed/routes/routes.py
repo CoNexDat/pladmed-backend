@@ -232,6 +232,15 @@ def all_probes():
     return make_response(jsonify(probes_data), HTTP_OK)
 
 
+@api.route('/probes/me', methods=["GET"])
+@user_protected
+def probes_by_user():
+    user = request.user
+    probes = current_app.db.probes.find_by_user(user._id)
+
+    return make_response(jsonify(probes), HTTP_OK)
+
+
 @api.route('/delete_all', methods=["DELETE"])
 def delete_all():
     if current_app.config["ENV"] == "production":
