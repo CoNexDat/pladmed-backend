@@ -54,9 +54,25 @@ def validate_user_data(data):
     if "password" not in data or data["password"] == "":
         return "Missing password field"
     addr = address.validate_address(data["email"])
-    if addr != None:
-        return ""
-    return "Email address has invalid format, or MX domain does not exist"
+    if addr == None:
+        return "Email address has invalid format, or MX domain does not exist"
+
+    password = data["password"]
+    special_characters = '!"@#$%^&*()-+?_=,/'
+    rules = [lambda s: any(x.isupper() for x in s),  # must have at least one uppercase
+             # must have at least one lowercase
+             lambda s: any(x.islower() for x in s),
+             lambda s: any(x.isdigit()
+                           for x in s),  # must have at least one digit
+             # must be at least 8 characters
+             lambda s: len(s) >= 8,
+             lambda s: any(x in special_characters for x in s),
+             ]
+
+    if not all(rule(password) for rule in rules):
+        return "Password must have at least 8 characters, 1 uppercase character, 1 lowercase, 1 digit and 1 special character"
+
+    return ""
 
 
 def validate_credits(data):
