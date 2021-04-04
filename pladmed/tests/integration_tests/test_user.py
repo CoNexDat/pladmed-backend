@@ -2,19 +2,20 @@ import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
 
+
 class UserTest(BaseTest):
     def test_get_user_data(self):
-        access_token = self.register_user()
+        access_token = self.register_predefined_user()
 
         res = self.client.get(
-            '/users/me', 
+            '/users/me',
             headers={'access_token': access_token}
         )
-        
+
         self.assertEqual(res.status_code, 200)
 
     def test_get_user_data_fails_no_token(self):
-        self.register_user()
+        self.register_predefined_user()
 
         res = self.client.get(
             '/users/me'
@@ -23,7 +24,7 @@ class UserTest(BaseTest):
         self.assertEqual(res.status_code, 401)
 
     def test_get_user_data_fails_invalid_token(self):
-        self.register_user()
+        self.register_predefined_user()
 
         res = self.client.get(
             '/users/me',
@@ -35,10 +36,10 @@ class UserTest(BaseTest):
         self.assertEqual(res.status_code, 401)
 
     def test_get_user_data_returns_user_data(self):
-        access_token = self.register_user()
+        access_token = self.register_predefined_user()
 
         res = self.client.get(
-            '/users/me', 
+            '/users/me',
             headers={'access_token': access_token}
         )
 
@@ -50,5 +51,5 @@ class UserTest(BaseTest):
             "credits",
             "is_superuser"
         )
-        
+
         self.assertEqual(len(data.keys() - expected_data), 0)

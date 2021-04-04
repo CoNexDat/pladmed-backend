@@ -28,18 +28,21 @@ class BaseTest(unittest.TestCase):
 
         return json.loads(res.data)["access_token"]
 
-    def register_user(self):
+    def register_predefined_user(self):
+        return self.register_user("agustin@gmail.com", "secure_password")
+
+    def register_user(self, email, password):
         self.client.post('/register', json=dict(
-            email="agustin@gmail.com",
-            password="secure_password"
+            email=email,
+            password=password
         ))
 
         res = self.client.post('/login', json=dict(
-            email="agustin@gmail.com",
-            password="secure_password"
+            email=email,
+            password=password
         ))
 
-        user = self.app.db.users.find_user("agustin@gmail.com")
+        user = self.app.db.users.find_user(email)
         self.app.db.users.change_credits(user, 400)
 
         return json.loads(res.data)["access_token"]

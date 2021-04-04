@@ -67,7 +67,7 @@ class ProbeTest(BaseTest):
     def setUp(self):
         super().setUp()
 
-        self.access_token = self.register_user()
+        self.access_token = self.register_predefined_user()
         self.probe_conn = self.start_connection(
             self.access_token, self.LOCATION)
 
@@ -482,3 +482,22 @@ class ProbeTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(len(data), 1)
+
+    def test_get_only_user_probes(self):
+        # Register another user and probes to his name
+        otherUserToken = self.register_user(
+            "ruperto@gmail.com", "ultra_secure_password")
+        location = {"longitude": 179.1969, "latitude": 8.5239}
+        self.register_probe(otherUserToken, location)
+        self.register_probe(otherUserToken, location)
+
+        # Get the predefined user's probe, and validate it's the only one
+        res = self.client.get(
+            '/probes/me',
+            headers={'access_token': self.access_token},
+        )
+        self.assertEqual(res.status_code, HTTP_OK)
+
+        probeData = json.loads(res.data)
+
+        self.assertEqual(len(probeData), 1)
