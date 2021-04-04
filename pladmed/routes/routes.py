@@ -147,8 +147,9 @@ def do_operation(operation, probes, data, credits_per_probe):
 def create_user():
     data = request.get_json(force=True)
 
-    if not validate_user_data(data):
-        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+    validation_error = validate_user_data(data)
+    if validation_error != "":
+        return error_response(HTTP_BAD_REQUEST, validation_error)
 
     try:
         user = current_app.db.users.create_user(

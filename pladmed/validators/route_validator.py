@@ -1,5 +1,6 @@
 from pladmed.validators.operations_validator import TRACEROUTE_PARAMS, PING_PARAMS, DNS_PARAMS
 from pladmed.validators.command_validator import InvalidParam
+from flanker.addresslib import address
 
 
 def validate_params(data, valid_params):
@@ -48,7 +49,14 @@ def validate_operation(data, valid_params):
 
 
 def validate_user_data(data):
-    return "email" in data and data["email"] != "" and "password" in data and data["password"] != ""
+    if "email" not in data or data["email"] == "":
+        return "Missing email field"
+    if "password" not in data or data["password"] == "":
+        return "Missing password field"
+    addr = address.validate_address(data["email"])
+    if addr != None:
+        return ""
+    return "Email address has invalid format, or MX domain does not exist"
 
 
 def validate_credits(data):
