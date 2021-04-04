@@ -221,7 +221,10 @@ def all_probes():
         data = probe.public_data()
 
         if probe in current_app.probes:
+            conn = current_app.probes[probe]
+
             data["connected"] = True
+            data["availability"] = 1.0 - conn.in_use_credits / conn.total_credits
         
         probes_data.append(data)
 

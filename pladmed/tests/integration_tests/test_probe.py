@@ -476,3 +476,12 @@ class ProbeTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data[0]["connected"], True)
+
+    def test_get_all_probes_includes_availability(self):
+        res = self.client.get(
+            '/probes'
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data[0]["availability"], 1.0)
