@@ -11,7 +11,7 @@ class OperationTest(BaseTest):
     def setUp(self):
         super().setUp()
 
-        self.access_token = self.register_user()
+        self.access_token = self.register_predefined_user()
         self.probe_conn = self.start_connection(
             self.access_token, self.LOCATION)
 

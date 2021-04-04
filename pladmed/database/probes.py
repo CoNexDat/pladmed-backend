@@ -54,6 +54,18 @@ class ProbesCollection:
 
         return probes
 
+    def find_by_user(self, user_id):
+        probes = []
+
+        user_query = {"owner": ObjectId(user_id)}
+
+        for probe in self.probesCol.find(user_query):
+            location = self.from_geo_json(probe["location"])
+            probes.append(
+                Probe(str(probe["_id"]), str(probe["owner"]), location))
+
+        return probes
+
     def find_selected_probes(self, identifiers):
         probes = []
 
