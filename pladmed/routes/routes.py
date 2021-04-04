@@ -219,6 +219,7 @@ def all_probes():
 
     for probe in probes:
         data = probe.public_data()
+        data["connected"] = False
 
         if probe in current_app.probes:
             conn = current_app.probes[probe]

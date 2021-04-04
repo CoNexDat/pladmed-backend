@@ -485,3 +485,16 @@ class ProbeTest(BaseTest):
         data = json.loads(res.data)
 
         self.assertEqual(data[0]["availability"], 1.0)
+
+    def test_get_all_probes_includes_status_of_no_connected_probes(self):
+        self.probe_conn = self.register_probe(
+            self.access_token, self.LOCATION
+        )
+
+        res = self.client.get(
+            '/probes'
+        )
+
+        data = json.loads(res.data)
+
+        self.assertEqual(data[1]["connected"], False)
