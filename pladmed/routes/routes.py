@@ -233,8 +233,9 @@ def all_probes():
             conn = current_app.probes[probe]
 
             data["connected"] = True
-            data["availability"] = 1.0 - conn.in_use_credits / conn.total_credits
-        
+            data["availability"] = 1.0 - \
+                conn.in_use_credits / conn.total_credits
+
         probes_data.append(data)
 
     return make_response(jsonify(probes_data), HTTP_OK)
@@ -245,6 +246,9 @@ def all_probes():
 def probes_by_user():
     user = request.user
     probes = current_app.db.probes.find_by_user(user._id)
+
+    for probe in probes:
+        probe.token = current_app.token.create_token(probe.public_data())
 
     return make_response(jsonify(probes), HTTP_OK)
 
