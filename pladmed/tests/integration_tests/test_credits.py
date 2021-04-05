@@ -20,7 +20,7 @@ class CreditsTest(BaseTest):
     def test_give_credits_to_user(self):
         access_token = self.register_superuser()
 
-        user = self.app.db.users.find_user("diego@gmail.com")
+        user = self.app.db.users.find_user("diego.lopez@gmail.com")
 
         res = self.client.post('/credits',
                                json=dict(

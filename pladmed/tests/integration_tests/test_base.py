@@ -15,21 +15,21 @@ class BaseTest(unittest.TestCase):
 
     def register_superuser(self):
         user = self.app.db.users.create_user(
-            email="diego@gmail.com",
-            password="123",
+            email="diego.lopez@gmail.com",
+            password="seCure123!",
             is_superuser=True,
             credits_=400
         )
 
         res = self.client.post('/login', json=dict(
-            email="diego@gmail.com",
-            password="123"
+            email="diego.lopez@gmail.com",
+            password="seCure123!"
         ))
 
         return json.loads(res.data)["access_token"]
 
     def register_predefined_user(self):
-        return self.register_user("agustin@gmail.com", "secure_password")
+        return self.register_user("agustin@gmail.com", "secure_Password1")
 
     def register_user(self, email, password):
         self.client.post('/register', json=dict(
@@ -55,7 +55,6 @@ class BaseTest(unittest.TestCase):
         )
 
         data = json.loads(res.data)
-
         return data["token"]
 
     def start_connection(self, access_token, location):

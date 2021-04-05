@@ -4,11 +4,12 @@ import json
 from unittest import mock
 import os
 
+
 class DeleteAllTest(BaseTest):
     def test_deletes_everything(self):
         self.client.post('/register', json=dict(
             email="agustin@gmail.com",
-            password="secure_password"
+            password="secure_Password1"
         ))
 
         res = self.client.delete(
@@ -23,7 +24,7 @@ class DeleteAllTest(BaseTest):
 
         self.client.post('/register', json=dict(
             email="agustin@gmail.com",
-            password="secure_password"
+            password="secure_Password1"
         ))
 
         res = self.client.delete(

@@ -6,8 +6,9 @@ from unittest import mock
 import pladmed.routes.events as events
 import pladmed.routes.routes as routes
 from pladmed.utils.response import (
-    HTTP_OK, HTTP_NO_AUTH, HTTP_CREATED
+    HTTP_BAD_REQUEST, HTTP_OK, HTTP_NO_AUTH, HTTP_CREATED
 )
+from datetime import datetime
 
 
 class ProbeBaseTest(BaseTest):
@@ -97,7 +98,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -119,7 +123,10 @@ class ProbeTest(BaseTest):
             operation="ping",
             probes=[probes[0]["identifier"]],
             params={
-                "ips": ["192.168.0.0", "192.162.1.1"]
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             }
         ),
             headers={'access_token': self.access_token}
@@ -140,7 +147,10 @@ class ProbeTest(BaseTest):
             operation="dns",
             probes=[probes[0]["identifier"]],
             params={
-                "fqdns": ["www.google.com", "www.facebook.com"]
+                "fqdns": ["www.google.com", "www.facebook.com"],
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             }
         ),
             headers={'access_token': self.access_token}
@@ -162,7 +172,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -202,7 +215,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -249,7 +265,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -290,7 +309,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -401,7 +423,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -446,18 +471,27 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(res.status_code, HTTP_CREATED)
 
-    def test_register_probe_doesnt_work_without_token(self):
+    def test_register_probe_fails_without_token(self):
         res = self.client.post('/probes')
 
         self.assertEqual(res.status_code, HTTP_NO_AUTH)
 
-    def test_register_probe_doesnt_work_without_invalid_token(self):
+    def test_register_probe_fails_with_invalid_token(self):
         res = self.client.post(
             '/probes',
             headers={'access_token': "fake_token"}
         )
 
         self.assertEqual(res.status_code, HTTP_NO_AUTH)
+
+    def test_register_probe_fails_with_invalid_location(self):
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': self.access_token},
+            json=dict(location={"x": 180, "y": 0})
+        )
+
+        self.assertEqual(res.status_code, HTTP_BAD_REQUEST)
 
     def test_register_probe_correctly_gets_token(self):
         self.assertEqual(len(self.access_token) > 0, True)
@@ -517,7 +551,7 @@ class ProbeTest(BaseTest):
     def test_get_only_user_probes(self):
         # Register another user and probes to his name
         otherUserToken = self.register_user(
-            "ruperto@gmail.com", "ultra_secure_password")
+            "ruperto.gomez@gmail.com", "ultra_Secure_password1")
         location = {"longitude": 179.1969, "latitude": 8.5239}
         self.register_probe(otherUserToken, location)
         self.register_probe(otherUserToken, location)

@@ -1,6 +1,8 @@
+from os import truncate
 import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
+from datetime import datetime, time
 
 # TODO Reduce code duplication
 
@@ -24,121 +26,67 @@ class OperationTest(BaseTest):
         super().tearDown()
 
     def test_creates_traceroute(self):
+        self.create_operation("traceroute", {
+            "ips": ["192.168.0.0", "192.162.1.1"],
+            "confidence": 0.95,
+            "cron": "* * * * *",
+            "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "times_per_minute": 1
+        })
+
+    def test_creates_ping(self):
+        self.create_operation("ping", {
+            "ips": ["192.168.0.0", "192.162.1.1"],
+            "cron": "* * * * *",
+            "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "times_per_minute": 1
+        })
+
+    def test_creates_dns(self):
+        self.create_operation("dns", {
+            "fqdns": ["www.google.com", "www.facebook.com"],
+            "cron": "* * * * *",
+            "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "times_per_minute": 1
+        })
+
+    def create_operation(self, operation, params):
         res_probes = self.client.get('/probes')
 
         probes = json.loads(res_probes.data)
 
         res = self.client.post(
-            '/traceroute',
+            f"/{operation}",
             json=dict(
-                operation="traceroute",
+                operation=f"{operation}",
                 probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
+                params=params,
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
 
         data = json.loads(res.data)
-
-        self.assertEqual(201, res.status_code)
-        self.assertEqual(data["params"]["confidence"], 0.95)
-
-    def test_creates_ping(self):
-        res_probes = self.client.get('/probes')
-
-        probes = json.loads(res_probes.data)
-
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                }
-            ),
-            headers={'access_token': self.access_token}
-        )
-
-        data = json.loads(res.data)
-
-        self.assertEqual(201, res.status_code)
-
-    def test_creates_dns(self):
-        res_probes = self.client.get('/probes')
-
-        probes = json.loads(res_probes.data)
-
-        res = self.client.post(
-            '/dns',
-            json=dict(
-                operation="dns",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "fqdns": ["www.google.com", "www.facebook.com"]
-                }
-            ),
-            headers={'access_token': self.access_token}
-        )
-
-        data = json.loads(res.data)
-
         self.assertEqual(201, res.status_code)
 
     def test_creates_traceroute_requires_login(self):
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=["test_probe", "another_test_probe"],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                },
-                result_format="json"
-            )
-        )
-
-        data = json.loads(res.data)
-
-        self.assertEqual(401, res.status_code)
+        self.create_operation_requires_login("traceroute")
 
     def test_creates_ping_requires_login(self):
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=["test_probe", "another_test_probe"],
-                params={
-                    "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
-                }
-            )
-        )
-
-        data = json.loads(res.data)
-
-        self.assertEqual(401, res.status_code)
+        self.create_operation_requires_login("ping")
 
     def test_creates_dns_requires_login(self):
+        self.create_operation_requires_login("dns")
+
+    def create_operation_requires_login(self, operation):
         res = self.client.post(
-            '/dns',
+            f"/{operation}",
             json=dict(
-                operation="dns",
-                probes=["test_probe", "another_test_probe"],
-                params={
-                    "dns": ["www.google.com", "www.facebook.com"]
-                }
+                operation=f"{operation}",
+                probes=["test_probe", "another_test_probe"]
             )
         )
-
-        data = json.loads(res.data)
-
+        json.loads(res.data)
         self.assertEqual(401, res.status_code)
 
     def test_creates_traceroute_returns_404_invalid_probes(self):
@@ -149,7 +97,10 @@ class OperationTest(BaseTest):
                 probes=["test_probe", "another_test_probe"],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -261,47 +212,47 @@ class OperationTest(BaseTest):
         json.loads(res.data)
         self.assertEqual(400, res.status_code)
 
-    def test_create_traceroute_with_confidence_greater_or_equals_than_one_gets_rejected(self):
+    def test_create_dns_fails_with_invalid_cron(self):
+        self.create_operation_fails_with_invalid_cron("dns")
+
+    def test_create_ping_fails_with_invalid_cron(self):
+        self.create_operation_fails_with_invalid_cron("ping")
+
+    def test_create_traceroute_fails_with_invalid_cron(self):
+        self.create_operation_fails_with_invalid_cron("traceroute")
+
+    def create_operation_fails_with_invalid_cron(self, operation):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
-            '/traceroute',
+            f'/{operation}',
             json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
+                operation=operation,
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "confidence": 1
+                    "cron": "invalid",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
-                result_format="json"
+                result_format="json",
+                probes=[probes[0]["identifier"]]
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
         self.assertEqual(400, res.status_code)
+
+    def test_create_traceroute_with_confidence_greater_or_equals_than_one_gets_rejected(self):
+        self.create_traceroute_with_confidence(1, 400)
 
     def test_create_traceroute_with_confidence_lower_than_zero_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "confidence": -0.01
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_confidence(-0.01, 400)
 
     def test_create_traceroute_with_valid_confidence(self):
+        self.create_traceroute_with_confidence(0.99, 201)
+
+    def create_traceroute_with_confidence(self, confidence, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -312,76 +263,31 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "confidence": 0.99
+                    "confidence": confidence,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_traceroute_with_icp_method(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "method": "icp"
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.create_traceroute_with_method("icp", 201)
 
     def test_create_traceroute_with_udp_paris_method(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "method": "udp-paris"
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.create_traceroute_with_method("udp-paris", 201)
 
     def test_create_traceroute_with_icmp_paris_method(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "method": "icmp-paris"
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.create_traceroute_with_method("icmp-paris", 201)
 
-    def test_create_traceroute_with_invlaid_method_gets_rejected(self):
+    def test_create_traceroute_with_invalid_method_gets_rejected(self):
+        self.create_traceroute_with_method("thisIsAnInvalidMethod", 400)
+
+    def create_traceroute_with_method(self, method, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -392,56 +298,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "method": "thisIsAnInvalidMethod"
+                    "method": method,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_traceroute_with_maxttl_greater_than_255_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "maxttl": 256
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_maxttl(256, 400)
 
     def test_create_traceroute_with_maxttl_lower_than_one_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "maxttl": 0
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_maxttl(0, 400)
 
     def test_create_traceroute_with_valid_maxttl(self):
+        self.create_traceroute_with_maxttl(5, 201)
+
+    def create_traceroute_with_maxttl(self, maxttl, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -452,56 +330,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "maxttl": 5
+                    "maxttl": maxttl,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_traceroute_with_attempts_greater_than_10_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "attempts": 11
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_attempts(11, 400)
 
     def test_create_traceroute_with_attempts_lower_than_one_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "attempts": 0
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_attempts(0, 400)
 
     def test_create_traceroute_with_valid_attempts(self):
+        self.create_traceroute_with_attempts(5, 201)
+
+    def create_traceroute_with_attempts(self, attempts, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -512,56 +362,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "attempts": 5
+                    "attempts": attempts,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_traceroute_with_wait_greater_than_20_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait": 21
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_wait(21, 400)
 
     def test_create_traceroute_with_wait_lower_than_one_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait": 0
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_wait(0, 400)
 
     def test_create_traceroute_with_valid_wait(self):
+        self.create_traceroute_with_wait(5, 201)
+
+    def create_traceroute_with_wait(self, wait, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -572,56 +394,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "wait": 5
+                    "wait": wait,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_traceroute_with_wait_probe_greater_than_100_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait-probe": 101
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_wait_probe(101, 400)
 
     def test_create_traceroute_with_wait_probe_lower_than_zero_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/traceroute',
-            json=dict(
-                operation="traceroute",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait-probe": -1
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_traceroute_with_wait_probe(-1, 400)
 
     def test_create_traceroute_with_valid_wait_probe(self):
+        self.create_traceroute_with_wait_probe(5, 201)
+
+    def create_traceroute_with_wait_probe(self, wait_probe, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -632,56 +426,61 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "wait-probe": 5
+                    "wait-probe": wait_probe,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
+
+    def test_traceroute_without_cron(self):
+        self.create_traceroute_with_missing_time_param("cron")
+
+    def test_traceroute_without_stop_time(self):
+        self.create_traceroute_with_missing_time_param("stop_time")
+
+    def test_traceroute_without_times_per_minute(self):
+        self.create_traceroute_with_missing_time_param("times_per_minute")
+
+    def create_traceroute_with_missing_time_param(self, missing_param_name):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        traceroute_params = {
+            "ips": [],
+            "fqdns": ["www.google.com"],
+            "cron": "* * * * *",
+            "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "times_per_minute": 1
+        }
+        del traceroute_params[missing_param_name]
+        res = self.client.post(
+            '/traceroute',
+            json=dict(
+                operation="traceroute",
+                probes=[probes[0]["identifier"]],
+                params=traceroute_params,
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
 
     def test_create_ping_with_wait_probecount_greater_than_100_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "probecount": 101
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_wait_probe_count(101, 400)
 
     def test_create_ping_with_wait_probecount_lower_than_one_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "probecount": 0
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_wait_probe_count(0, 400)
 
     def test_create_ping_with_valid_wait_probecount(self):
+        self.create_ping_with_wait_probe_count(5, 201)
+
+    def create_ping_with_wait_probe_count(self, wait_probe_count, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -692,56 +491,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "probecount": 5
+                    "probecount": wait_probe_count,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_ping_with_wait_greater_than_20_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait": 21
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_wait(21, 400)
 
     def test_create_ping_with_wait_lower_than_one_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait": 0
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_wait(0, 400)
 
     def test_create_ping_with_valid_wait(self):
+        self.create_ping_with_wait(5, 201)
+
+    def create_ping_with_wait(self, wait, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -752,57 +523,76 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "wait": 5
+                    "wait": wait,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
+
+    def test_create_ping_without_cron(self):
+        self.create_dns_with_missing_timing_param("cron")
+
+    def test_create_ping_without_stop_time(self):
+        self.create_dns_with_missing_timing_param("stop_time")
+
+    def test_create_ping_without_times_per_minute(self):
+        self.create_dns_with_missing_timing_param("times_per_minute")
+
+    def create_ping_with_missing_timing_param(self, missing_param_name):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        ping_params = {
+            "ips": [],
+            "fqdns": ["www.google.com"],
+            "cron": "* * * * *",
+            "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "times_per_minute": 1
+        }
+        del ping_params[missing_param_name]
+        res = self.client.post(
+            '/ping',
+            json=dict(
+                operation="ping",
+                probes=[probes[0]["identifier"]],
+                params=ping_params,
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
 
     def test_create_ping_with_icmp_echo_method(self):
-        self.create_ping_with_method("icmp-echo")
+        self.create_ping_with_method("icmp-echo", 201)
 
     def test_create_ping_with_icmp_time_method(self):
-        self.create_ping_with_method("icmp-time")
+        self.create_ping_with_method("icmp-time", 201)
 
     def test_create_ping_with_tcp_syn_method(self):
-        self.create_ping_with_method("tcp-syn")
+        self.create_ping_with_method("tcp-syn", 201)
 
     def test_create_ping_with_tcp_ack_method(self):
-        self.create_ping_with_method("tcp-ack")
+        self.create_ping_with_method("tcp-ack", 201)
 
     def test_create_ping_with_tcp_ack_sport_method(self):
-        self.create_ping_with_method("tcp-ack-sport")
+        self.create_ping_with_method("tcp-ack-sport", 201)
 
     def test_create_ping_with_udp_method(self):
-        self.create_ping_with_method("udp")
+        self.create_ping_with_method("udp", 201)
 
     def test_create_ping_with_udp_dport_method(self):
-        self.create_ping_with_method("udp-dport")
-
-    def create_ping_with_method(self, method):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "method": method
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.create_ping_with_method("udp-dport", 201)
 
     def test_create_ping_with_invalid_method(self):
+        self.create_ping_with_method("thisIsAnInvalidMethod", 400)
+
+    def create_ping_with_method(self, method, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -813,56 +603,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "method": "thisIsAnInvalidMethod"
+                    "method": method,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_ping_with_size_greater_than_255_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait": 256
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_size(256, 400)
 
     def test_create_ping_with_size_lower_than_one_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "size": 0
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_size(0, 400)
 
     def test_create_ping_with_valid_size(self):
+        self.create_ping_with_size(5, 201)
+
+    def create_ping_with_size(self, size, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -873,56 +635,28 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "size": 5
+                    "size": size,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_ping_with_timeout_greater_than_100_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "wait": 101
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_timeout(101, 400)
 
     def test_create_ping_with_timeout_lower_than_zero_gets_rejected(self):
-        res_probes = self.client.get('/probes')
-        probes = json.loads(res_probes.data)
-        res = self.client.post(
-            '/ping',
-            json=dict(
-                operation="ping",
-                probes=[probes[0]["identifier"]],
-                params={
-                    "ips": [],
-                    "fqdns": ["www.google.com"],
-                    "size": -1
-                },
-                result_format="json"
-            ),
-            headers={'access_token': self.access_token}
-        )
-        json.loads(res.data)
-        self.assertEqual(400, res.status_code)
+        self.create_ping_with_timeout(-1, 400)
 
     def test_create_ping_with_valid_timeout(self):
+        self.create_ping_with_timeout(5, 201)
+
+    def create_ping_with_timeout(self, timeout, expected_status_code):
         res_probes = self.client.get('/probes')
         probes = json.loads(res_probes.data)
         res = self.client.post(
@@ -933,14 +667,17 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "timeout": 5
+                    "timeout": timeout,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
         )
         json.loads(res.data)
-        self.assertEqual(201, res.status_code)
+        self.assertEqual(expected_status_code, res.status_code)
 
     def test_create_dns_with_a_type(self):
         self.create_dns_with_type("a")
@@ -977,7 +714,10 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "type": type
+                    "type": type,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -997,8 +737,44 @@ class OperationTest(BaseTest):
                 params={
                     "ips": [],
                     "fqdns": ["www.google.com"],
-                    "type": "invalidType"
+                    "type": "invalidType",
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+        json.loads(res.data)
+        self.assertEqual(400, res.status_code)
+
+    def test_create_dns_without_cron(self):
+        self.create_dns_with_missing_timing_param("cron")
+
+    def test_create_dns_without_stop_time(self):
+        self.create_dns_with_missing_timing_param("stop_time")
+
+    def test_create_dns_without_times_per_minute(self):
+        self.create_dns_with_missing_timing_param("times_per_minute")
+
+    def create_dns_with_missing_timing_param(self, missing_param_name):
+        res_probes = self.client.get('/probes')
+        probes = json.loads(res_probes.data)
+        dns_params = {
+            "ips": [],
+            "fqdns": ["www.google.com"],
+            "cron": "* * * * *",
+            "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "times_per_minute": 1
+        }
+        del dns_params[missing_param_name]
+        res = self.client.post(
+            '/dns',
+            json=dict(
+                operation="dns",
+                probes=[probes[0]["identifier"]],
+                params=dns_params,
                 result_format="json"
             ),
             headers={'access_token': self.access_token}
@@ -1017,7 +793,10 @@ class OperationTest(BaseTest):
                 params={
                     "ips": ["myIp"],
                     "fqdns": ["www.google.com"],
-                    "type": "txt"
+                    "type": "txt",
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1036,7 +815,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0].identifier],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1058,7 +840,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0].identifier],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1077,7 +862,10 @@ class OperationTest(BaseTest):
                 probes=["test_probe", "another_test_probe"],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1093,7 +881,10 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0].identifier],
                 params={
-                    "fqdns": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1111,7 +902,10 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=["test_probe", "another_test_probe"],
                 params={
-                    "fqdns": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1133,7 +927,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1156,7 +953,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1179,7 +979,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1214,7 +1017,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1246,7 +1052,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1272,7 +1081,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1293,7 +1105,10 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
-                    "ips": ["192.168.0.0", "192.162.1.1"]
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1313,7 +1128,10 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"]],
                 params={
-                    "fqdns": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1335,7 +1153,10 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
-                    "fqdns": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1359,7 +1180,10 @@ class OperationTest(BaseTest):
             json=dict(
                 probes=[probes[0]["identifier"], probes[1]["identifier"]],
                 params={
-                    "fqdns": ["www.google.com", "www.facebook.com"]
+                    "fqdns": ["www.google.com", "www.facebook.com"],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 }
             ),
             headers={'access_token': self.access_token}
@@ -1382,7 +1206,10 @@ class OperationTest(BaseTest):
                     "ips": [
                         "192.168.1.0", "192.168.1.0",
                         "192.168.1.0", "192.168.1.0"
-                    ]
+                    ],
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1406,7 +1233,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
@@ -1429,7 +1259,10 @@ class OperationTest(BaseTest):
                 probes=[probes[0]["identifier"]],
                 params={
                     "ips": ["192.168.0.0", "192.162.1.1"],
-                    "confidence": 0.95
+                    "confidence": 0.95,
+                    "cron": "* * * * *",
+                    "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
                 },
                 result_format="json"
             ),
