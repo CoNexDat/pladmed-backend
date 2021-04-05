@@ -11,3 +11,4 @@ jsonstream==0.0.1
 flanker==0.9.11
 redis==3.5.3
 dnsq==1.1.6
+croniter==1.0.10

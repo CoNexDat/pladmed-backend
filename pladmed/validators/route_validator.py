@@ -1,7 +1,9 @@
 from pladmed.validators.operations_validator import TRACEROUTE_PARAMS, PING_PARAMS, DNS_PARAMS
 from pladmed.validators.command_validator import InvalidParam
 from flanker.addresslib import address
+from croniter import croniter
 import numbers
+import datetime
 
 
 def validate_params(data, valid_params):
@@ -30,6 +32,24 @@ def validate_destinations(data):
     return total_destinations != 0
 
 
+def validate_timing_params(data):
+    if "cron" not in data:
+        return False
+    if not croniter.is_valid(data["cron"]):
+        return False
+
+    if "stop_time" not in data:
+        return False
+    try:
+        datetime.datetime.strptime(data["stop_time"], '%d/%m/%Y %H:%M')
+    except ValueError:
+        return False
+
+    if "times_per_minute" not in data:
+        return False
+    return isinstance(data["times_per_minute"], numbers.Number)
+
+
 def validate_traceroute(data):
     return validate_operation(data, TRACEROUTE_PARAMS)
 
@@ -46,7 +66,7 @@ def validate_operation(data, valid_params):
     if "probes" not in data or "params" not in data:
         return False
     return validate_probes(data["probes"]) and validate_params(data["params"], valid_params) and validate_destinations(
-        data["params"])
+        data["params"]) and validate_timing_params(data["params"])
 
 
 def validate_user_data_present(data):

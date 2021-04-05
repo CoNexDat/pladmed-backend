@@ -8,6 +8,7 @@ import pladmed.routes.routes as routes
 from pladmed.utils.response import (
     HTTP_BAD_REQUEST, HTTP_OK, HTTP_NO_AUTH, HTTP_CREATED
 )
+from datetime import datetime
 
 
 class ProbeBaseTest(BaseTest):
@@ -97,7 +98,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -119,7 +123,10 @@ class ProbeTest(BaseTest):
             operation="ping",
             probes=[probes[0]["identifier"]],
             params={
-                "ips": ["192.168.0.0", "192.162.1.1"]
+                "ips": ["192.168.0.0", "192.162.1.1"],
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             }
         ),
             headers={'access_token': self.access_token}
@@ -140,7 +147,10 @@ class ProbeTest(BaseTest):
             operation="dns",
             probes=[probes[0]["identifier"]],
             params={
-                "fqdns": ["www.google.com", "www.facebook.com"]
+                "fqdns": ["www.google.com", "www.facebook.com"],
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             }
         ),
             headers={'access_token': self.access_token}
@@ -162,7 +172,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -202,7 +215,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -249,7 +265,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -290,7 +309,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
@@ -401,7 +423,10 @@ class ProbeTest(BaseTest):
             probes=[probes[0]["identifier"]],
             params={
                 "ips": ["192.168.0.0", "192.162.1.1"],
-                "confidence": 0.95
+                "confidence": 0.95,
+                "cron": "* * * * *",
+                "stop_time": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "times_per_minute": 1
             },
             result_format="json"
         ),
