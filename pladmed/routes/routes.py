@@ -50,6 +50,9 @@ def create_operation(name, data, credits_per_probe, result_format):
 
         total_credits = credits_per_probe * len(available_probes)
 
+        if user.credits - total_credits < 0:
+            return error_response(HTTP_BAD_REQUEST, "Not enough credits")
+
         operation = current_app.db.operations.create_operation(
             name,
             data["params"],
@@ -60,9 +63,6 @@ def create_operation(name, data, credits_per_probe, result_format):
         )
 
         operation_data = operation.public_data()
-
-        if user.credits - total_credits < 0:
-            return error_response(HTTP_BAD_REQUEST, "Not enough credits")
 
         current_app.db.users.change_credits(user, user.credits - total_credits)
 
@@ -271,9 +271,17 @@ def probes_by_user():
 @user_protected
 def operations_by_user():
     user = request.user
+
     operations = current_app.db.operations.find_by_user(user._id)
 
-    return make_response(jsonify(operations), HTTP_OK)
+    data = []
+
+    for op in operations:
+        pub_data = op.public_data()
+
+        data.append(pub_data)
+
+    return make_response(jsonify(data), HTTP_OK)
 
 
 @api.route('/delete_all', methods=["DELETE"])
