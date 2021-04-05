@@ -38,27 +38,41 @@ class OperationsCollection:
         try:
             op = self.operationsCol.find_one({"_id": ObjectId(identifier)})
 
-            operation = Operation(
-                str(op["_id"]),
-                op["operation"],
-                op["params"],
-                [Probe(str(probe), str(op["owner"]), None)
-                 for probe in op["probes"]],
-                op["credits"],
-                op["result_format"]
-            )
-
-            if "results" in op:
-                for result in op["results"]:
-                    operation.add_results(
-                        str(result["probe"]),
-                        result["results"],
-                        result["unique_code"]
-                    )
-
-            return operation
+            return self.deserialize_operation(op)
         except:
             raise InvalidOperation()
+
+    def find_by_user(self, user_id):
+        operations = []
+
+        user_query = {"owner": ObjectId(user_id)}
+
+        for op in self.operationsCol.find(user_query):
+            operation = self.deserialize_operation(op)
+            operations.append(operation)
+
+        return operations
+
+    def deserialize_operation(self, raw_operation):
+        operation = Operation(
+            str(raw_operation["_id"]),
+            raw_operation["operation"],
+            raw_operation["params"],
+            [Probe(str(probe), str(raw_operation["owner"]), None)
+                for probe in raw_operation["probes"]],
+            raw_operation["credits"],
+            raw_operation["result_format"]
+        )
+
+        if "results" in raw_operation:
+            for result in raw_operation["results"]:
+                operation.add_results(
+                    str(result["probe"]),
+                    result["results"],
+                    result["unique_code"]
+                )
+
+        return operation
 
     def add_results(self, operation, probe, results, unique_code):
         new_results = {
