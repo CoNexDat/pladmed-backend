@@ -55,7 +55,6 @@ class BaseTest(unittest.TestCase):
         )
 
         data = json.loads(res.data)
-
         return data["token"]
 
     def start_connection(self, access_token, location):

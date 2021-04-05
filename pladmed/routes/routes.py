@@ -16,7 +16,7 @@ from pladmed.utils.credits_operations import (
 from pladmed import socketio
 from pladmed.validators.route_validator import (
     validate_traceroute, validate_ping, validate_dns, validate_user_data, validate_user_data_present,
-    validate_credits
+    validate_credits, validate_location
 )
 
 
@@ -205,6 +205,11 @@ def users_me():
 def register_probe():
     user = request.user
     location_json = request.get_json(force=True)
+
+    validation_error = validate_location(location_json)
+    if validation_error != "":
+        return error_response(HTTP_BAD_REQUEST, validation_error)
+
     location = location_json["location"]
 
     probe = current_app.db.probes.create_probe(user, location)

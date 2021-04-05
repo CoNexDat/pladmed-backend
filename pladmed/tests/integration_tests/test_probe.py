@@ -6,7 +6,7 @@ from unittest import mock
 import pladmed.routes.events as events
 import pladmed.routes.routes as routes
 from pladmed.utils.response import (
-    HTTP_OK, HTTP_NO_AUTH, HTTP_CREATED
+    HTTP_BAD_REQUEST, HTTP_OK, HTTP_NO_AUTH, HTTP_CREATED
 )
 
 
@@ -446,18 +446,27 @@ class ProbeTest(BaseTest):
 
         self.assertEqual(res.status_code, HTTP_CREATED)
 
-    def test_register_probe_doesnt_work_without_token(self):
+    def test_register_probe_fails_without_token(self):
         res = self.client.post('/probes')
 
         self.assertEqual(res.status_code, HTTP_NO_AUTH)
 
-    def test_register_probe_doesnt_work_without_invalid_token(self):
+    def test_register_probe_fails_with_invalid_token(self):
         res = self.client.post(
             '/probes',
             headers={'access_token': "fake_token"}
         )
 
         self.assertEqual(res.status_code, HTTP_NO_AUTH)
+
+    def test_register_probe_fails_with_invalid_location(self):
+        res = self.client.post(
+            '/probes',
+            headers={'access_token': self.access_token},
+            json=dict(location={"x": 180, "y": 0})
+        )
+
+        self.assertEqual(res.status_code, HTTP_BAD_REQUEST)
 
     def test_register_probe_correctly_gets_token(self):
         self.assertEqual(len(self.access_token) > 0, True)

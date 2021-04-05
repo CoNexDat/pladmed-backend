@@ -1,6 +1,7 @@
 from pladmed.validators.operations_validator import TRACEROUTE_PARAMS, PING_PARAMS, DNS_PARAMS
 from pladmed.validators.command_validator import InvalidParam
 from flanker.addresslib import address
+import numbers
 
 
 def validate_params(data, valid_params):
@@ -84,3 +85,16 @@ def validate_user_data(data):
 
 def validate_credits(data):
     return "id" in data and data["id"] != "" and "credits" in data and data["credits"] > 0
+
+
+def validate_location(data):
+    if not "location" in data or data["location"] == None:
+        return ""
+    location = data["location"]
+
+    if not "longitude" in location or location["longitude"] == None or not isinstance(location["longitude"], numbers.Number):
+        return "location.longitude is not a number"
+
+    if not "latitude" in location or location["latitude"] == None or not isinstance(location["latitude"], numbers.Number):
+        return "location.latitude is not a number"
+    return ""

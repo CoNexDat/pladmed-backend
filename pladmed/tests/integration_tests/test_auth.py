@@ -115,7 +115,7 @@ class AuthenticationTest(BaseTest):
 
     def test_login_fails_no_user_exists(self):
         res = self.client.post('/login', json=dict(
-            email="agustin@gmail.com",
+            email="agustin2@gmail.com",
             password="secure_Password1"
         ))
 
