@@ -31,5 +31,5 @@ class Operation:
         for result in self.results:
             if code == result["unique_code"]:
                 return True
-        
+
         return False
