@@ -247,10 +247,24 @@ def probes_by_user():
     user = request.user
     probes = current_app.db.probes.find_by_user(user._id)
 
-    for probe in probes:
-        probe.token = current_app.token.create_token(probe.public_data())
+    probes_data = []
 
-    return make_response(jsonify(probes), HTTP_OK)
+    for probe in probes:
+        data = probe.public_data()
+
+        data["token"] = current_app.token.create_token(data)
+        data["connected"] = False
+
+        if probe in current_app.probes:
+            conn = current_app.probes[probe]
+
+            data["connected"] = True
+            data["availability"] = 1.0 - \
+                conn.in_use_credits / conn.total_credits
+
+        probes_data.append(data)
+
+    return make_response(jsonify(probes_data), HTTP_OK)
 
 
 @api.route('/delete_all', methods=["DELETE"])
