@@ -486,7 +486,7 @@ class ProbeTest(BaseTest):
     def test_get_only_user_probes(self):
         # Register another user and probes to his name
         otherUserToken = self.register_user(
-            "ruperto@gmail.com", "ultra_secure_password")
+            "ruperto.gomez@gmail.com", "ultra_Secure_password1")
         location = {"longitude": 179.1969, "latitude": 8.5239}
         self.register_probe(otherUserToken, location)
         self.register_probe(otherUserToken, location)

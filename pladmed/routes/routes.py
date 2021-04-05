@@ -15,7 +15,8 @@ from pladmed.utils.credits_operations import (
 )
 from pladmed import socketio
 from pladmed.validators.route_validator import (
-    validate_traceroute, validate_ping, validate_dns, validate_user_data, validate_credits
+    validate_traceroute, validate_ping, validate_dns, validate_user_data, validate_user_data_present,
+    validate_credits
 )
 
 
@@ -170,8 +171,9 @@ def create_user():
 def login_user():
     data = request.get_json(force=True)
 
-    if not validate_user_data(data):
-        return error_response(HTTP_BAD_REQUEST, "Invalid data provided")
+    validation_error = validate_user_data_present(data)
+    if validation_error != "":
+        return error_response(HTTP_BAD_REQUEST, validation_error)
 
     try:
         user = current_app.db.users.find_user(data["email"])
