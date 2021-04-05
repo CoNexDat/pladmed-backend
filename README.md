@@ -54,7 +54,7 @@ MONGO_PORT=<mongo-port:27017> #Database service port
 
 LOG_FILE=server.log #Log file location
 ```
-## Endpoints / pladmed-backend web API documentation
+## Endpoints / pladmed-backend web API documentation 
 
 Inside the  `docs/endpoints` directory, there's a .yaml [Swagger](https://swagger.io/tools/swagger-ui/) file which can be used for viewing and testing the web API endpoints.
 
