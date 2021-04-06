@@ -74,9 +74,6 @@ def validate_user_data_present(data):
         return "Missing email field"
     if "password" not in data or data["password"] == "":
         return "Missing password field"
-    addr = address.validate_address(data["email"])
-    if addr == None:
-        return "Email address has invalid format, or MX domain does not exist"
     return ""
 
 
@@ -84,6 +81,10 @@ def validate_user_data(data):
     validation_error = validate_user_data_present(data)
     if validation_error != "":
         return validation_error
+
+    addr = address.validate_address(data["email"], skip_remote_checks=True)
+    if addr == None:
+        return "Email address has invalid format, or MX domain does not exist"
 
     password = data["password"]
     special_characters = '!"@#$%^&*()-+?_=,/'
