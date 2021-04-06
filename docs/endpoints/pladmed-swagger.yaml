@@ -17,17 +17,83 @@ paths:
       summary: Traceroute
       operationId: Traceroute
       parameters:
-        - $ref: '#/components/parameters/access_token'
+        - name: access_token
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
       responses:
-        '200':
-          description: ''
-          headers: {}
+        '201':
+          description: 'Created'
+        '400':
+          description: 'Invalid parameters'
+        '401':
+          description: 'Unauthorized'
       requestBody:
         required: true
         content:
-          text/plain:
+          application/json:
             schema:
-              type: string
+              type: object
+              properties:
+                operation: 
+                  type: string
+                  description: 'traceroute'
+                probes:
+                  type: array
+                  items:
+                    type: string
+                  description: 'List of probes ids'
+                params:
+                  type: object
+                  properties:
+                    cron:
+                      type: string
+                      description: 'Cron execution (cron format)'
+                    stop_time:
+                      type: string
+                      description: 'Cron execution stop time (dd/MM/yyyy HH:mm)'
+                    times_per_minute:
+                      type: integer
+                      description: 'How many times it will be executed in a minute'
+                    ips:
+                      type: array
+                      items:
+                        type: string
+                      description: List of ips
+                    fqdns:
+                      type: array
+                      items:
+                        type: string
+                      description: List of fqdns
+                    confidence:
+                      type: number
+                      description: '-c [Between 0 and 0.99]'
+                    method:
+                      type: string
+                      description: "-P ['udp-paris', 'icmp-paris', 'icp']"
+                    dport:
+                      type: string
+                      description: "-d"
+                    firsthop:
+                      type: string
+                      description: "-f"
+                    maxttl:
+                      type: integer
+                      description: "-m [Between 1 and 255]"
+                    attempts:
+                      type: integer
+                      description: "-q [Between 1 and 10]"
+                    sport:
+                      type: integer
+                      description: "-s"
+                    wait:
+                      type: integer
+                      description: "-w [Between 1 and 20]"
+                    wait-probe:
+                      type: integer
+                      description: "-W [Between 0 and 100]"
               example:
                 operation: traceroute
                 probes:
@@ -41,7 +107,6 @@ paths:
                     - 179.60.195.36
                   fqdns:
                     - ar.yahoo.com
-            example: "{\n\t\"operation\": \"traceroute\",\n\t\"probes\": [\"6047c91ef391a23bca4c31d8\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"07/03/2021 05:56\",\n\t\t\"firsthop\": 5,\n\t\t\"ips\": [\"179.60.195.36\"],\n        \"fqdns\": [\"ar.yahoo.com\"]\n\t}\n}"
   /dns:
     post:
       summary: DNS
@@ -53,18 +118,59 @@ paths:
           style: simple
           schema:
             type: string
-            example: >-
-              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDI1ZWY0MWIwNjg5MTFlYjYyNjQzNmIiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIn0.KVvkiBYnGqnWVCQQE4yM4F-re3eBJA7BLILtyr41nmc
       responses:
-        '200':
-          description: ''
-          headers: {}
+        '201':
+          description: 'Created'
+        '400':
+          description: 'Invalid parameters'
+        '401':
+          description: 'Unauthorized'
       requestBody:
         required: true
         content:
           text/plain:
             schema:
-              type: string
+              type: object
+              properties:
+                operation: 
+                  type: string
+                  description: 'dns'
+                probes:
+                  type: array
+                  items:
+                    type: string
+                  description: 'List of probes ids'
+                params:
+                  type: object
+                  properties:
+                    cron:
+                      type: string
+                      description: 'Cron execution (cron format)'
+                    stop_time:
+                      type: string
+                      description: 'Cron execution stop time (dd/MM/yyyy HH:mm)'
+                    times_per_minute:
+                      type: integer
+                      description: 'How many times it will be executed in a minute'
+                    ips:
+                      type: array
+                      items:
+                        type: string
+                      description: List of ips, must be empty or null
+                    fqdns:
+                      type: array
+                      items:
+                        type: string
+                      description: List of fqdns
+                    address: 
+                      type: string
+                      description: -b
+                    name: 
+                      type: string
+                      description: -q
+                    type:
+                      type: string
+                      description: '-P ["a", "any", "axfr", "hinfo", "mx", "ns", "soa", "txt"]'
               example:
                 operation: dns
                 probes:
@@ -76,7 +182,6 @@ paths:
                   fqns:
                     - www.google.com
                     - ar.yahoo.com
-            example: "{\n\t\"operation\": \"dns\",\n\t\"probes\": [\"6047e7202a003d6b564ab99a\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"09/03/2021 23:59\",\n        \"fqns\": [\"www.google.com\", \"ar.yahoo.com\"]\n    }\n}"
   /ping:
     post:
       summary: Ping
@@ -88,18 +193,74 @@ paths:
           style: simple
           schema:
             type: string
-            example: >-
-              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE
       responses:
-        '200':
-          description: ''
-          headers: {}
+        '201':
+          description: 'Created'
+        '400':
+          description: 'Invalid parameters'
+        '401':
+          description: 'Unauthorized'
       requestBody:
         required: true
         content:
           text/plain:
             schema:
-              type: string
+              type: object
+              properties:
+                operation: 
+                  type: string
+                  description: 'dns'
+                probes:
+                  type: array
+                  items:
+                    type: string
+                  description: 'List of probes ids'
+                params:
+                  type: object
+                  properties:
+                    cron:
+                      type: string
+                      description: 'Cron execution (cron format)'
+                    stop_time:
+                      type: string
+                      description: 'Cron execution stop time (dd/MM/yyyy HH:mm)'
+                    times_per_minute:
+                      type: integer
+                      description: 'How many times it will be executed in a minute'
+                    ips:
+                      type: array
+                      items:
+                        type: string
+                      description: List of ips
+                    fqdns:
+                      type: array
+                      items:
+                        type: string
+                      description: List of fqdns
+                    probecount:
+                      type: integer
+                      description: '-c [Between 1 and 100]'
+                    icmp-sum:
+                      type: string
+                      description: '-C'
+                    dport:
+                      type: string
+                      description: '-d'
+                    sport:
+                      type: string
+                      description: '-F'
+                    wait:
+                      type: integer
+                      description: '-c [Between 1 and 20]'
+                    method:
+                      type: string
+                      description: '-P ["icmp-echo", "icmp-time", "tcp-syn", "tcp-ack", "tcp-ack-sport", "udp", "udp-dport"]'
+                    size:
+                      type: integer
+                      description: '-s [Between 1 and 255]'
+                    timeout:
+                      type: integer
+                      description: '-W [Between 0 and 100]'
               example:
                 operation: ping
                 probes:
@@ -114,30 +275,32 @@ paths:
                   ips:
                     - 104.21.234.2
                   result_format: json
-            example: "{\n\t\"operation\": \"ping\",\n\t\"probes\": [\"6047e38e2a003d6b564ab999\"],\n\t\"params\": {\n        \"cron\": \"* * * * *\",\n        \"times_per_minute\": 1,\n        \"stop_time\": \"11/03/2021 23:59\",\n        \"fqdns\": [\"www.google.com\", \"ar.yahoo.com\"],\n        \"ips\": [\"104.21.234.2\"],\n        \"result_format\": \"json\"\n    }\n}"
   /register:
     post:
       summary: Register
       operationId: Register
       parameters: []
       responses:
-        '200':
-          description: ''
-          headers: {}
+        '201':
+          description: 'Created'
+        '400':
+          description: 'Invalid parameters'
       requestBody:
         required: true
         content:
           text/plain:
             schema:
-              type: string
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User email
+                password:
+                  type: string
+                  description: User password
               example:
                 email: deramos@fi.uba.ar
-                password: zaRandaja57
-            example: |-
-              {
-                  "email": "deramos@fi.uba.ar",
-                  "password": "zaRandaja57"
-              }
+                password: myNewPassword1234
   /login:
     post:
       summary: Login
@@ -145,22 +308,25 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
-          headers: {}
+          description: 'OK'
+        '404':
+          description: 'User not found'
       requestBody:
         required: true
         content:
           text/plain:
             schema:
-              type: string
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User email
+                password:
+                  type: string
+                  description: User password
               example:
                 email: deramos@fi.uba.ar
-                password: zaRandaja57
-            example: |-
-              {
-                  "email": "deramos@fi.uba.ar",
-                  "password": "zaRandaja57"
-              }
+                password: myNewPassword1234
   /probes:
     get:
       summary: Get Probes
@@ -168,8 +334,9 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
-          headers: {}
+          description: 'OK'
+        '401':
+          description: 'Unauthorized'
     post:
       summary: Register Probe
       operationId: RegisterProbe
@@ -180,12 +347,32 @@ paths:
           style: simple
           schema:
             type: string
-            example: >-
-              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                      description: Probe location latitude
+                    longitude:
+                      type: number
+                      description: Probe location longitude
+              example:
+                location:
+                  latitude: -34.6158037
+                  logitude: -58.5033383
+                    
       responses:
         '200':
-          description: ''
-          headers: {}
+          description: 'OK'
+        '401':
+          description: 'Unauthorized'
   /users/me:
     get:
       summary: User
@@ -198,12 +385,11 @@ paths:
           style: simple
           schema:
             type: string
-            example: >-
-              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTMzYzJhMDAzZDZiNTY0YWI5OTgiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjpmYWxzZX0.c45PiPpuCM2Md13bKuPdxynQLlnxcxRmLUTPVfFfkCE
       responses:
         '200':
           description: ''
-          headers: {}
+        '401':
+          description: 'Unauthorized'
   /operation:
     get:
       summary: Operation
@@ -213,58 +399,10 @@ paths:
       responses:
         '200':
           description: ''
-          headers: {}
-  /delete_all:
-    delete:
-      summary: Delete All
-      operationId: DeleteAll
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          headers: {}
-  /credits:
-    post:
-      summary: Credits
-      operationId: Credits
-      parameters:
-        - name: access_token
-          in: header
-          required: true
-          style: simple
-          schema:
-            type: string
-            example: >-
-              eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDQ3ZTYyYWVkMzc2MGM5MjA4MGVlZWEiLCJlbWFpbCI6ImRlcmFtb3Nfc3VwZXJAZmkudWJhLmFyIiwiY3JlZGl0cyI6MCwiaXNfc3VwZXJ1c2VyIjp0cnVlfQ.xfpSFP8dSlB3w0ItsjAW1uUvzQDW6kvt1Uh8HjD_2D0
-      responses:
-        '200':
-          description: ''
-          headers: {}
-      requestBody:
-        required: true
-        content:
-          text/plain:
-            schema:
-              type: string
-              example:
-                id: 6047e33c2a003d6b564ab998
-                credits: 100000
-            example: |-
-              {
-                  "id": "6047e33c2a003d6b564ab998",
-                  "credits": 100000
-              }
+        '404':
+          description: 'Not found'
 components:
   parameters:
-    access_token:
-      name: access_token
-      in: header
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: >-
-          eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MDI1ZWY0MWIwNjg5MTFlYjYyNjQzNmIiLCJlbWFpbCI6ImRlcmFtb3NAZmkudWJhLmFyIn0.KVvkiBYnGqnWVCQQE4yM4F-re3eBJA7BLILtyr41nmc
     id:
       name: id
       in: query
@@ -272,16 +410,6 @@ components:
       style: form
       schema:
         type: string
-        example: 6047e7202a003d6b564ab99a
+        example: operationId
 security: []
 tags: []
-externalDocs:
-  url: ''
-  description: ''
-warnings:
-  - >-
-    Two GET or two POST methods for the same path are not allowed in OpenAPI
-    specification : posthttp://localhost:5000/login
-  - >-
-    Two GET or two POST methods for the same path are not allowed in OpenAPI
-    specification : gethttp://localhost:5000/users/me
