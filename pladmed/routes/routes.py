@@ -150,7 +150,8 @@ def create_user():
 
     validation_error = validate_user_data(data)
     if validation_error != "":
-        print("*** Validation error: " + validation_error + " *****")
+        print(
+            f"*** Validation error: {validation_error} ***** on data:  **** {data}")
         return error_response(HTTP_BAD_REQUEST, validation_error)
 
     try:
