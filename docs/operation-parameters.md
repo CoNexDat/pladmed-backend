@@ -10,7 +10,9 @@ All ranges include the edge values.
 
 * **fqdns**: A comma-separated list of strings.
 
-* **ips**: Same as fqdns, a comma-separated list of strings.
+* **fqdns**: Same as name: a comma-separated list of strings. If `ips` is empty, must be present.
+
+* **ips**: A comma-separated list of IPv4 or IPv6 addresses. If `fqdns` is empty, must be present.
 
 * **attempts**: An integer number between 1 and 10.
 
@@ -32,13 +34,13 @@ All ranges include the edge values.
 
 ## ping
 
-* **fqdns**: A comma-separated list of strings.
-
-* **ips**: Same as fqdns, a comma-separated list of strings.
-
 * **dport**: An integer greater than zero.
 
+* **fqdns**: Same as name: a comma-separated list of strings. If `ips` is empty, must be present.
+
 * **icmp-sum**: An integer greater than zero.
+
+* **ips**: A comma-separated list of IPv4 or IPv6 addresses. If `fqdns` is empty, must be present.
 
 * **method**: A string. Can only be "icmp-echo", "icmp-time", "tcp-ack", "tcp-ack-sport", "tcp-syn", "udp", or "udp-dport".
 
