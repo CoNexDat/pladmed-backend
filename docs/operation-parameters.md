@@ -14,7 +14,7 @@ These three parameters are mandatory for any kind of operation.
 
 * **stop_time**: A date and time defining when the measurement operation should end. It is expected to be in `dd/mm/YYYY HH:MM` format (the single space between date and time is expected and mandatory).
 
-* **times_per_minute**: Since cron doesn't allow resolution beyond minutes, this settings allows for that smaller granularity. One second is the limit, so this value must be an integer between 1 and 60.
+* **times_per_minute**: Since cron doesn't allow resolution beyond minutes, this setting allows for that smaller granularity. One second is the limit, so this value must be an integer between 1 and 60.
 
 ## Operation-specific parameters
 
