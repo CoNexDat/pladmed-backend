@@ -8,6 +8,8 @@ All ranges include the edge values.
 
 ## General parameters
 
+These three parameters are mandatory for any kind of operation.
+
 * **cron**: A cron expression which defines the frequency to use for running the operation. Since cron doesn't handle years, an operation cannot run for longer than a year. It is recommended to use [Cron Guru](https://crontab.guru/) for validating this value beforehand.
 
 * **stop_time**: A date and time defining when the measurement operation should end. It is expected to be in `dd/mm/YYYY HH:MM` format (the single space between date and time is expected and mandatory).
