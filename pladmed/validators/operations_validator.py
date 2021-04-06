@@ -38,7 +38,8 @@ DNS_PARAMS = {
         "a", "any", "axfr", "hinfo", "mx", "ns", "soa", "txt"
     ]),
     "fqdns": AnyValidator(),
-    "ips": EmptyListValidator()
+    "ips": EmptyListValidator(),
+    "x": AnyValidator()
 }
 
 GENERAL_PARAMS = {
