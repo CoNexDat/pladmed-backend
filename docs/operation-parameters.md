@@ -8,19 +8,17 @@ All ranges include the edge values.
 
 ## traceroute
 
-* **fqdns**: A comma-separated list of strings.
-
-* **fqdns**: Same as name: a comma-separated list of strings. If `ips` is empty, must be present.
-
-* **ips**: A comma-separated list of IPv4 or IPv6 addresses. If `fqdns` is empty, must be present.
-
 * **attempts**: An integer number between 1 and 10.
 
 * **confidence**: Floating point number between 0 and 0.99.
 
 * **dport**: An integer greater than zero.
 
+* **fqdns**: A comma-separated list of strings. If `ips` is empty, must be present.
+
 * **firsthop**: An integer greater than zero.
+
+* **ips**: A comma-separated list of IPv4 or IPv6 addresses. If `fqdns` is empty, must be present.
 
 * **maxttl**: An integer between 1 and 255.
 
