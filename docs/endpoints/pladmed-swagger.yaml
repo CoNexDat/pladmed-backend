@@ -74,11 +74,11 @@ paths:
                       type: string
                       description: "-P ['udp-paris', 'icmp-paris', 'icp']"
                     dport:
-                      type: string
-                      description: "-d"
+                      type: integer
+                      description: "-d [Greater than zero]"
                     firsthop:
-                      type: string
-                      description: "-f"
+                      type: integer
+                      description: "-f [Greater than zero]"
                     maxttl:
                       type: integer
                       description: "-m [Between 1 and 255]"
@@ -87,7 +87,7 @@ paths:
                       description: "-q [Between 1 and 10]"
                     sport:
                       type: integer
-                      description: "-s"
+                      description: "-s [Greater than zero]"
                     wait:
                       type: integer
                       description: "-w [Between 1 and 20]"
@@ -166,7 +166,9 @@ paths:
                       type: string
                       description: -b
                     name: 
-                      type: string
+                      type: array
+                      items:
+                        type: string
                       description: -q
                     type:
                       type: string
@@ -241,14 +243,14 @@ paths:
                       type: integer
                       description: '-c [Between 1 and 100]'
                     icmp-sum:
-                      type: string
-                      description: '-C'
+                      type: integer
+                      description: '-C [greater than zero]'
                     dport:
-                      type: string
-                      description: '-d'
+                      type: integer
+                      description: '-d [greater than zero]'
                     sport:
-                      type: string
-                      description: '-F'
+                      type: integer
+                      description: '-F [greater than zero]'
                     wait:
                       type: integer
                       description: '-c [Between 1 and 20]'
