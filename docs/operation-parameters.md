@@ -8,6 +8,10 @@ All ranges include the edge values.
 
 ## traceroute
 
+* **fqdns**: A comma-separated list of strings.
+
+* **ips**: Same as fqdns, a comma-separated list of strings.
+
 * **attempts**: An integer number between 1 and 10.
 
 * **confidence**: Floating point number between 0 and 0.99.
@@ -27,6 +31,10 @@ All ranges include the edge values.
 * **wait-probe**: An integer between 0 and 100.
 
 ## ping
+
+* **fqdns**: A comma-separated list of strings.
+
+* **ips**: Same as fqdns, a comma-separated list of strings.
 
 * **dport**: An integer greater than zero.
 
