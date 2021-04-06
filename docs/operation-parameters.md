@@ -6,7 +6,17 @@ For details on the meaning of each parameter, refer to [Scamper manual](https://
 
 All ranges include the edge values.
 
-## traceroute
+## General parameters
+
+* **cron**: A cron expression which defines the frequency to use for running the operation. Since cron doesn't handle years, an operation cannot run for longer than a year. It is recommended to use [Cron Guru](https://crontab.guru/) for validating this value beforehand.
+
+* **stop_time**: A date and time defining when the measurement operation should end. It is expected to be in `dd/mm/YYYY HH:MM` format (the single space between date and time is expected and mandatory).
+
+* **times_per_minute**: Since cron doesn't allow resolution beyond minutes, this settings allows for that smaller granularity. One second is the limit, so this value must be an integer between 1 and 60.
+
+## Operation-specific parameters
+
+### traceroute
 
 * **attempts**: An integer number between 1 and 10.
 
@@ -30,7 +40,7 @@ All ranges include the edge values.
 
 * **wait-probe**: An integer between 0 and 100.
 
-## ping
+### ping
 
 * **dport**: An integer greater than zero.
 
@@ -52,7 +62,7 @@ All ranges include the edge values.
 
 * **wait**: An integer between 1 and 20.
 
-## dns
+### dns
 
 * **address**: A string representing an IPv4 or IPv6 address.
 
