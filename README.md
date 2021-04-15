@@ -1,6 +1,6 @@
 # Pladmed backend
 
-[![Build Status](https://travis-ci.com/fedefunes96/pladmed-backend.svg?branch=travis-badge)](https://travis-ci.com/fedefunes96/pladmed-backend)
+[![Build Status](https://travis-ci.org/CoNexDat/pladmed-backend.svg?branch=master)](https://travis-ci.org/CoNexDat/pladmed-backend)
 
 [![codecov](https://codecov.io/gh/fedefunes96/pladmed-backend/branch/master/graph/badge.svg?token=YTU6E27H7T)](https://codecov.io/gh/fedefunes96/pladmed-backend)
 
