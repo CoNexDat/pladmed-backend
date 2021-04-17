@@ -1,14 +1,48 @@
+from croniter import croniter
+from datetime import datetime
+
 CREDITS_PER_TRACEROUTE = 15
 CREDITS_PER_PING = 1
 CREDITS_PER_DNS = 1
 
 CREDITS_PER_RESULT = 10
 
-def calculate_credits_traceroute(total_ips):
-    return CREDITS_PER_TRACEROUTE * total_ips
+#TODO Credits per total Operations - use CRONTAB
 
-def calculate_credits_ping(total_ips):
-    return CREDITS_PER_PING * total_ips
+def estimate_executions(cron, stop_time):
+    iterat = croniter(cron)
+    
+    first_date = iterat.get_next(datetime)
+    second_date = iterat.get_next(datetime)
+    stop_date = datetime.strptime(stop_time, '%d/%m/%Y %H:%M')
 
-def calculate_credits_dns(total_domains):
-    return CREDITS_PER_DNS * total_domains
+    if stop_date < first_date:
+        return 1
+
+    # Executions per minute
+    frequency_ex = (second_date - first_date).total_seconds()
+
+    difference = (stop_date - first_date).total_seconds()
+
+    executions = difference / frequency_ex
+
+    # It'll execute once (second_date > stop_date)
+    if executions < 1.0:
+        return 1
+
+    return executions
+
+def calculate_credits_traceroute(cron, stop_time, total_ips):
+    executions = estimate_executions(cron, stop_time)
+
+    return CREDITS_PER_TRACEROUTE * total_ips * executions
+
+def calculate_credits_ping(cron, stop_time, total_ips):
+    executions = estimate_executions(cron, stop_time)
+
+    return CREDITS_PER_PING * total_ips * executions
+
+def calculate_credits_dns(cron, stop_time, total_domains):
+    executions = estimate_executions(cron, stop_time)
+
+    return CREDITS_PER_DNS * total_domains * executions

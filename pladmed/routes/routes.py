@@ -83,7 +83,11 @@ def traceroute():
 
     total_destinations = count_destinations(data["params"])
 
-    credits_ = calculate_credits_traceroute(total_destinations)
+    credits_ = calculate_credits_traceroute(
+        data["params"]["cron"],
+        data["params"]["stop_time"],
+        total_destinations
+    )
 
     return create_operation("traceroute", data, credits_, data["result_format"])
 
@@ -98,7 +102,11 @@ def ping():
 
     total_destinations = count_destinations(data["params"])
 
-    credits_ = calculate_credits_ping(total_destinations)
+    credits_ = calculate_credits_ping(
+        data["params"]["cron"],
+        data["params"]["stop_time"],
+        total_destinations
+    )
 
     return create_operation("ping", data, credits_, "json")
 
@@ -113,7 +121,11 @@ def dns():
 
     total_destinations = count_destinations(data["params"])
 
-    credits_per_probe = calculate_credits_dns(total_destinations)
+    credits_per_probe = calculate_credits_dns(
+        data["params"]["cron"],
+        data["params"]["stop_time"],
+        total_destinations
+    )
 
     return create_operation("dns", data, credits_per_probe, "text")
 
