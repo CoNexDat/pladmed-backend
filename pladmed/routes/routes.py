@@ -86,6 +86,7 @@ def traceroute():
     credits_ = calculate_credits_traceroute(
         data["params"]["cron"],
         data["params"]["stop_time"],
+        int(data["params"]["times_per_minute"]),
         total_destinations
     )
 
@@ -105,6 +106,7 @@ def ping():
     credits_ = calculate_credits_ping(
         data["params"]["cron"],
         data["params"]["stop_time"],
+        int(data["params"]["times_per_minute"]),
         total_destinations
     )
 
@@ -124,6 +126,7 @@ def dns():
     credits_per_probe = calculate_credits_dns(
         data["params"]["cron"],
         data["params"]["stop_time"],
+        int(data["params"]["times_per_minute"]),
         total_destinations
     )
 
