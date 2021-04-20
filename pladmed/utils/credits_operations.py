@@ -35,14 +35,20 @@ def estimate_executions(cron, stop_time):
 def calculate_credits_traceroute(cron, stop_time, ex_per_min, total_ips):
     executions = estimate_executions(cron, stop_time)
 
-    return CREDITS_PER_TRACEROUTE * total_ips * executions * ex_per_min
+    credits_per_probe = CREDITS_PER_TRACEROUTE * total_ips
+
+    return [credits_per_probe, credits_per_probe * executions * ex_per_min]
 
 def calculate_credits_ping(cron, stop_time, ex_per_min, total_ips):
     executions = estimate_executions(cron, stop_time)
 
-    return CREDITS_PER_PING * total_ips * executions * ex_per_min
+    credits_per_probe = CREDITS_PER_PING * total_ips
+
+    return [credits_per_probe, credits_per_probe * executions * ex_per_min]
 
 def calculate_credits_dns(cron, stop_time, ex_per_min, total_domains):
     executions = estimate_executions(cron, stop_time)
 
-    return CREDITS_PER_DNS * total_domains * executions * ex_per_min
+    credits_per_probe = CREDITS_PER_DNS * total_domains
+
+    return [credits_per_probe, credits_per_probe * executions * ex_per_min]

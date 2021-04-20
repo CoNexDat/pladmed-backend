@@ -37,7 +37,7 @@ def get_available_probes(probes, credits_):
     return avail_probes
 
 
-def create_operation(name, data, credits_per_probe, result_format):
+def create_operation(name, data, credits_for_probes, credits_per_probe, result_format):
     try:
         user = request.user
 
@@ -66,7 +66,7 @@ def create_operation(name, data, credits_per_probe, result_format):
 
         current_app.db.users.change_credits(user, user.credits - total_credits)
 
-        do_operation(name, available_probes, operation_data, credits_per_probe)
+        do_operation(name, available_probes, operation_data, credits_for_probes)
 
         return make_response(operation_data, HTTP_CREATED)
     except:
@@ -83,14 +83,20 @@ def traceroute():
 
     total_destinations = count_destinations(data["params"])
 
-    credits_ = calculate_credits_traceroute(
+    [credits_for_probe, credits_per_probe] = calculate_credits_traceroute(
         data["params"]["cron"],
         data["params"]["stop_time"],
         int(data["params"]["times_per_minute"]),
         total_destinations
     )
 
-    return create_operation("traceroute", data, credits_, data["result_format"])
+    return create_operation(
+        "traceroute",
+        data,
+        credits_for_probe,
+        credits_per_probe,
+        data["result_format"]
+    )
 
 
 @api.route('/ping', methods=["POST"])
@@ -103,14 +109,20 @@ def ping():
 
     total_destinations = count_destinations(data["params"])
 
-    credits_ = calculate_credits_ping(
+    [credits_for_probe, credits_per_probe] = calculate_credits_ping(
         data["params"]["cron"],
         data["params"]["stop_time"],
         int(data["params"]["times_per_minute"]),
         total_destinations
     )
 
-    return create_operation("ping", data, credits_, "json")
+    return create_operation(
+        "ping",
+        data,
+        credits_for_probe,
+        credits_per_probe,
+        "json"
+    )
 
 
 @api.route('/dns', methods=["POST"])
@@ -123,14 +135,20 @@ def dns():
 
     total_destinations = count_destinations(data["params"])
 
-    credits_per_probe = calculate_credits_dns(
+    [credits_for_probe, credits_per_probe] = calculate_credits_dns(
         data["params"]["cron"],
         data["params"]["stop_time"],
         int(data["params"]["times_per_minute"]),
         total_destinations
     )
 
-    return create_operation("dns", data, credits_per_probe, "text")
+    return create_operation(
+        "dns",
+        data,
+        credits_for_probe,
+        credits_per_probe,
+        "text"
+    )
 
 
 def count_destinations(params):
