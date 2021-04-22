@@ -2,7 +2,7 @@ from os import truncate
 import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 # TODO Reduce code duplication
 
@@ -1272,3 +1272,51 @@ class OperationTest(BaseTest):
         user = self.app.db.users.find_user("agustin@gmail.com")
 
         self.assertEqual(user.credits, 370)
+
+    def test_creates_operation_changes_credits_for_user_counting_operations(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/ping',
+            json=dict(
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "cron": "* * * * *",
+                    "stop_time": (datetime.now() + timedelta(minutes=10)).strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        user = self.app.db.users.find_user("agustin@gmail.com")
+
+        self.assertEqual(user.credits, 382)
+
+    def test_creates_operation_changes_credits_for_user_counting_times_per_minute(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        res = self.client.post(
+            '/ping',
+            json=dict(
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "cron": "* * * * *",
+                    "stop_time": (datetime.now() + timedelta(minutes=10)).strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 2
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        user = self.app.db.users.find_user("agustin@gmail.com")
+
+        self.assertEqual(user.credits, 364)
