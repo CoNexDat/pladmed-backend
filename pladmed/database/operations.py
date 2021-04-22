@@ -42,6 +42,16 @@ class OperationsCollection:
         except:
             raise InvalidOperation()
 
+    def find_all_operations(self):
+        operations = []
+
+        for operation in self.operationsCol.find():
+            operations.append(
+                self.deserialize_operation(operation)
+            )
+
+        return operations        
+
     def find_by_user(self, user_id):
         operations = []
 

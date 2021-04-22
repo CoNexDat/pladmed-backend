@@ -358,3 +358,19 @@ def give_credits():
         return make_response(user.public_data(), HTTP_OK)
     except:
         return error_response(HTTP_NOT_FOUND, "User doesn't exist")
+
+@api.route('/operations', methods=["GET"])
+@user_protected
+def all_operations():
+    operations = current_app.db.operations.find_all_operations()
+
+    operations_data = []
+
+    for operation in operations:
+        op_data = operation.public_data()
+
+        del op_data["results"]
+
+        operations_data.append(op_data)
+
+    return make_response(jsonify(operations_data), HTTP_OK)
