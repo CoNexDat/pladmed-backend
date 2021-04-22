@@ -1320,3 +1320,81 @@ class OperationTest(BaseTest):
         user = self.app.db.users.find_user("agustin@gmail.com")
 
         self.assertEqual(user.credits, 364)
+
+    def test_get_all_operations_gets_empty_list_no_operation(self):
+        res = self.client.get(
+            '/operations',
+            headers={'access_token': self.access_token}
+        )
+
+        operations = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(0, len(operations))
+
+    def test_get_all_operations_invalid_no_auth_token(self):
+        res = self.client.get(
+            '/operations'
+        )
+
+        self.assertEqual(401, res.status_code)
+
+    def test_get_all_operations_success(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        self.client.post(
+            '/ping',
+            json=dict(
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "cron": "* * * * *",
+                    "stop_time": (datetime.now() + timedelta(minutes=10)).strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        res = self.client.get(
+            '/operations',
+            headers={'access_token': self.access_token}
+        )
+
+        operations = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(1, len(operations))
+
+    def test_get_all_operations_doesnt_contain_results(self):
+        res_probes = self.client.get('/probes')
+
+        probes = json.loads(res_probes.data)
+
+        self.client.post(
+            '/ping',
+            json=dict(
+                probes=[probes[0]["identifier"]],
+                params={
+                    "ips": ["192.168.0.0", "192.162.1.1"],
+                    "cron": "* * * * *",
+                    "stop_time": (datetime.now() + timedelta(minutes=10)).strftime("%d/%m/%Y %H:%M"),
+                    "times_per_minute": 1
+                },
+                result_format="json"
+            ),
+            headers={'access_token': self.access_token}
+        )
+
+        res = self.client.get(
+            '/operations',
+            headers={'access_token': self.access_token}
+        )
+
+        operations = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(False, "results" in operations[0])
