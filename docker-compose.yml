@@ -10,12 +10,13 @@ services:
     volumes:
       - ./pladmed:/home/pladmed
       - ./logs:/home/logs
+      - ./mongo/mongod.conf:/etc/mongod.conf
     ports:
       - 5000:5000
     restart: on-failure
     networks:
       - pladmed_net
-      
+
   db:
     image: 'mongo:3.6'
     container_name: pladmed-database
@@ -32,7 +33,7 @@ services:
       - 'SYS_TIME'
     image: chrony
     container_name: chrony
-    networks: 
+    networks:
       - pladmed_net
 
 networks:
