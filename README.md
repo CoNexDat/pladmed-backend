@@ -68,3 +68,6 @@ Alternatively, in the same directory, there is a [Postman](https://www.postman.c
 - [Class diagram and class responsibilites](docs/class-diagram.md)
 - [Deployment/installation](docs/deployment.md)
 - [Time synchronization](time-sync.md)
+
+## License
+All releases of PlaDMed are licensed under the GPL v2.
