@@ -1,3 +1,5 @@
+from pladmed.routes.routes import ERROR_TYPE_EMAIL_ALREADY_REGISTERED
+from pladmed.validators.route_validator import ERROR_TYPE_INVALID_EMAIL, ERROR_TYPE_INVALID_PWD, ERROR_TYPE_MISSING_EMAIL, ERROR_TYPE_MISSING_PWD
 import unittest
 from pladmed.tests.integration_tests.test_base import BaseTest
 import json
@@ -48,6 +50,8 @@ class AuthenticationTest(BaseTest):
         ))
 
         self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertEqual(data["Type"], ERROR_TYPE_MISSING_EMAIL)
 
     def test_register_should_have_password(self):
         res = self.client.post('/register', json=dict(
@@ -55,13 +59,18 @@ class AuthenticationTest(BaseTest):
         ))
 
         self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertEqual(data["Type"], ERROR_TYPE_MISSING_PWD)
 
     def test_register_should_have_valid_email(self):
         res = self.client.post('/register', json=dict(
-            email="foo"
+            email="foo",
+            password="secure_Password1"
         ))
 
         self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertEqual(data["Type"], ERROR_TYPE_INVALID_EMAIL)
 
     def test_register_should_have_strong_password(self):
         res = self.client.post('/register', json=dict(
@@ -70,6 +79,8 @@ class AuthenticationTest(BaseTest):
         ))
 
         self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertEqual(data["Type"], ERROR_TYPE_INVALID_PWD)
 
     def test_unique_users(self):
         self.client.post('/register', json=dict(
@@ -83,6 +94,8 @@ class AuthenticationTest(BaseTest):
         ))
 
         self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertEqual(data["Type"], ERROR_TYPE_EMAIL_ALREADY_REGISTERED)
 
     def test_login_user_correctly(self):
         self.client.post('/register', json=dict(

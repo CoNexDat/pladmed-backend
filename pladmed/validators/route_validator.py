@@ -5,6 +5,12 @@ from croniter import croniter
 import numbers
 import datetime
 
+ERROR_TYPE_EMAIL_ALREADY_REGISTERED = "ET_EMAIL_ALREADY_REGISTERED"
+ERROR_TYPE_INVALID_EMAIL = "ET_INVALID_EMAIL"
+ERROR_TYPE_INVALID_PWD = "ET_INVALID_PWD"
+ERROR_TYPE_MISSING_EMAIL = "ET_MISSING_EMAIL"
+ERROR_TYPE_MISSING_PWD = "ET_MISSING_PWD"
+
 
 def validate_params(data, valid_params):
     try:
@@ -71,20 +77,20 @@ def validate_operation(data, valid_params):
 
 def validate_user_data_present(data):
     if "email" not in data or data["email"] == "":
-        return "Missing email field"
+        return "Missing email field", ERROR_TYPE_MISSING_EMAIL
     if "password" not in data or data["password"] == "":
-        return "Missing password field"
-    return ""
+        return "Missing password field", ERROR_TYPE_MISSING_PWD
+    return "", ""
 
 
 def validate_user_data(data):
-    validation_error = validate_user_data_present(data)
+    validation_error, error_type = validate_user_data_present(data)
     if validation_error != "":
-        return validation_error
+        return validation_error, error_type
 
     addr = address.validate_address(data["email"], skip_remote_checks=True)
     if addr == None:
-        return "Email address has invalid format, or MX domain does not exist"
+        return "Email address has invalid format, or MX domain does not exist", ERROR_TYPE_INVALID_EMAIL
 
     password = data["password"]
     special_characters = '!"@#$%^&*()-+?_=,/'
@@ -99,9 +105,9 @@ def validate_user_data(data):
              ]
 
     if not all(rule(password) for rule in rules):
-        return "Password must have at least 8 characters, 1 uppercase character, 1 lowercase, 1 digit and 1 special character"
+        return "Password must have at least 8 characters, 1 uppercase character, 1 lowercase, 1 digit and 1 special character", ERROR_TYPE_INVALID_PWD
 
-    return ""
+    return "", ""
 
 
 def validate_credits(data):

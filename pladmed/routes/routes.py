@@ -16,7 +16,7 @@ from pladmed.utils.credits_operations import (
 from pladmed import socketio
 from pladmed.validators.route_validator import (
     validate_traceroute, validate_ping, validate_dns, validate_user_data, validate_user_data_present,
-    validate_credits, validate_location
+    validate_credits, validate_location, ERROR_TYPE_EMAIL_ALREADY_REGISTERED
 )
 
 
@@ -66,7 +66,8 @@ def create_operation(name, data, credits_for_probes, credits_per_probe, result_f
 
         current_app.db.users.change_credits(user, user.credits - total_credits)
 
-        do_operation(name, available_probes, operation_data, credits_for_probes)
+        do_operation(name, available_probes,
+                     operation_data, credits_for_probes)
 
         return make_response(operation_data, HTTP_CREATED)
     except:
@@ -181,9 +182,9 @@ def do_operation(operation, probes, data, credits_per_probe):
 def create_user():
     data = request.get_json(force=True)
 
-    validation_error = validate_user_data(data)
+    validation_error, error_type = validate_user_data(data)
     if validation_error != "":
-        return error_response(HTTP_BAD_REQUEST, validation_error)
+        return error_response(HTTP_BAD_REQUEST, validation_error, error_type)
 
     try:
         user = current_app.db.users.create_user(
@@ -197,16 +198,16 @@ def create_user():
 
         return make_response(jsonify(user_data), HTTP_CREATED)
     except:
-        return error_response(HTTP_BAD_REQUEST, "That email is already registered")
+        return error_response(HTTP_BAD_REQUEST, "That email is already registered", ERROR_TYPE_EMAIL_ALREADY_REGISTERED)
 
 
 @api.route('/login', methods=["POST"])
 def login_user():
     data = request.get_json(force=True)
 
-    validation_error = validate_user_data_present(data)
+    validation_error, error_type = validate_user_data_present(data)
     if validation_error != "":
-        return error_response(HTTP_BAD_REQUEST, validation_error)
+        return error_response(HTTP_BAD_REQUEST, validation_error, error_type)
 
     try:
         user = current_app.db.users.find_user(data["email"])
@@ -358,6 +359,7 @@ def give_credits():
         return make_response(user.public_data(), HTTP_OK)
     except:
         return error_response(HTTP_NOT_FOUND, "User doesn't exist")
+
 
 @api.route('/operations', methods=["GET"])
 @user_protected
